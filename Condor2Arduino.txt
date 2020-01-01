@@ -1,0 +1,184 @@
+using System;
+using System.Collections.Generic;
+using System.ComponentModel;
+using System.Data;
+using System.Drawing;
+using System.Linq;
+using System.Text;
+using System.Windows.Forms;
+using System.Net;
+using System.Net.Sockets;
+
+using System.Globalization;
+using System.IO.Ports; // for the serial port connections
+
+
+namespace TutorialCs1
+{
+    // ref UDPSocket.cs how to connect asynchronous
+    // my code works, but it is not asychronous. 
+    
+    public struct PlaneData // easy object to store some planedata into. --> NOT used yet
+    {
+        public float time; // time
+        public float airspeed; // speed in the air. 
+        public float vario; 
+        public float evario;
+        public float integrated;
+        public float height;
+        public float compass;
+        public float gforce;
+        public float bank;
+        public float pitch; // not sure what data is output through Condor UDP. It is not the pitch as in FSX
+        public float yaw; 
+    }
+ 
+    public partial class Form1 : Form
+    {
+        public Form1()
+
+        {
+            InitializeComponent();
+        
+        }
+       
+        UdpClient Ontvanger; 
+        IPEndPoint listenEndPoint;
+        byte[] receivedData;
+        int poort;
+        int Speed;
+        string condordata;
+        string extract;
+        SerialPort port; 
+       
+        
+        public string GetCondorData()
+        {
+            receivedData = Ontvanger.Receive(ref listenEndPoint); // blocking code via threads proberen te omzeilen maar werkt niet: nog aanpassen
+            string cdata = Encoding.ASCII.GetString(receivedData);
+            return cdata;
+        }
+
+        public int GetSpeed(string s) //condordata is raw data from udp received at GetCondorData
+        {
+            if (s.Contains("airspeed"))
+            {
+                int pos1 = s.IndexOf("airspeed="); // posnumber where airspeed starts
+                extract = s.Substring(pos1 + 9, 4);
+                double a= (double.Parse(extract, CultureInfo.InvariantCulture.NumberFormat)) * 3.6; // in km/h
+                return Convert.ToInt32(a);
+           }
+            return -1;
+        }
+
+        public string Getvario(string s) //condordata is raw data from udp received at GetCondorData
+        {
+            if (s.Contains("vario"))
+            {
+                int pos1 = s.IndexOf("vario="); // posnumber where airspeed starts
+                if (s.Substring(pos1 + 6, 1) == "-")
+                    extract = s.Substring(pos1 + 6, 4);
+                else
+                    extract = "+" + s.Substring(pos1 + 6, 3);
+                
+                return extract;
+            }
+            return "-1";
+        }
+ 
+        public void btnConnect_Click(object sender, EventArgs e) //event when buttonConnect UDP is clicked
+        {
+            try
+            {
+                if (btnConnect.Text == "Connect") // if not connected then connect else disconnect 
+                {
+                    poort = Convert.ToInt32(textBox1.Text); //converts port string to variable  poort as int32
+                    Ontvanger = new UdpClient(poort); //create new client using port 'poort'
+                    Ontvanger.Client.SetSocketOption(SocketOptionLevel.Socket, SocketOptionName.ReceiveTimeout, 100);
+                    listenEndPoint = new IPEndPoint(IPAddress.Any, poort);
+
+                    label1.Text = "Connected"; // change the label text
+                    btnConnect.Text = "Disconnect"; // change the button text
+                    timer1.Enabled = true; // we have contact with condor start processing
+                }
+                else
+                {
+                    timer1.Enabled = false;
+                    Ontvanger.Close();
+                    label1.Text = "disconnected";
+                    btnConnect.Text = "Connect";
+                }
+            }
+            catch (Exception f) { } // no exception catch coded. 
+        }
+       
+        
+        private void timer1_Tick(object sender, EventArgs e)
+        {
+            // timer is only enabled when user clicks Connect, so no need to check if connected
+            try
+            {
+                condordata = GetCondorData(); // extract the condordata
+                textBox2.Text = condordata; // show the received condordata. not needed, for testing only
+               // ************** Speed
+                Speed = GetSpeed(condordata); // find and convert the airspeed in km/h
+                if (Speed < 10)
+                    textBoxSpeedkmh.Text = "000" + Speed.ToString(); // speed 1 km/h --> 0001 km/h - we want 4 chars in the string
+                if (Speed < 100 && Speed >= 10) 
+                    textBoxSpeedkmh.Text = "00" + Speed.ToString(); // debug info on screen
+                if (Speed >= 100)
+                    textBoxSpeedkmh.Text = "0" + Speed.ToString(); // debug info on screen
+                // ************** Vario
+                textBoxVario.Text = Getvario(condordata); // find and convert Vario in m/s
+
+                // ************** Build & Send Arduino Serial String
+                string Eric = "<G" + textBoxSpeedkmh.Text + "<B" + textBoxVario.Text; // the actual string to send to the serial port
+                port.Write(Eric); // send it
+                textBoxTestData.Text = Eric; // show it. testing only
+            }
+            catch (Exception f) { } // no exception catch coded. 
+        }
+
+        
+        private void buttonCom_Click(object sender, EventArgs e)
+        {
+            try
+            {
+            if (buttonCom.Text == "Connect") 
+            {
+                port = new SerialPort(comboBoxCom.Text, Convert.ToInt32(textBoxBaud.Text), Parity.None, 8, StopBits.One);
+                port.Open();
+                buttonCom.Text = "Disconnect";
+                
+                
+            }
+            else 
+            {
+                port.Close();
+                port.Dispose();
+                buttonCom.Text = "Connect";
+            }
+            }
+                catch (Exception f) { }
+        }
+
+         
+        private void buttonZEROup_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                port.Write("<A");
+            }
+            catch (Exception f) { }
+        }
+
+        private void buttonZEROdwn_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                port.Write("<D");
+            }
+            catch (Exception f) { }
+        }       
+    }
+}
