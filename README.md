@@ -1,6 +1,7 @@
 Condor soaring simulator (v2)
 ref: www.condorsoaring.com/
 ref http://www.condorsoaring.com/manual/ UDP data
+Checkout current issue of Sailplane and Gliding, August-September- 5 pages of experiments, false trails...
 
 Simple program that collects the Condor UDP output
 and converts it to output to a serial port
