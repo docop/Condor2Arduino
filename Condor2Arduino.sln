@@ -6,9 +6,6 @@ MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Condor2Arduino", "TutorialCs1\Condor2Arduino.csproj", "{8CADA596-A1F6-42AA-A0AA-B46EE0A3C0D4}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{38C2ECF4-9BE9-405A-A1A3-5A18C4B5ACDF}"
-	ProjectSection(SolutionItems) = preProject
-		SerialConnect.cs = SerialConnect.cs
-	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

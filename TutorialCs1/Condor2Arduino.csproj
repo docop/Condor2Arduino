@@ -80,6 +80,7 @@
     </Compile>
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="SerialConnect.cs" />
     <EmbeddedResource Include="FormC2A.resx">
       <DependentUpon>FormC2A.cs</DependentUpon>
     </EmbeddedResource>
