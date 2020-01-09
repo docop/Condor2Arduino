@@ -10,25 +10,26 @@ using System.Net;
 using System.Net.Sockets;
 using System.Globalization;
 using System.IO.Ports; // for the serial port connections
+using System.Threading; // threading
 
 namespace Condor2Arduino
 {
-    
 
+    public struct planedata
+    {
+        public string speed;
+        public string altitudebaro;
+        public string bank;
+        public string varioraw;
+        public string variointegrated;
+        public string varioelec;
+        public string gforce;
+    }
+    inc
     public partial class Form1 : Form
     {
-        public struct planedata
-        {
-            public string speed;
-            public string altitudebaro;
-            public string bank;
-            public string varioraw;
-            public string variointegrated;
-            public string varioelec;
-            public string gforce;
-        }
-
-        public Form1()
+        
+      public Form1()
 
         {
             InitializeComponent();
@@ -45,7 +46,7 @@ namespace Condor2Arduino
         bool connected = false;
         bool arduino = false;
         planedata PlaneData;
-
+        
         public void btnConnect_Click(object sender, EventArgs e) //event when buttonConnect UDP is clicked
         {
             try
