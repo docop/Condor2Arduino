@@ -10,78 +10,73 @@ using System.Net;
 using System.Net.Sockets;
 using System.Globalization;
 using System.IO.Ports; // for the serial port connections
+using System.Threading; // threading
 
 namespace Condor2Arduino
 {
-    
 
+    public struct planedata
+    {
+        public string speed;
+        public string altitudebaro;
+        public string bank;
+        public string varioraw;
+        public string variointegrated;
+        public string varioelec;
+        public string gforce;
+    }
+    
     public partial class Form1 : Form
     {
-        public struct planedata
-        {
-            public string speed;
-            public string altitudebaro;
-            public string bank;
-            public string varioraw;
-            public string variointegrated;
-            public string varioelec;
-            public string gforce;
-        }
-
-        public Form1()
+        
+      public Form1()
 
         {
             InitializeComponent();
-            
+            Portfiller();
+            backgroundWorker1.WorkerReportsProgress = true;
+            backgroundWorker1.WorkerSupportsCancellation = true;
+            backgroundWorker2.WorkerReportsProgress = true;
+            backgroundWorker2.WorkerSupportsCancellation = true;
         }
        
-        UdpClient Ontvanger; 
-        IPEndPoint listenEndPoint;
-        byte[] receivedData;
-        int poort;
+        public SerialPort port;
+        public bool arduino = false;
         int speedkmph;
-        string condordata, extract;
-        SerialPort port;
-        bool connected = false;
-        bool arduino = false;
+        string condordata; 
+        string extract;
         planedata PlaneData;
+        SerialConnect serialconnect = new SerialConnect();
 
         public void btnConnect_Click(object sender, EventArgs e) //event when buttonConnect UDP is clicked
         {
-            try
-            {
-                if (!connected)
+                if (!serialconnect.connected)
                 {
-                    poort = Convert.ToInt32(textBox1.Text); //converts port string to variable  poort as int32
-                    Ontvanger = new UdpClient(poort); //create new client using port 'poort'
-                    Ontvanger.Client.SetSocketOption(SocketOptionLevel.Socket, SocketOptionName.ReceiveTimeout, 100);
-                    listenEndPoint = new IPEndPoint(IPAddress.Any, poort);
+                    backgroundWorker1.RunWorkerAsync();
                     label1.Text = "Connected";
                     btnConnect.Text = "Disconnect";
-                    connected = true;
                     timer1.Enabled = true;
-                    
                 }
-                else
+                else // we are connected so we disconnect
                 {
-                    Ontvanger.Close();
+                    backgroundWorker2.CancelAsync();
+                    backgroundWorker1.CancelAsync();
                     label1.Text = "disconnected";
                     btnConnect.Text = "Connect";
-                    connected = false;
+                    serialconnect.CondorDisConnect();
                     timer1.Enabled = false;
                 }
-            }
-            catch (Exception f) { } // no exception catch coded. 
         }
 
         private void timer1_Tick(object sender, EventArgs e)
         {
-            condordata = GetCondorData();
+           // if (serialconnect.connected) condordata = serialconnect.GetCondorData();
             textBox2.Text = condordata;
 
-            if (condordata != "-1")
+            if (condordata != "-1") 
             {
                 label1.Text = "Receiving data";
+                if (condordata!=null)
                 ConvertCondorData(condordata);
                 ShowConvertedData(PlaneData);
                 
@@ -97,18 +92,12 @@ namespace Condor2Arduino
 
             }
         }
-        public string GetCondorData()
-        {
-                  try
-                    {
-                   
-                        receivedData = Ontvanger.Receive(ref listenEndPoint); // blocking code via threads proberen te omzeilen maar werkt niet: nog aanpassen
-                        return (Encoding.ASCII.GetString(receivedData));
-                       
-                    }
-                catch (Exception f) { return "-1";}
-            }
 
+        public void Portfiller()
+        {
+            foreach (string s in SerialPort.GetPortNames())
+                comboBoxCom.Items.Add(s);
+        }
 
         public void ConvertCondorData(string s) //s=condordata 
         {
@@ -211,9 +200,13 @@ namespace Condor2Arduino
             textBoxGforce.Text = a.gforce;
         }
 
-        public void Send2Arduino(string e)
+        public void Send2Arduino(string str)
         {
-            port.Write(e);
+            try
+            {
+                port.Write(str);
+            }
+            catch { }
         }
 
          private void buttonCom_Click(object sender, EventArgs e)
@@ -258,6 +251,23 @@ namespace Condor2Arduino
                 port.Write("<D");
             }
             catch (Exception f) { }
+        }
+
+        private void backgroundWorker1_DoWork(object sender, DoWorkEventArgs e)
+        {
+            if (!serialconnect.connected)
+            {
+                serialconnect.CondorConnect(Convert.ToInt32(textBox1.Text));
+                backgroundWorker2.RunWorkerAsync();
+            }
+        }
+
+        private void backgroundWorker2_DoWork(object sender, DoWorkEventArgs e)
+        {
+            while (serialconnect.connected)
+            {
+                condordata = serialconnect.GetCondorData();
+            }
         }
 
         

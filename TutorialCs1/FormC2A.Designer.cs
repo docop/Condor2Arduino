@@ -69,6 +69,8 @@
             this.textBoxBaud = new System.Windows.Forms.TextBox();
             this.comboBoxCom = new System.Windows.Forms.ComboBox();
             this.timer1 = new System.Windows.Forms.Timer(this.components);
+            this.backgroundWorker1 = new System.ComponentModel.BackgroundWorker();
+            this.backgroundWorker2 = new System.ComponentModel.BackgroundWorker();
             this.groupBox1.SuspendLayout();
             this.groupBox2.SuspendLayout();
             this.groupBoxSerial.SuspendLayout();
@@ -430,9 +432,6 @@
             // comboBoxCom
             // 
             this.comboBoxCom.FormattingEnabled = true;
-            this.comboBoxCom.Items.AddRange(new object[] {
-            "COM1",
-            "COM5"});
             this.comboBoxCom.Location = new System.Drawing.Point(15, 29);
             this.comboBoxCom.Name = "comboBoxCom";
             this.comboBoxCom.Size = new System.Drawing.Size(96, 21);
@@ -441,8 +440,18 @@
             // 
             // timer1
             // 
-            this.timer1.Interval = 20;
+            this.timer1.Interval = 10;
             this.timer1.Tick += new System.EventHandler(this.timer1_Tick);
+            // 
+            // backgroundWorker1
+            // 
+            this.backgroundWorker1.DoWork += new System.ComponentModel.DoWorkEventHandler(this.backgroundWorker1_DoWork);
+            // 
+            // backgroundWorker2
+            // 
+            this.backgroundWorker2.WorkerReportsProgress = true;
+            this.backgroundWorker2.WorkerSupportsCancellation = true;
+            this.backgroundWorker2.DoWork += new System.ComponentModel.DoWorkEventHandler(this.backgroundWorker2_DoWork);
             // 
             // Form1
             // 
@@ -506,6 +515,8 @@
         private System.Windows.Forms.Button buttonZEROdwn;
         private System.Windows.Forms.Button buttonZEROup;
         public System.Windows.Forms.Timer timer1;
+        public System.ComponentModel.BackgroundWorker backgroundWorker1;
+        private System.ComponentModel.BackgroundWorker backgroundWorker2;
     }
 }
 
