@@ -133,9 +133,11 @@ namespace Condor2Arduino
                 if (a < 10)
                     PlaneData.altitudebaro = "000" + a.ToString(); // alt 9m--> 0009m - we want 4 chars in the string
                 if (a < 100 && a >= 10)
-                    PlaneData.altitudebaro = "00" + a.ToString();
-                if (a >= 100)
-                    PlaneData.altitudebaro = "0" + a.ToString();
+                    PlaneData.altitudebaro = "00" + a.ToString(); // alt 90m --> 0090m
+                if (a < 1000 && a >= 100)
+                    PlaneData.altitudebaro = "0" + a.ToString(); // alt 900m --> 0900m
+                if (a >= 1000)
+                    PlaneData.altitudebaro = a.ToString(); // alt 9000m --> 9000m
             }
            
             // Bankangle (radians) --> deg
@@ -247,7 +249,7 @@ namespace Condor2Arduino
         {
             try
             {
-                port.Write("<A");
+                port.Write("=A");
             }
             catch (Exception f) { }
         }
@@ -256,7 +258,7 @@ namespace Condor2Arduino
         {
             try
             {
-                port.Write("<D");
+                port.Write("=D");
             }
             catch (Exception f) { }
         }
