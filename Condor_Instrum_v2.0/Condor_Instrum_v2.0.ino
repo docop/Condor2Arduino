@@ -41,8 +41,34 @@ TM1638 tm4(DIO_TM, CLOCK_TM, STROBE_TM2);
 //void display7Seg(uint8_t position, uint8_t value);
 // **************************************************************************
 
+//LiquidCrystal_I2C lcd(0x27, 20, 4);
 LiquidCrystal_I2C lcd(0x3F, 16, 2);  // define object of LCD
-
+/* LCD
+ * Stel hier in welke chip en foromaat LCD je hebt
+ * Gebruik 0x27 als je chip PCF8574 hebt van NXP
+ * Gebruik 0x3F als je chip PCF8574A hebt van Ti (Texas Instruments)
+ * De laatste twee getallen geven het formaat van je LCD aan
+ * bijvoorbeeld 20x4 of 16x2
+ *  
+ *  *  
+ * PIN AANSLUITINGEN
+ * 
+ * SDA is serial data
+ * SCL is serial clock
+ *
+ * GND --> GND wit
+ * VCC --> 5V  grijs
+ * SDA --> A4  rood
+ * SCL --> A5  blauw
+ * 
+ * 
+ * I2C aansluitingen per Arduino:
+ * Uno, Ethernet    A4 (SDA), A5 (SCL)
+ * Mega2560         20 (SDA), 21 (SCL)
+ * Leonardo          2 (SDA),  3 (SCL)
+ * Due              20 (SDA), 21 (SCL) of SDA1, SCL1
+ *
+ */
 Servo MyServo; // define an object of servomotor
 // *********************************************
 // My Servo is a Hitec HS-211 servo
@@ -80,7 +106,7 @@ int SpeedNew = 0;
 String SpeedRead = "";
 bool homing = false;
 
-bool lcdon = false;
+bool lcdon = true;
 bool TM1638on=true;
 
 
