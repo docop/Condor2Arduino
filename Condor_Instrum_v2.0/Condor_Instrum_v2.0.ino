@@ -23,12 +23,11 @@
 #define  DIO_TM 3         // DIO of all boards is on pin 3
 #define TM_BRT 0x02       // set the brightness of board (0-7)
 
-// **************************************************************************
+//*************************************************************************
 TM1638plus tm(STROBE_TM1, CLOCK_TM , DIO_TM); // define object of TM1638
 TM1638plus tm2(STROBE_TM2, CLOCK_TM , DIO_TM); // define object of TM1638
+//*************************************************************************
 
-TM1638 tm3(DIO_TM, CLOCK_TM, STROBE_TM1);
-TM1638 tm4(DIO_TM, CLOCK_TM, STROBE_TM2);
 
 //void reset();
 //void brightness(uint8_t brightness)--> Sets the brightness level on a scale of brightness = 0 to 7.
@@ -41,6 +40,46 @@ TM1638 tm4(DIO_TM, CLOCK_TM, STROBE_TM2);
 //void display7Seg(uint8_t position, uint8_t value);
 // **************************************************************************
 
+TM1638 tm3(DIO_TM, CLOCK_TM, STROBE_TM1);
+TM1638 tm4(DIO_TM, CLOCK_TM, STROBE_TM2);
+/*Set the display (segments and LEDs) active or off and intensity (range from 0-7).
+  setupDisplay(boolean active, byte intensity)
+* Set a single display at pos (starting at 0) to a digit (left to right)
+  setDisplayDigit(byte digit, byte pos, boolean dot, const byte numberFont[] = NUMBER_FONT)
+* Clear  a single display at pos (starting at 0, left to right) 
+  clearDisplayDigit(byte pos, boolean dot)
+* Set the display to the values (left to right)
+  setDisplay(const byte values[], unsigned int length = 8)
+* Clear the display
+  clearDisplay()
+* Set the display to the string (defaults to built in font)
+  setDisplayToString(const char* string, const word dots = 0, const byte pos = 0,
+    const byte font[] = FONT_DEFAULT)
+
+Instantiate a tm1638 module specifying the display state, the starting intensity (0-7) data, clock and stobe pins.
+    TM1638(byte dataPin, byte clockPin, byte strobePin, boolean activateDisplay = true, byte intensity = 7)
+
+    /** Set the display to a unsigned hexadecimal number (with or without leading zeros)
+    void setDisplayToHexNumber(unsigned long number, byte dots, boolean leadingZeros = true,
+    const byte numberFont[] = NUMBER_FONT)
+    /** Set the display to a unsigned decimal number (with or without leading zeros)
+    void setDisplayToDecNumber(unsigned long number, byte dots, boolean leadingZeros = true,
+    const byte numberFont[] = NUMBER_FONT)
+    /** Set the display to a signed decimal number (with or without leading zeros)
+    void setDisplayToSignedDecNumber(signed long number, byte dots, boolean leadingZeros = true,
+    const byte numberFont[] = NUMBER_FONT)
+    /** Set the display to a unsigned binary number
+    void setDisplayToBinNumber(byte number, byte dots,
+    const byte numberFont[] = NUMBER_FONT)
+
+    /** Set the LED at pos to color (TM1638_COLOR_RED, TM1638_COLOR_GREEN or both)
+    virtual void setLED(byte color, byte pos)
+    /** Set the LEDs. MSB byte for the green LEDs, LSB for the red LEDs
+    void setLEDs(word led)
+
+    /** Returns the pressed buttons as a bit set (left to right)
+    virtual byte getButtons() 
+*/
 //LiquidCrystal_I2C lcd(0x27, 20, 4);
 LiquidCrystal_I2C lcd(0x3F, 16, 2);  // define object of LCD
 /* LCD
@@ -106,7 +145,7 @@ int SpeedNew = 0;
 String SpeedRead = "";
 bool homing = false;
 
-bool lcdon = true;
+bool lcdon = falsep;
 bool TM1638on=true;
 
 
@@ -140,18 +179,22 @@ void setup()
 
 if (TM1638on)
   {
+  /*
   tm.reset();
   tm2.reset();
   tm.brightness(TM_BRT);
   tm2.brightness(TM_BRT);
   tm.displayText("Condor 2");
   tm2.displayText("Arduino");
-  }
+*/
+  tm3.setupDisplay(true, 1);
+  tm4.setupDisplay(true, 1);
   tm3.clearDisplay();
   tm4.clearDisplay();
   tm3.setDisplayToString("SPD", 0, 0);
   tm4.setDisplayToString("ALT", 0, 0);
- 
+  }
+  
   Serial.begin(115200);
 }
 
@@ -197,7 +240,7 @@ void loop()
   //Print data 2 lcd
   if (lcdon)
   {
-    LCD(SpeedRead, VarioRead);
+    LCD(AltRead, SpeedRead);
   }
 
   if (TM1638on)
