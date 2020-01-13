@@ -158,7 +158,7 @@ namespace Condor2Arduino
             }
 
             // pneumatic variometer reading (m/s)
-            if (s.Contains("vario"))
+            if (s.Contains("vario")) //Todo: rangechecks. vario > 10 or < 10? does that work correctly?
             {
                 int pos1 = s.IndexOf("vario="); // posnumber where vario starts
                 if (s.Substring(pos1 + 6, 1) == "-")
