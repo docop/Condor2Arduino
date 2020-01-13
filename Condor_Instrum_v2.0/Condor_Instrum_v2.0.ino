@@ -10,7 +10,7 @@
 #include <Wire.h> // needed for the liquid crystal display (LCD)
 #include <LiquidCrystal_I2C.h> // LCD display
 #include <TM1638plus.h> // library for the 8 segments display / 8 buttons, 8 led red/green 
-#include <TM1638.h>
+#include <TM1638.h> //older library for the 8 segments display / 8 buttons, 8 led red/green 
 
 #define motorPin1  8      // IN1 on the ULN2003 driver
 #define motorPin2  9      // IN2 on the ULN2003 driver
@@ -26,7 +26,9 @@
 // **************************************************************************
 TM1638plus tm(STROBE_TM1, CLOCK_TM , DIO_TM); // define object of TM1638
 TM1638plus tm2(STROBE_TM2, CLOCK_TM , DIO_TM); // define object of TM1638
+
 TM1638 tm3(DIO_TM, CLOCK_TM, STROBE_TM1);
+TM1638 tm4(DIO_TM, CLOCK_TM, STROBE_TM2);
 
 //void reset();
 //void brightness(uint8_t brightness)--> Sets the brightness level on a scale of brightness = 0 to 7.
@@ -120,7 +122,10 @@ if (TM1638on)
   tm2.displayText("Arduino");
   }
   tm3.clearDisplay();
-  tm3.setDisplayToString("r", 0, 5);
+  tm4.clearDisplay();
+  tm3.setDisplayToString("SPD", 0, 0);
+  tm4.setDisplayToString("ALT", 0, 0);
+ 
   Serial.begin(115200);
 }
 
@@ -282,8 +287,10 @@ void TMDisplay(String a, String b)
 //  tm2.displayText("        ");
 //  tm.displayText(c);
 //  tm2.displayText(d);
-//tm3.setDisplayToString(a,0,0);
-tm3.setDisplayToDecNumber(SpeedNew, 0, false);
+tm3.setDisplayToString(b,0,4);
+tm4.setDisplayToString(a,0,4);
+
+//tm3.setDisplayToDecNumber(SpeedNew, 0, false);
 //Serial.print(a);
 //Serial.print(b);
  

@@ -81,11 +81,11 @@ namespace Condor2Arduino
                 ShowConvertedData(PlaneData);
                 
                 // ************** Build & Send Arduino Serial String
-                string Send2Arduino = 
-                    "<S" + PlaneData.speed + 
-                    "<V" + PlaneData.varioraw + 
-                    "<A" +PlaneData.altitudebaro +
-                    "<G" +PlaneData.gforce;
+                string Send2Arduino =
+                    "<S" + PlaneData.speed
+                    + "<V" + PlaneData.varioraw
+                    + "<A" + PlaneData.altitudebaro;
+                    //+ "<G" + PlaneData.gforce;
                     // the actual string to send to the serial port
 
                 if (arduino)
