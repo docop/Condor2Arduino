@@ -281,17 +281,6 @@ void LCD(String a, String b)
 
 void TMDisplay(String a, String b)
 {
-// const char *c = a.c_str();
-// const char *d = b.c_str();
-//  tm.displayText("        ");
-//  tm2.displayText("        ");
-//  tm.displayText(c);
-//  tm2.displayText(d);
 tm3.setDisplayToString(b,0,4);
 tm4.setDisplayToString(a,0,4);
-
-//tm3.setDisplayToDecNumber(SpeedNew, 0, false);
-//Serial.print(a);
-//Serial.print(b);
- 
 }
