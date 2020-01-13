@@ -81,10 +81,18 @@ namespace Condor2Arduino
                 ShowConvertedData(PlaneData);
                 
                 // ************** Build & Send Arduino Serial String
-                string Send2Arduino = "<G" + PlaneData.speed + "<B" + PlaneData.varioraw; // the actual string to send to the serial port
-                
-                if (arduino) port.Write(Send2Arduino); // send it
-                textBoxTestData.Text = Send2Arduino; // show it. testing only
+                string Send2Arduino =
+                    "<S" + PlaneData.speed
+                    + "<V" + PlaneData.varioraw
+                    + "<A" + PlaneData.altitudebaro;
+                    //+ "<G" + PlaneData.gforce;
+                    // the actual string to send to the serial port
+
+                if (arduino)
+                {
+                    port.Write(Send2Arduino); // send it
+                    textBoxTestData.Text = Send2Arduino;
+                } // show it. testing only
             }
             else
             {
@@ -125,9 +133,11 @@ namespace Condor2Arduino
                 if (a < 10)
                     PlaneData.altitudebaro = "000" + a.ToString(); // alt 9m--> 0009m - we want 4 chars in the string
                 if (a < 100 && a >= 10)
-                    PlaneData.altitudebaro = "00" + a.ToString();
-                if (a >= 100)
-                    PlaneData.altitudebaro = "0" + a.ToString();
+                    PlaneData.altitudebaro = "00" + a.ToString(); // alt 90m --> 0090m
+                if (a < 1000 && a >= 100)
+                    PlaneData.altitudebaro = "0" + a.ToString(); // alt 900m --> 0900m
+                if (a >= 1000)
+                    PlaneData.altitudebaro = a.ToString(); // alt 9000m --> 9000m
             }
            
             // Bankangle (radians) --> deg
@@ -148,7 +158,7 @@ namespace Condor2Arduino
             }
 
             // pneumatic variometer reading (m/s)
-            if (s.Contains("vario"))
+            if (s.Contains("vario")) //Todo: rangechecks. vario > 10 or < 10? does that work correctly?
             {
                 int pos1 = s.IndexOf("vario="); // posnumber where vario starts
                 if (s.Substring(pos1 + 6, 1) == "-")
@@ -239,7 +249,7 @@ namespace Condor2Arduino
         {
             try
             {
-                port.Write("<A");
+                port.Write("=A");
             }
             catch (Exception f) { }
         }
@@ -248,7 +258,7 @@ namespace Condor2Arduino
         {
             try
             {
-                port.Write("<D");
+                port.Write("=D");
             }
             catch (Exception f) { }
         }

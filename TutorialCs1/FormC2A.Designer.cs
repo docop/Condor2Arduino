@@ -436,7 +436,6 @@
             this.comboBoxCom.Name = "comboBoxCom";
             this.comboBoxCom.Size = new System.Drawing.Size(96, 21);
             this.comboBoxCom.TabIndex = 0;
-            this.comboBoxCom.Text = "COM5";
             // 
             // timer1
             // 
