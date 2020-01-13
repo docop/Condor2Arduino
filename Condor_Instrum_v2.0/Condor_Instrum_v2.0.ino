@@ -10,7 +10,7 @@
 #include <Wire.h> // needed for the liquid crystal display (LCD)
 #include <LiquidCrystal_I2C.h> // LCD display
 #include <TM1638plus.h> // library for the 8 segments display / 8 buttons, 8 led red/green 
-
+#include <TM1638.h>
 
 #define motorPin1  8      // IN1 on the ULN2003 driver
 #define motorPin2  9      // IN2 on the ULN2003 driver
@@ -26,6 +26,8 @@
 // **************************************************************************
 TM1638plus tm(STROBE_TM1, CLOCK_TM , DIO_TM); // define object of TM1638
 TM1638plus tm2(STROBE_TM2, CLOCK_TM , DIO_TM); // define object of TM1638
+TM1638 tm3(DIO_TM, CLOCK_TM, STROBE_TM1);
+
 //void reset();
 //void brightness(uint8_t brightness)--> Sets the brightness level on a scale of brightness = 0 to 7.
 //uint8_t readButtons(void)-->Read buttons returns a byte with value of buttons 1-8 b7b6b5b4b3b2b1b0
@@ -79,6 +81,7 @@ bool homing = false;
 bool lcdon = false;
 bool TM1638on=true;
 
+
 //Vario variables
 double Vario = 0.0;
 double VarioOld = 0.0;
@@ -115,8 +118,9 @@ if (TM1638on)
   tm2.brightness(TM_BRT);
   tm.displayText("Condor 2");
   tm2.displayText("Arduino");
-  
   }
+  tm3.clearDisplay();
+  tm3.setDisplayToString("r", 0, 5);
   Serial.begin(115200);
 }
 
@@ -272,12 +276,14 @@ void LCD(String a, String b)
 
 void TMDisplay(String a, String b)
 {
- const char *c = a.c_str();
- const char *d = b.c_str();
-  tm.displayText("        ");
-  tm2.displayText("        ");
-  tm.displayText(c);
-  tm2.displayText(d);
+// const char *c = a.c_str();
+// const char *d = b.c_str();
+//  tm.displayText("        ");
+//  tm2.displayText("        ");
+//  tm.displayText(c);
+//  tm2.displayText(d);
+//tm3.setDisplayToString(a,0,0);
+tm3.setDisplayToDecNumber(SpeedNew, 0, false);
 //Serial.print(a);
 //Serial.print(b);
  
