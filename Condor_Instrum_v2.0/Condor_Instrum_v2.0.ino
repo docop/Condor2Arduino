@@ -240,7 +240,7 @@ void loop()
     //Print data naar lcd
     if (lcdon)
     {
-     // eLCeeDee(AltRead, SpeedRead);
+     //eLCeeDee();
     }
     
 
@@ -342,13 +342,13 @@ void SLASH() {   // The first identifier was "/" (Annunciator)
   //Do something
 }
 
-void eLCeeDee(String f, String q)
+void eLCeeDee()
 {
-  lcd.clear();                 // maak leeg
+ // lcd.clear();                 // maak leeg
   lcd.setCursor(0, 1);
-  lcd.print(q);
-  lcd.setCursor(9, 1);
-  lcd.print(f);
+  lcd.print(SpeedRead);
+ lcd.setCursor(9, 1);
+ lcd.print(AltRead);
 }
 
 void TMDisplay(String a, String b)
