@@ -71,9 +71,11 @@
             this.timer1 = new System.Windows.Forms.Timer(this.components);
             this.backgroundWorker1 = new System.ComponentModel.BackgroundWorker();
             this.backgroundWorker2 = new System.ComponentModel.BackgroundWorker();
+            this.groupBox3 = new System.Windows.Forms.GroupBox();
             this.groupBox1.SuspendLayout();
             this.groupBox2.SuspendLayout();
             this.groupBoxSerial.SuspendLayout();
+            this.groupBox3.SuspendLayout();
             this.SuspendLayout();
             // 
             // textBox1
@@ -369,8 +371,7 @@
             // 
             // groupBoxSerial
             // 
-            this.groupBoxSerial.Controls.Add(this.buttonZEROdwn);
-            this.groupBoxSerial.Controls.Add(this.buttonZEROup);
+            this.groupBoxSerial.Controls.Add(this.groupBox3);
             this.groupBoxSerial.Controls.Add(this.textBoxTestData);
             this.groupBoxSerial.Controls.Add(this.buttonCom);
             this.groupBoxSerial.Controls.Add(this.textBoxBaud);
@@ -384,21 +385,21 @@
             // 
             // buttonZEROdwn
             // 
-            this.buttonZEROdwn.Location = new System.Drawing.Point(243, 135);
+            this.buttonZEROdwn.Location = new System.Drawing.Point(21, 64);
             this.buttonZEROdwn.Name = "buttonZEROdwn";
             this.buttonZEROdwn.Size = new System.Drawing.Size(70, 24);
             this.buttonZEROdwn.TabIndex = 7;
-            this.buttonZEROdwn.Text = "SpeedDwn";
+            this.buttonZEROdwn.Text = "Stop";
             this.buttonZEROdwn.UseVisualStyleBackColor = true;
             this.buttonZEROdwn.Click += new System.EventHandler(this.buttonZEROdwn_Click);
             // 
             // buttonZEROup
             // 
-            this.buttonZEROup.Location = new System.Drawing.Point(243, 105);
+            this.buttonZEROup.Location = new System.Drawing.Point(21, 34);
             this.buttonZEROup.Name = "buttonZEROup";
             this.buttonZEROup.Size = new System.Drawing.Size(70, 24);
             this.buttonZEROup.TabIndex = 6;
-            this.buttonZEROup.Text = "SpeedUp";
+            this.buttonZEROup.Text = "Forward";
             this.buttonZEROup.UseVisualStyleBackColor = true;
             this.buttonZEROup.Click += new System.EventHandler(this.buttonZEROup_Click);
             // 
@@ -408,7 +409,7 @@
             this.textBoxTestData.Multiline = true;
             this.textBoxTestData.Name = "textBoxTestData";
             this.textBoxTestData.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
-            this.textBoxTestData.Size = new System.Drawing.Size(194, 186);
+            this.textBoxTestData.Size = new System.Drawing.Size(194, 58);
             this.textBoxTestData.TabIndex = 3;
             // 
             // buttonCom
@@ -427,7 +428,7 @@
             this.textBoxBaud.Name = "textBoxBaud";
             this.textBoxBaud.Size = new System.Drawing.Size(70, 20);
             this.textBoxBaud.TabIndex = 1;
-            this.textBoxBaud.Text = "115200";
+            this.textBoxBaud.Text = "9600";
             // 
             // comboBoxCom
             // 
@@ -452,6 +453,17 @@
             this.backgroundWorker2.WorkerSupportsCancellation = true;
             this.backgroundWorker2.DoWork += new System.ComponentModel.DoWorkEventHandler(this.backgroundWorker2_DoWork);
             // 
+            // groupBox3
+            // 
+            this.groupBox3.Controls.Add(this.buttonZEROdwn);
+            this.groupBox3.Controls.Add(this.buttonZEROup);
+            this.groupBox3.Location = new System.Drawing.Point(218, 66);
+            this.groupBox3.Name = "groupBox3";
+            this.groupBox3.Size = new System.Drawing.Size(117, 103);
+            this.groupBox3.TabIndex = 8;
+            this.groupBox3.TabStop = false;
+            this.groupBox3.Text = "Homing Speed";
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -468,6 +480,7 @@
             this.groupBox2.PerformLayout();
             this.groupBoxSerial.ResumeLayout(false);
             this.groupBoxSerial.PerformLayout();
+            this.groupBox3.ResumeLayout(false);
             this.ResumeLayout(false);
 
         }
@@ -516,6 +529,7 @@
         public System.Windows.Forms.Timer timer1;
         public System.ComponentModel.BackgroundWorker backgroundWorker1;
         private System.ComponentModel.BackgroundWorker backgroundWorker2;
+        private System.Windows.Forms.GroupBox groupBox3;
     }
 }
 
