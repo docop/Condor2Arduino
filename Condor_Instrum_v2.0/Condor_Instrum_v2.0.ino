@@ -158,6 +158,9 @@ String VarioRead = "";
 int AltOld = 0;
 int AltNew = 0;
 String AltRead = "";
+String GforceRead = "";
+double Gforce = 0;
+
 
 void setup()
 {
@@ -187,15 +190,15 @@ void setup()
       tm.displayText("Condor 2");
       tm2.displayText("Arduino");
     */
-    tm3.setupDisplay(true, 1);
-    tm4.setupDisplay(true, 1);
+    tm3.setupDisplay(true, 2);
+    tm4.setupDisplay(true, 2);
     tm3.clearDisplay();
     tm4.clearDisplay();
     tm3.setDisplayToString("SPD", 0, 0);
     tm4.setDisplayToString("ALT", 0, 0);
   }
 
-  Serial.begin(115200);
+  Serial.begin(9600);
 }
 
 void loop()
@@ -237,16 +240,9 @@ void loop()
     // Set the VARIO
     MyServo.write(Vario * StepVario + 100); //
 
-    //Print data naar lcd
-    if (lcdon)
+   if (TM1638on)
     {
-     //eLCeeDee();
-    }
-    
-
-    if (TM1638on)
-    {
-      TMDisplay(AltRead, SpeedRead);
+    //  TMDisplay(AltRead, SpeedRead);
     }
   }
 }
@@ -295,26 +291,41 @@ void LESSTHAN()
         VarioRead += getChar(); // "-3."
         VarioRead += getChar(); // "-3.6"
         Vario = VarioRead.toDouble();
+        //LCD_B(VarioRead);
         break;
       }
     case 'S': //Found the second identifier (Speed) //format <S123
       {
-        SpeedRead = "";
         SpeedRead += getChar();//"1"
         SpeedRead += getChar();//"12"
         SpeedRead += getChar();//"123"
         SpeedRead += getChar();//"1234"
         SpeedNew = SpeedRead.toInt();//1234
+        LCD_A(SpeedRead);
+        TMDisplay1(SpeedRead);
+        SpeedRead = "";
         break;
       }
     case 'A': //Found the second identifier (Altitude) //format <A1234
       {
-        AltRead = "";
         AltRead += getChar();//"1"
         AltRead += getChar();//"12"
         AltRead += getChar();//"123"
         AltRead += getChar();//"1234"
         AltNew = AltRead.toInt();//1234
+        TMDisplay2(AltRead);
+        AltRead = "";
+        break;
+      }
+      case 'G': // here we decode our Gforce // for example:<G-1.6
+      {
+        GforceRead += getChar(); // "-" or "+"
+        GforceRead += getChar(); // 1e char "-3"
+        GforceRead += getChar(); // "-3."
+        GforceRead += getChar(); // "-3.6"
+        Gforce = GforceRead.toDouble();
+        LCD_B(GforceRead);
+         GforceRead = "";
         break;
       }
   }
@@ -342,17 +353,27 @@ void SLASH() {   // The first identifier was "/" (Annunciator)
   //Do something
 }
 
-void eLCeeDee()
+void LCD_A(String a)
 {
- // lcd.clear();                 // maak leeg
   lcd.setCursor(0, 1);
-  lcd.print(SpeedRead);
- lcd.setCursor(9, 1);
- lcd.print(AltRead);
-}
+  lcd.print(a);
 
+}
+void LCD_B(String b)
+{
+ lcd.setCursor(9, 1);
+ lcd.print(b);
+}
 void TMDisplay(String a, String b)
 {
   tm3.setDisplayToString(b, 0, 4);
+  tm4.setDisplayToString(a, 0, 4);
+}
+void TMDisplay1(String a)
+{
+  tm3.setDisplayToString(a, 0, 4);
+}
+void TMDisplay2(String a)
+{
   tm4.setDisplayToString(a, 0, 4);
 }
