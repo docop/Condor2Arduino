@@ -19,7 +19,8 @@ namespace Condor2Arduino
     {
         public string speed; // converted to km/h
         public string altitudebaro; // m or feet depends on Condor setting
-        public string bank; // converted to degrees
+        public string bank; // converted from radians to degrees
+        public string pitch; // converted from radians to degrees
         public string varioraw; //pneumatic variometer reading
         public string variointegrated; //vario integrator value
         public string varioelec; //electronic variometer reading
@@ -27,7 +28,7 @@ namespace Condor2Arduino
         public string kompas;
     }
 
-    public struct sendbytes // first attempt in sending and converting data with bytes. ToDo!!
+    public struct SENDBYTES // first attempt in sending and converting data with bytes. ToDo!!
     {
         public Byte Speed;
         public Byte Altitudbaro;
@@ -80,38 +81,40 @@ namespace Condor2Arduino
 
         private void timer1_Tick(object sender, EventArgs e)
         {
-           // if (serialconnect.connected) condordata = serialconnect.GetCondorData();
+            // if (serialconnect.connected) condordata = serialconnect.GetCondorData();
             textBox2.Text = condordata;
 
             if (condordata != "-1") // -1 is my primitive exception handler. Send "-1" when something goes wrong.
             {
                 label1.Text = "Receiving data";
-                if (condordata!=null)
+                if (condordata != null)
                 {
-                ConvertCondorData(condordata);
-                ShowConvertedData(PlaneData);
-                
-               
-                // ************** Build & Send Arduino Serial String
-                string Send2Arduino =
-                    "<S" + PlaneData.speed
-                    + "<V" + PlaneData.varioraw
-                   // + "<E" + PlaneData.varioelec
-                  //  + "<I"+ PlaneData.variointegrated
-                    + "<A" + PlaneData.altitudebaro
-                   // + "<B" + PlaneData.bank
-                    + "<G" + PlaneData.gforce;
-                if (arduino)
-                {
-                    port.Write(Send2Arduino); // send it
+                    ConvertCondorData(condordata);
+                    ShowConvertedData(PlaneData);
+
+
+                    // ************** Build & Send Arduino Serialdata String
+                    string Send2Arduino =
+                          "<S" + PlaneData.speed //000-999
+                        + "<V" + PlaneData.varioraw //I have limited  it to +9.9 and -9.9
+                        + "<E" + PlaneData.varioelec//I have  limited it to +9.9 and -9.9
+                        + "<I" + PlaneData.variointegrated//I have limited it to +9.9 and -9.9
+                        + "<A" + PlaneData.altitudebaro//-0099 9999
+                        + "<K" + PlaneData.kompas//000 360
+                        + "<B" + PlaneData.bank//-180+180
+                        + "<P" + PlaneData.pitch//-090 +090
+                        + "<G" + PlaneData.gforce;//I have limited it to +9.9 and -9.9
+
                     textBoxTestData.Text = Send2Arduino; // show it. for testing only
-                }
+                    if (arduino) // if connected to arduino
+                    {
+                        port.Write(Send2Arduino); // send it
+                    }
                 }
             }
             else // something went wrong
             {
                 label1.Text = "No Data Received";
-
             }
         }
 
@@ -121,111 +124,173 @@ namespace Condor2Arduino
                 comboBoxCom.Items.Add(s);
         }
 
+
+
         public void ConvertCondorData(string s) //s=condordata 
         {
             // airspeed incl wind m/s --> km/h
             if (s.Contains("airspeed"))
-            {
-                int pos1 = s.IndexOf("airspeed="); // posnumber where airspeed starts
-                extract = s.Substring(pos1 + 9, 4);
-                double a = (double.Parse(extract, CultureInfo.InvariantCulture.NumberFormat)) * 3.6; // in km/h
-                speedkmph = Convert.ToInt32(a);
-                if (speedkmph < 10)
-                    PlaneData.speed = "000" + speedkmph.ToString(); // speed 1 km/h --> 0001 km/h - we want 4 chars in the string
-                if (speedkmph < 100 && speedkmph >= 10)
-                    PlaneData.speed = "00" + speedkmph.ToString(); // debug info on screen
-                if (speedkmph >= 100)
-                    PlaneData.speed = "0" + speedkmph.ToString(); // debug info on screen
-            }
-            
+                try
+                {
+                    {
+                        int pos1 = s.IndexOf("airspeed="); // posnumber where airspeed starts
+                        extract = s.Substring(pos1 + 9, 4);
+                        double a = (double.Parse(extract, CultureInfo.InvariantCulture.NumberFormat)) * 3.6; // in km/h
+                        speedkmph = Convert.ToInt32(a);
+                        
+                        if (speedkmph < 0) PlaneData.speed = "000";
+                        if (speedkmph < 10)
+                            PlaneData.speed = "000" + speedkmph.ToString(); // speed 1 km/h --> 0001 km/h - we want 4 chars in the string
+                        if (speedkmph < 100 && speedkmph >= 10)
+                            PlaneData.speed = "00" + speedkmph.ToString();
+                        if (speedkmph >= 100)
+                            PlaneData.speed = "0" + speedkmph.ToString(); 
+                        if (speedkmph >= 999)
+                            PlaneData.speed = "999"; 
+                  }
+                }
+                catch { PlaneData.speed = "X"; }
+
             // Altitude (m or ft according to units selected)
             if (s.Contains("altitude"))
             {
-                int pos1 = s.IndexOf("altitude="); // posnumber where altitude starts
-                extract = s.Substring(pos1 + 9, 6);
-                int a = Convert.ToInt32((double.Parse(extract, CultureInfo.InvariantCulture.NumberFormat))); // meters afgerond naar beneden 
-                if (a < 10)
-                    PlaneData.altitudebaro = "000" + a.ToString(); // alt 9m--> 0009m - we want 4 chars in the string
-                if (a < 100 && a >= 10)
-                    PlaneData.altitudebaro = "00" + a.ToString(); // alt 90m --> 0090m
-                if (a < 1000 && a >= 100)
-                    PlaneData.altitudebaro = "0" + a.ToString(); // alt 900m --> 0900m
-                if (a >= 1000)
-                    PlaneData.altitudebaro = a.ToString(); // alt 9000m --> 9000m
-            }
-           
-            // Bankangle (radians) --> deg
-            if (s.Contains("bank"))
-            {
-                int pos1 = s.IndexOf("bank="); // posnumber where altitude starts
-                extract = s.Substring(pos1 + 5, 6);
-                if (extract == "0\r\nqua")
+                try
                 {
-                    PlaneData.bank = "0";
+                    int pos1 = s.IndexOf("altitude="); // posnumber where altitude starts
+                    extract = s.Substring(pos1 + 9, 6);
+
+                    int a = Convert.ToInt32((double.Parse(extract, CultureInfo.InvariantCulture.NumberFormat))); // meters afgerond naar beneden 
+                    if (a < -10 && a >= -99)
+                        PlaneData.altitudebaro = "-0" + (a * -1).ToString();//-099 max negative. we keep 4 chars in the altitude value
+                    if (a < 0 && a >= -10)
+                        PlaneData.altitudebaro = "-00" + (a * -1).ToString(); //-009 we keep 4 chars in the altitude value
+                    if (a < 10 && a >= 0)
+                        PlaneData.altitudebaro = "000" + a.ToString(); // alt 9m--> 0009m - we want 4 chars in the string
+                    if (a < 100 && a >= 10)
+                        PlaneData.altitudebaro = "00" + a.ToString(); // alt 90m --> 0090m
+                    if (a < 1000 && a >= 100)
+                        PlaneData.altitudebaro = "0" + a.ToString(); // alt 900m --> 0900m
+                    if (a >= 1000 && a < 9999)
+                        PlaneData.altitudebaro = a.ToString(); // alt 9000m --> 9000m
+                    if (a >= 9999) PlaneData.altitudebaro = "9999"; // limit 9999 m
                 }
-                else
-                {
-                    double a = double.Parse(extract, CultureInfo.InvariantCulture.NumberFormat);
-                    PlaneData.bank = (Convert.ToInt32(a * 57.2957)).ToString();
-                }
-                
+                catch { PlaneData.altitudebaro = "X"; }
             }
 
+            // Bankangle (radians) --> deg
+            if (s.Contains("bank"))
+                try
+                {
+                    int pos1 = s.IndexOf("bank="); // posnumber where bank starts
+                    extract = s.Substring(pos1 + 5, 6);
+                    if (extract.Substring(0, 3) == "0\r")
+                    {
+                        PlaneData.bank = "0";
+                    }
+                    else
+                    {
+                        double a = double.Parse(extract, CultureInfo.InvariantCulture.NumberFormat);
+                        Int32 b = (Convert.ToInt32(a * 57.2957));
+                        if (b >= 0 && b < 10) PlaneData.bank = "+000"+ b.ToString();
+                        if (b >= 10 && b < 100) PlaneData.bank = "+00" + b.ToString();
+                        if (b >= 100 && b < 180) PlaneData.bank = "+0" + b.ToString();
+                        if (b < 0 && b > -10) PlaneData.bank = "-000" + (b * -1).ToString();
+                        if (b <= -10 && b > -100) PlaneData.bank = "-00" + (b * -1).ToString();
+                        if (b <= -100 && b > -180) PlaneData.bank = "-0" + (b * -1).ToString();
+
+                    }
+                }
+                catch { PlaneData.bank = "X"; }
+            
+            // pitchangle (radians) --> deg
+            if (s.Contains("pitch"))
+                try
+                {
+                    int pos1 = s.IndexOf("pitch="); // posnumber where altitude starts
+                    extract = s.Substring(pos1 + 6, 6);
+                    if (extract.Substring(0,3)== "0\r")
+                    {
+                        PlaneData.pitch = "0";
+                    }
+                    else
+                    {
+                        double a = double.Parse(extract, CultureInfo.InvariantCulture.NumberFormat);
+                        Int32 b = (Convert.ToInt32(a * 57.2957));
+                        if (b >= 0 && b < 10) PlaneData.pitch = "+00" + b.ToString();
+                        if (b >= 10 && b < 90) PlaneData.pitch = "+0" + b.ToString();
+                        if (b < 0 && b > -10) PlaneData.pitch = "-00" + (b * -1).ToString();
+                        if (b <= -10 && b > -90) PlaneData.pitch = "-0" + (b * -1).ToString();
+                    }
+                }
+                catch { PlaneData.pitch = "X"; }
+
             // pneumatic variometer reading (m/s)
-            if (s.Contains("vario")) //Todo: rangechecks. vario > 10 or < 10? does that work correctly?
-            {
-                int pos1 = s.IndexOf("vario="); // posnumber where vario starts
-                if (s.Substring(pos1 + 6, 1) == "-")
-                    PlaneData.varioraw = s.Substring(pos1 + 6, 4);
-                else
-                    PlaneData.varioraw = "+" + s.Substring(pos1 + 6, 3);
-            }
+            if (s.Contains("vario"))
+                try
+                {
+                    int pos1 = s.IndexOf("vario="); // posnumber where vario starts
+                    if (s.Substring(pos1 + 6, 1) == "-") 
+                        PlaneData.varioraw = s.Substring(pos1 + 6, 4);
+                    else
+                        PlaneData.varioraw = "+" + s.Substring(pos1 + 6, 3);
+                    }
+                catch { PlaneData.varioraw = "X"; }
 
             // electronic variometer reading (m/s)
             if (s.Contains("evario"))
-            {
-                int pos1 = s.IndexOf("evario="); // posnumber where string starts
-                if (s.Substring(pos1 + 7, 1) == "-")
-                    PlaneData.varioelec = s.Substring(pos1 + 7, 4);
-                else
-                    PlaneData.varioelec = "+" + s.Substring(pos1 + 7, 3);
-            }
+                try
+                {
+                    int pos1 = s.IndexOf("evario="); // posnumber where string starts
+                    if (s.Substring(pos1 + 7, 1) == "-")
+                        PlaneData.varioelec = s.Substring(pos1 + 7, 4);
+                    else
+                        PlaneData.varioelec = "+" + s.Substring(pos1 + 7, 3);
+                }
+                catch { PlaneData.varioelec = "X"; }
 
             // Integrated vario (m/s)
             if (s.Contains("integrator"))
-            {
-                int pos1 = s.IndexOf("integrator="); // posnumber where string starts
-                if (s.Substring(pos1 + 11, 1) == "-")
-                    PlaneData.variointegrated = s.Substring(pos1 + 11, 4);
-                else
-                    PlaneData.variointegrated = "+" + s.Substring(pos1 + 11, 3);
-            }
+                try
+                {
+                    int pos1 = s.IndexOf("integrator="); // posnumber where string starts
+                    if (s.Substring(pos1 + 11, 1) == "-")
+                        PlaneData.variointegrated = s.Substring(pos1 + 11, 4);
+                    else
+                        PlaneData.variointegrated = "+" + s.Substring(pos1 + 11, 3);
+                }
+                catch { PlaneData.variointegrated = "X"; }
 
             // Gforce (G)
             if (s.Contains("gforce"))
-            {
-                int pos1 = s.IndexOf("gforce="); // posnumber where string starts
-                 if (s.Substring(pos1 + 7, 1) == "-")
-                    PlaneData.gforce = s.Substring(pos1 + 7, 4);
-                else
-                    PlaneData.gforce= "+" + s.Substring(pos1 + 7, 3);
-            }
+                try
+                {
+                    int pos1 = s.IndexOf("gforce="); // posnumber where string starts
+                    if (s.Substring(pos1 + 7, 1) == "-")
+                        PlaneData.gforce = s.Substring(pos1 + 7, 4);
+                    else
+                        PlaneData.gforce = "+" + s.Substring(pos1 + 7, 3);
+                }
+                catch { PlaneData.gforce = "X"; }
 
             // Heading Compass
             if (s.Contains("compass")) //degrees
-            {
-                int pos1 = s.IndexOf("compass="); // posnumber where string starts
-                extract = s.Substring(pos1 + 8, 5);    
-                double temp = double.Parse(extract, CultureInfo.InvariantCulture.NumberFormat); // complicated mess...everyone has a regional difference in decimal.. . or ,
-                Int32 temp2 = Convert.ToInt32(Math.Round(temp));
-                PlaneData.kompas = temp2.ToString();
-            }
-
+                try
+                {
+                    int pos1 = s.IndexOf("compass="); // posnumber where string starts
+                    extract = s.Substring(pos1 + 8, 5);
+                    double temp = double.Parse(extract, CultureInfo.InvariantCulture.NumberFormat); // complicated mess...everyone has a regional difference in decimal.. . or ,
+                    Int32 temp2 = Convert.ToInt32(Math.Round(temp));
+                    if (temp2 < 10) PlaneData.kompas = "00" + temp2.ToString();
+                    if (temp2 < 100 && temp2 >= 10) PlaneData.kompas = "0" + temp2.ToString();
+                    if (temp2 >= 100) PlaneData.kompas = temp2.ToString();
+                }
+                catch { PlaneData.kompas = "X"; }
         }
 
         private void ShowConvertedData(planedata a)
         {
             textBoxBankdeg.Text = a.bank;
+            textBoxPitch.Text = a.pitch;
             textBoxIntegrated.Text = a.variointegrated;
             textBoxVario.Text = a.varioraw;
             textBoxEvario.Text = a.varioelec;

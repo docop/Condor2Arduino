@@ -35,12 +35,9 @@
             this.label1 = new System.Windows.Forms.Label();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
             this.groupBox2 = new System.Windows.Forms.GroupBox();
-            this.textBoxTimeconv = new System.Windows.Forms.TextBox();
-            this.textBoxPitchdeg = new System.Windows.Forms.TextBox();
             this.textBoxBankdeg = new System.Windows.Forms.TextBox();
             this.textBoxCompass = new System.Windows.Forms.TextBox();
             this.textBoxPitch = new System.Windows.Forms.TextBox();
-            this.textBoxBank = new System.Windows.Forms.TextBox();
             this.label5 = new System.Windows.Forms.Label();
             this.label4 = new System.Windows.Forms.Label();
             this.label3 = new System.Windows.Forms.Label();
@@ -51,7 +48,6 @@
             this.textBoxIntegrated = new System.Windows.Forms.TextBox();
             this.textBoxVario = new System.Windows.Forms.TextBox();
             this.textBoxHeight = new System.Windows.Forms.TextBox();
-            this.textBoxSpeed = new System.Windows.Forms.TextBox();
             this.labelEvario = new System.Windows.Forms.Label();
             this.labelTime = new System.Windows.Forms.Label();
             this.labelGforce = new System.Windows.Forms.Label();
@@ -59,6 +55,10 @@
             this.labelVario = new System.Windows.Forms.Label();
             this.labelHeight = new System.Windows.Forms.Label();
             this.labelSpeed = new System.Windows.Forms.Label();
+            this.textBoxTimeconv = new System.Windows.Forms.TextBox();
+            this.textBoxPitchdeg = new System.Windows.Forms.TextBox();
+            this.textBoxBank = new System.Windows.Forms.TextBox();
+            this.textBoxSpeed = new System.Windows.Forms.TextBox();
             this.groupBoxSerial = new System.Windows.Forms.GroupBox();
             this.groupBox3 = new System.Windows.Forms.GroupBox();
             this.buttonZEROdwn = new System.Windows.Forms.Button();
@@ -157,52 +157,31 @@
             this.groupBox2.TabStop = false;
             this.groupBox2.Text = "Conversie";
             // 
-            // textBoxTimeconv
-            // 
-            this.textBoxTimeconv.Location = new System.Drawing.Point(117, 207);
-            this.textBoxTimeconv.Name = "textBoxTimeconv";
-            this.textBoxTimeconv.Size = new System.Drawing.Size(70, 20);
-            this.textBoxTimeconv.TabIndex = 25;
-            // 
-            // textBoxPitchdeg
-            // 
-            this.textBoxPitchdeg.Location = new System.Drawing.Point(117, 233);
-            this.textBoxPitchdeg.Name = "textBoxPitchdeg";
-            this.textBoxPitchdeg.Size = new System.Drawing.Size(70, 20);
-            this.textBoxPitchdeg.TabIndex = 23;
-            // 
             // textBoxBankdeg
             // 
-            this.textBoxBankdeg.Location = new System.Drawing.Point(139, 215);
+            this.textBoxBankdeg.Location = new System.Drawing.Point(139, 190);
             this.textBoxBankdeg.Name = "textBoxBankdeg";
             this.textBoxBankdeg.Size = new System.Drawing.Size(70, 20);
             this.textBoxBankdeg.TabIndex = 22;
             // 
             // textBoxCompass
             // 
-            this.textBoxCompass.Location = new System.Drawing.Point(139, 267);
+            this.textBoxCompass.Location = new System.Drawing.Point(139, 242);
             this.textBoxCompass.Name = "textBoxCompass";
             this.textBoxCompass.Size = new System.Drawing.Size(70, 20);
             this.textBoxCompass.TabIndex = 21;
             // 
             // textBoxPitch
             // 
-            this.textBoxPitch.Location = new System.Drawing.Point(139, 241);
+            this.textBoxPitch.Location = new System.Drawing.Point(139, 216);
             this.textBoxPitch.Name = "textBoxPitch";
             this.textBoxPitch.Size = new System.Drawing.Size(70, 20);
             this.textBoxPitch.TabIndex = 20;
             // 
-            // textBoxBank
-            // 
-            this.textBoxBank.Location = new System.Drawing.Point(41, 207);
-            this.textBoxBank.Name = "textBoxBank";
-            this.textBoxBank.Size = new System.Drawing.Size(70, 20);
-            this.textBoxBank.TabIndex = 19;
-            // 
             // label5
             // 
             this.label5.AutoSize = true;
-            this.label5.Location = new System.Drawing.Point(19, 270);
+            this.label5.Location = new System.Drawing.Point(17, 245);
             this.label5.Name = "label5";
             this.label5.Size = new System.Drawing.Size(50, 13);
             this.label5.TabIndex = 18;
@@ -211,7 +190,7 @@
             // label4
             // 
             this.label4.AutoSize = true;
-            this.label4.Location = new System.Drawing.Point(17, 244);
+            this.label4.Location = new System.Drawing.Point(17, 219);
             this.label4.Name = "label4";
             this.label4.Size = new System.Drawing.Size(31, 13);
             this.label4.TabIndex = 17;
@@ -220,7 +199,7 @@
             // label3
             // 
             this.label3.AutoSize = true;
-            this.label3.Location = new System.Drawing.Point(17, 218);
+            this.label3.Location = new System.Drawing.Point(17, 193);
             this.label3.Name = "label3";
             this.label3.Size = new System.Drawing.Size(32, 13);
             this.label3.TabIndex = 16;
@@ -235,7 +214,7 @@
             // 
             // textBoxTime
             // 
-            this.textBoxTime.Location = new System.Drawing.Point(139, 189);
+            this.textBoxTime.Location = new System.Drawing.Point(139, 268);
             this.textBoxTime.Name = "textBoxTime";
             this.textBoxTime.Size = new System.Drawing.Size(70, 20);
             this.textBoxTime.TabIndex = 13;
@@ -275,13 +254,6 @@
             this.textBoxHeight.Size = new System.Drawing.Size(70, 20);
             this.textBoxHeight.TabIndex = 8;
             // 
-            // textBoxSpeed
-            // 
-            this.textBoxSpeed.Location = new System.Drawing.Point(41, 233);
-            this.textBoxSpeed.Name = "textBoxSpeed";
-            this.textBoxSpeed.Size = new System.Drawing.Size(70, 20);
-            this.textBoxSpeed.TabIndex = 7;
-            // 
             // labelEvario
             // 
             this.labelEvario.AutoSize = true;
@@ -294,7 +266,7 @@
             // labelTime
             // 
             this.labelTime.AutoSize = true;
-            this.labelTime.Location = new System.Drawing.Point(17, 192);
+            this.labelTime.Location = new System.Drawing.Point(17, 268);
             this.labelTime.Name = "labelTime";
             this.labelTime.Size = new System.Drawing.Size(30, 13);
             this.labelTime.TabIndex = 5;
@@ -344,6 +316,34 @@
             this.labelSpeed.Size = new System.Drawing.Size(38, 13);
             this.labelSpeed.TabIndex = 0;
             this.labelSpeed.Text = "Speed";
+            // 
+            // textBoxTimeconv
+            // 
+            this.textBoxTimeconv.Location = new System.Drawing.Point(117, 207);
+            this.textBoxTimeconv.Name = "textBoxTimeconv";
+            this.textBoxTimeconv.Size = new System.Drawing.Size(70, 20);
+            this.textBoxTimeconv.TabIndex = 25;
+            // 
+            // textBoxPitchdeg
+            // 
+            this.textBoxPitchdeg.Location = new System.Drawing.Point(117, 233);
+            this.textBoxPitchdeg.Name = "textBoxPitchdeg";
+            this.textBoxPitchdeg.Size = new System.Drawing.Size(70, 20);
+            this.textBoxPitchdeg.TabIndex = 23;
+            // 
+            // textBoxBank
+            // 
+            this.textBoxBank.Location = new System.Drawing.Point(41, 207);
+            this.textBoxBank.Name = "textBoxBank";
+            this.textBoxBank.Size = new System.Drawing.Size(70, 20);
+            this.textBoxBank.TabIndex = 19;
+            // 
+            // textBoxSpeed
+            // 
+            this.textBoxSpeed.Location = new System.Drawing.Point(41, 233);
+            this.textBoxSpeed.Name = "textBoxSpeed";
+            this.textBoxSpeed.Size = new System.Drawing.Size(70, 20);
+            this.textBoxSpeed.TabIndex = 7;
             // 
             // groupBoxSerial
             // 
