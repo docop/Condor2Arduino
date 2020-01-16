@@ -35,17 +35,12 @@
             this.label1 = new System.Windows.Forms.Label();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
             this.groupBox2 = new System.Windows.Forms.GroupBox();
-            this.textBoxTimeconv = new System.Windows.Forms.TextBox();
-            this.textBoxYawdeg = new System.Windows.Forms.TextBox();
-            this.textBoxPitchdeg = new System.Windows.Forms.TextBox();
             this.textBoxBankdeg = new System.Windows.Forms.TextBox();
-            this.textBoxYaw = new System.Windows.Forms.TextBox();
+            this.textBoxCompass = new System.Windows.Forms.TextBox();
             this.textBoxPitch = new System.Windows.Forms.TextBox();
-            this.textBoxBank = new System.Windows.Forms.TextBox();
             this.label5 = new System.Windows.Forms.Label();
             this.label4 = new System.Windows.Forms.Label();
             this.label3 = new System.Windows.Forms.Label();
-            this.label2 = new System.Windows.Forms.Label();
             this.textBoxSpeedkmh = new System.Windows.Forms.TextBox();
             this.textBoxTime = new System.Windows.Forms.TextBox();
             this.textBoxGforce = new System.Windows.Forms.TextBox();
@@ -53,7 +48,6 @@
             this.textBoxIntegrated = new System.Windows.Forms.TextBox();
             this.textBoxVario = new System.Windows.Forms.TextBox();
             this.textBoxHeight = new System.Windows.Forms.TextBox();
-            this.textBoxSpeed = new System.Windows.Forms.TextBox();
             this.labelEvario = new System.Windows.Forms.Label();
             this.labelTime = new System.Windows.Forms.Label();
             this.labelGforce = new System.Windows.Forms.Label();
@@ -61,7 +55,12 @@
             this.labelVario = new System.Windows.Forms.Label();
             this.labelHeight = new System.Windows.Forms.Label();
             this.labelSpeed = new System.Windows.Forms.Label();
+            this.textBoxTimeconv = new System.Windows.Forms.TextBox();
+            this.textBoxPitchdeg = new System.Windows.Forms.TextBox();
+            this.textBoxBank = new System.Windows.Forms.TextBox();
+            this.textBoxSpeed = new System.Windows.Forms.TextBox();
             this.groupBoxSerial = new System.Windows.Forms.GroupBox();
+            this.groupBox3 = new System.Windows.Forms.GroupBox();
             this.buttonZEROdwn = new System.Windows.Forms.Button();
             this.buttonZEROup = new System.Windows.Forms.Button();
             this.textBoxTestData = new System.Windows.Forms.TextBox();
@@ -71,7 +70,6 @@
             this.timer1 = new System.Windows.Forms.Timer(this.components);
             this.backgroundWorker1 = new System.ComponentModel.BackgroundWorker();
             this.backgroundWorker2 = new System.ComponentModel.BackgroundWorker();
-            this.groupBox3 = new System.Windows.Forms.GroupBox();
             this.groupBox1.SuspendLayout();
             this.groupBox2.SuspendLayout();
             this.groupBoxSerial.SuspendLayout();
@@ -132,17 +130,12 @@
             // 
             // groupBox2
             // 
-            this.groupBox2.Controls.Add(this.textBoxTimeconv);
-            this.groupBox2.Controls.Add(this.textBoxYawdeg);
-            this.groupBox2.Controls.Add(this.textBoxPitchdeg);
             this.groupBox2.Controls.Add(this.textBoxBankdeg);
-            this.groupBox2.Controls.Add(this.textBoxYaw);
+            this.groupBox2.Controls.Add(this.textBoxCompass);
             this.groupBox2.Controls.Add(this.textBoxPitch);
-            this.groupBox2.Controls.Add(this.textBoxBank);
             this.groupBox2.Controls.Add(this.label5);
             this.groupBox2.Controls.Add(this.label4);
             this.groupBox2.Controls.Add(this.label3);
-            this.groupBox2.Controls.Add(this.label2);
             this.groupBox2.Controls.Add(this.textBoxSpeedkmh);
             this.groupBox2.Controls.Add(this.textBoxTime);
             this.groupBox2.Controls.Add(this.textBoxGforce);
@@ -150,7 +143,6 @@
             this.groupBox2.Controls.Add(this.textBoxIntegrated);
             this.groupBox2.Controls.Add(this.textBoxVario);
             this.groupBox2.Controls.Add(this.textBoxHeight);
-            this.groupBox2.Controls.Add(this.textBoxSpeed);
             this.groupBox2.Controls.Add(this.labelEvario);
             this.groupBox2.Controls.Add(this.labelTime);
             this.groupBox2.Controls.Add(this.labelGforce);
@@ -165,68 +157,40 @@
             this.groupBox2.TabStop = false;
             this.groupBox2.Text = "Conversie";
             // 
-            // textBoxTimeconv
-            // 
-            this.textBoxTimeconv.Location = new System.Drawing.Point(243, 189);
-            this.textBoxTimeconv.Name = "textBoxTimeconv";
-            this.textBoxTimeconv.Size = new System.Drawing.Size(70, 20);
-            this.textBoxTimeconv.TabIndex = 25;
-            // 
-            // textBoxYawdeg
-            // 
-            this.textBoxYawdeg.Location = new System.Drawing.Point(243, 267);
-            this.textBoxYawdeg.Name = "textBoxYawdeg";
-            this.textBoxYawdeg.Size = new System.Drawing.Size(70, 20);
-            this.textBoxYawdeg.TabIndex = 24;
-            // 
-            // textBoxPitchdeg
-            // 
-            this.textBoxPitchdeg.Location = new System.Drawing.Point(243, 241);
-            this.textBoxPitchdeg.Name = "textBoxPitchdeg";
-            this.textBoxPitchdeg.Size = new System.Drawing.Size(70, 20);
-            this.textBoxPitchdeg.TabIndex = 23;
-            // 
             // textBoxBankdeg
             // 
-            this.textBoxBankdeg.Location = new System.Drawing.Point(243, 215);
+            this.textBoxBankdeg.Location = new System.Drawing.Point(139, 190);
             this.textBoxBankdeg.Name = "textBoxBankdeg";
             this.textBoxBankdeg.Size = new System.Drawing.Size(70, 20);
             this.textBoxBankdeg.TabIndex = 22;
             // 
-            // textBoxYaw
+            // textBoxCompass
             // 
-            this.textBoxYaw.Location = new System.Drawing.Point(139, 267);
-            this.textBoxYaw.Name = "textBoxYaw";
-            this.textBoxYaw.Size = new System.Drawing.Size(70, 20);
-            this.textBoxYaw.TabIndex = 21;
+            this.textBoxCompass.Location = new System.Drawing.Point(139, 242);
+            this.textBoxCompass.Name = "textBoxCompass";
+            this.textBoxCompass.Size = new System.Drawing.Size(70, 20);
+            this.textBoxCompass.TabIndex = 21;
             // 
             // textBoxPitch
             // 
-            this.textBoxPitch.Location = new System.Drawing.Point(139, 241);
+            this.textBoxPitch.Location = new System.Drawing.Point(139, 216);
             this.textBoxPitch.Name = "textBoxPitch";
             this.textBoxPitch.Size = new System.Drawing.Size(70, 20);
             this.textBoxPitch.TabIndex = 20;
             // 
-            // textBoxBank
-            // 
-            this.textBoxBank.Location = new System.Drawing.Point(139, 215);
-            this.textBoxBank.Name = "textBoxBank";
-            this.textBoxBank.Size = new System.Drawing.Size(70, 20);
-            this.textBoxBank.TabIndex = 19;
-            // 
             // label5
             // 
             this.label5.AutoSize = true;
-            this.label5.Location = new System.Drawing.Point(19, 270);
+            this.label5.Location = new System.Drawing.Point(17, 245);
             this.label5.Name = "label5";
-            this.label5.Size = new System.Drawing.Size(28, 13);
+            this.label5.Size = new System.Drawing.Size(50, 13);
             this.label5.TabIndex = 18;
-            this.label5.Text = "Yaw";
+            this.label5.Text = "Compass";
             // 
             // label4
             // 
             this.label4.AutoSize = true;
-            this.label4.Location = new System.Drawing.Point(17, 244);
+            this.label4.Location = new System.Drawing.Point(17, 219);
             this.label4.Name = "label4";
             this.label4.Size = new System.Drawing.Size(31, 13);
             this.label4.TabIndex = 17;
@@ -235,31 +199,22 @@
             // label3
             // 
             this.label3.AutoSize = true;
-            this.label3.Location = new System.Drawing.Point(17, 218);
+            this.label3.Location = new System.Drawing.Point(17, 193);
             this.label3.Name = "label3";
             this.label3.Size = new System.Drawing.Size(32, 13);
             this.label3.TabIndex = 16;
             this.label3.Text = "Bank";
             // 
-            // label2
-            // 
-            this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(215, 16);
-            this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(16, 13);
-            this.label2.TabIndex = 15;
-            this.label2.Text = "->";
-            // 
             // textBoxSpeedkmh
             // 
-            this.textBoxSpeedkmh.Location = new System.Drawing.Point(243, 33);
+            this.textBoxSpeedkmh.Location = new System.Drawing.Point(139, 33);
             this.textBoxSpeedkmh.Name = "textBoxSpeedkmh";
             this.textBoxSpeedkmh.Size = new System.Drawing.Size(70, 20);
             this.textBoxSpeedkmh.TabIndex = 14;
             // 
             // textBoxTime
             // 
-            this.textBoxTime.Location = new System.Drawing.Point(139, 189);
+            this.textBoxTime.Location = new System.Drawing.Point(139, 268);
             this.textBoxTime.Name = "textBoxTime";
             this.textBoxTime.Size = new System.Drawing.Size(70, 20);
             this.textBoxTime.TabIndex = 13;
@@ -299,26 +254,19 @@
             this.textBoxHeight.Size = new System.Drawing.Size(70, 20);
             this.textBoxHeight.TabIndex = 8;
             // 
-            // textBoxSpeed
-            // 
-            this.textBoxSpeed.Location = new System.Drawing.Point(139, 33);
-            this.textBoxSpeed.Name = "textBoxSpeed";
-            this.textBoxSpeed.Size = new System.Drawing.Size(70, 20);
-            this.textBoxSpeed.TabIndex = 7;
-            // 
             // labelEvario
             // 
             this.labelEvario.AutoSize = true;
             this.labelEvario.Location = new System.Drawing.Point(17, 140);
             this.labelEvario.Name = "labelEvario";
-            this.labelEvario.Size = new System.Drawing.Size(37, 13);
+            this.labelEvario.Size = new System.Drawing.Size(80, 13);
             this.labelEvario.TabIndex = 6;
-            this.labelEvario.Text = "Evario";
+            this.labelEvario.Text = "Vario electronic";
             // 
             // labelTime
             // 
             this.labelTime.AutoSize = true;
-            this.labelTime.Location = new System.Drawing.Point(17, 192);
+            this.labelTime.Location = new System.Drawing.Point(17, 268);
             this.labelTime.Name = "labelTime";
             this.labelTime.Size = new System.Drawing.Size(30, 13);
             this.labelTime.TabIndex = 5;
@@ -338,27 +286,27 @@
             this.labelIntegrated.AutoSize = true;
             this.labelIntegrated.Location = new System.Drawing.Point(17, 114);
             this.labelIntegrated.Name = "labelIntegrated";
-            this.labelIntegrated.Size = new System.Drawing.Size(55, 13);
+            this.labelIntegrated.Size = new System.Drawing.Size(82, 13);
             this.labelIntegrated.TabIndex = 3;
-            this.labelIntegrated.Text = "Integrated";
+            this.labelIntegrated.Text = "Vario Integrated";
             // 
             // labelVario
             // 
             this.labelVario.AutoSize = true;
             this.labelVario.Location = new System.Drawing.Point(17, 88);
             this.labelVario.Name = "labelVario";
-            this.labelVario.Size = new System.Drawing.Size(31, 13);
+            this.labelVario.Size = new System.Drawing.Size(84, 13);
             this.labelVario.TabIndex = 2;
-            this.labelVario.Text = "Vario";
+            this.labelVario.Text = "Vario Pneumatic";
             // 
             // labelHeight
             // 
             this.labelHeight.AutoSize = true;
             this.labelHeight.Location = new System.Drawing.Point(17, 62);
             this.labelHeight.Name = "labelHeight";
-            this.labelHeight.Size = new System.Drawing.Size(38, 13);
+            this.labelHeight.Size = new System.Drawing.Size(42, 13);
             this.labelHeight.TabIndex = 1;
-            this.labelHeight.Text = "Height";
+            this.labelHeight.Text = "Altitude";
             // 
             // labelSpeed
             // 
@@ -369,19 +317,62 @@
             this.labelSpeed.TabIndex = 0;
             this.labelSpeed.Text = "Speed";
             // 
+            // textBoxTimeconv
+            // 
+            this.textBoxTimeconv.Location = new System.Drawing.Point(117, 207);
+            this.textBoxTimeconv.Name = "textBoxTimeconv";
+            this.textBoxTimeconv.Size = new System.Drawing.Size(70, 20);
+            this.textBoxTimeconv.TabIndex = 25;
+            // 
+            // textBoxPitchdeg
+            // 
+            this.textBoxPitchdeg.Location = new System.Drawing.Point(117, 233);
+            this.textBoxPitchdeg.Name = "textBoxPitchdeg";
+            this.textBoxPitchdeg.Size = new System.Drawing.Size(70, 20);
+            this.textBoxPitchdeg.TabIndex = 23;
+            // 
+            // textBoxBank
+            // 
+            this.textBoxBank.Location = new System.Drawing.Point(41, 207);
+            this.textBoxBank.Name = "textBoxBank";
+            this.textBoxBank.Size = new System.Drawing.Size(70, 20);
+            this.textBoxBank.TabIndex = 19;
+            // 
+            // textBoxSpeed
+            // 
+            this.textBoxSpeed.Location = new System.Drawing.Point(41, 233);
+            this.textBoxSpeed.Name = "textBoxSpeed";
+            this.textBoxSpeed.Size = new System.Drawing.Size(70, 20);
+            this.textBoxSpeed.TabIndex = 7;
+            // 
             // groupBoxSerial
             // 
+            this.groupBoxSerial.Controls.Add(this.textBoxPitchdeg);
+            this.groupBoxSerial.Controls.Add(this.textBoxTimeconv);
             this.groupBoxSerial.Controls.Add(this.groupBox3);
             this.groupBoxSerial.Controls.Add(this.textBoxTestData);
             this.groupBoxSerial.Controls.Add(this.buttonCom);
             this.groupBoxSerial.Controls.Add(this.textBoxBaud);
             this.groupBoxSerial.Controls.Add(this.comboBoxCom);
+            this.groupBoxSerial.Controls.Add(this.textBoxBank);
+            this.groupBoxSerial.Controls.Add(this.textBoxSpeed);
             this.groupBoxSerial.Location = new System.Drawing.Point(301, 320);
             this.groupBoxSerial.Name = "groupBoxSerial";
             this.groupBoxSerial.Size = new System.Drawing.Size(365, 273);
             this.groupBoxSerial.TabIndex = 6;
             this.groupBoxSerial.TabStop = false;
             this.groupBoxSerial.Text = "Serial Connect";
+            // 
+            // groupBox3
+            // 
+            this.groupBox3.Controls.Add(this.buttonZEROdwn);
+            this.groupBox3.Controls.Add(this.buttonZEROup);
+            this.groupBox3.Location = new System.Drawing.Point(218, 66);
+            this.groupBox3.Name = "groupBox3";
+            this.groupBox3.Size = new System.Drawing.Size(117, 103);
+            this.groupBox3.TabIndex = 8;
+            this.groupBox3.TabStop = false;
+            this.groupBox3.Text = "Homing Speed";
             // 
             // buttonZEROdwn
             // 
@@ -445,6 +436,8 @@
             // 
             // backgroundWorker1
             // 
+            this.backgroundWorker1.WorkerReportsProgress = true;
+            this.backgroundWorker1.WorkerSupportsCancellation = true;
             this.backgroundWorker1.DoWork += new System.ComponentModel.DoWorkEventHandler(this.backgroundWorker1_DoWork);
             // 
             // backgroundWorker2
@@ -452,17 +445,6 @@
             this.backgroundWorker2.WorkerReportsProgress = true;
             this.backgroundWorker2.WorkerSupportsCancellation = true;
             this.backgroundWorker2.DoWork += new System.ComponentModel.DoWorkEventHandler(this.backgroundWorker2_DoWork);
-            // 
-            // groupBox3
-            // 
-            this.groupBox3.Controls.Add(this.buttonZEROdwn);
-            this.groupBox3.Controls.Add(this.buttonZEROup);
-            this.groupBox3.Location = new System.Drawing.Point(218, 66);
-            this.groupBox3.Name = "groupBox3";
-            this.groupBox3.Size = new System.Drawing.Size(117, 103);
-            this.groupBox3.TabIndex = 8;
-            this.groupBox3.TabStop = false;
-            this.groupBox3.Text = "Homing Speed";
             // 
             // Form1
             // 
@@ -507,12 +489,10 @@
         private System.Windows.Forms.TextBox textBoxSpeed;
         private System.Windows.Forms.Label labelEvario;
         private System.Windows.Forms.Label labelTime;
-        private System.Windows.Forms.Label label2;
         private System.Windows.Forms.TextBox textBoxSpeedkmh;
-        private System.Windows.Forms.TextBox textBoxYawdeg;
         private System.Windows.Forms.TextBox textBoxPitchdeg;
         private System.Windows.Forms.TextBox textBoxBankdeg;
-        private System.Windows.Forms.TextBox textBoxYaw;
+        private System.Windows.Forms.TextBox textBoxCompass;
         private System.Windows.Forms.TextBox textBoxPitch;
         private System.Windows.Forms.TextBox textBoxBank;
         private System.Windows.Forms.Label label5;

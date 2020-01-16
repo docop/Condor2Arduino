@@ -205,6 +205,12 @@ void loop()
 {
   // this section is copy/pasted from link2Fs. It works perfect so no changes made to Jim's code
   if (Serial.available())
+  //***********************************************************
+  // we send this string from condor2arduino C# program:
+  //<S0085<V+2.8<E+2.9<I+2.8<A0749<K109<B-0032<P-014<G+0.7
+  // Speed, Vario, Elec vario, Indicated, Altitude, heading Compass, Bank, Pitch, Gforce
+  //***********************************************************
+
   {
     // Serialdata is always: Ident(1) +Value(4)+Ident(1)+value(4) etc etc
     CodeIn = getChar(); // get the first character
