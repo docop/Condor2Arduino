@@ -1,6 +1,6 @@
 
 /*
-    This code is based on Jim's great"Link2fs_Multi". Without Jim I would still be in the dark.
+    This code is based on Jim's great "Link2fs_Multi". Without Jim I would still be in the dark.
     Jimspage.co.nz
 */
 
@@ -27,18 +27,18 @@
 TM1638plus tm(STROBE_TM1, CLOCK_TM , DIO_TM); // define object of TM1638
 TM1638plus tm2(STROBE_TM2, CLOCK_TM , DIO_TM); // define object of TM1638
 //*************************************************************************
-
-
-//void reset();
-//void brightness(uint8_t brightness)--> Sets the brightness level on a scale of brightness = 0 to 7.
-//uint8_t readButtons(void)-->Read buttons returns a byte with value of buttons 1-8 b7b6b5b4b3b2b1b0
-//void setLED(uint8_t position, uint8_t value)-->Set an LED, pass it LED position 0-7 and value 0 or 1
-//void displayText(const char *text)-->send Text to Seven segments, passed char array pointer
-//void displayASCII(uint8_t position, uint8_t ascii)
-//void displayASCIIwDot(uint8_t position, uint8_t ascii)
-//void displayHex(uint8_t position, uint8_t hex)
-//void display7Seg(uint8_t position, uint8_t value);
-// **************************************************************************
+/*
+void reset();
+void brightness(uint8_t brightness)--> Sets the brightness level on a scale of brightness = 0 to 7.
+uint8_t readButtons(void)-->Read buttons returns a byte with value of buttons 1-8 b7b6b5b4b3b2b1b0
+void setLED(uint8_t position, uint8_t value)-->Set an LED, pass it LED position 0-7 and value 0 or 1
+void displayText(const char *text)-->send Text to Seven segments, passed char array pointer
+void displayASCII(uint8_t position, uint8_t ascii)
+void displayASCIIwDot(uint8_t position, uint8_t ascii)
+void displayHex(uint8_t position, uint8_t hex)
+void display7Seg(uint8_t position, uint8_t value);
+ **************************************************************************
+*/
 
 TM1638 tm3(DIO_TM, CLOCK_TM, STROBE_TM1);
 TM1638 tm4(DIO_TM, CLOCK_TM, STROBE_TM2);
@@ -136,30 +136,43 @@ AccelStepper ACSpeedStepper(AccelStepper::FULL4WIRE, 8, 10, 9, 11); // refer to 
 float stpSpeed = 10.50; //how many steps per km/h
 
 int CodeIn;// used in the serial reads
-String lcdtekst = "Condor2Arduino";
 uint8_t buttons;
 
-//Speedvaribles:
-int SpeedOld = 0;
-int SpeedNew = 0;
-String SpeedRead = "";
-bool homing = false;
+String lcdtekst = "Condor2Arduino";
 
+bool homing = false;
 bool lcdon = true;
 bool TM1638on = true;
 
 
 //Vario variables
 double Vario = 0.0;
-double VarioOld = 0.0;
-String VarioRead = "";
+double eVario =0.0;
+double iVario=0.0;
+double Gforce = 0;
 
-//Altituted variables
-int AltOld = 0;
-int AltNew = 0;
+
+String SpeedRead = "";
+String VarioRead = "";
+String eVarioRead= "";
+String iVarioRead= "";
 String AltRead = "";
 String GforceRead = "";
-double Gforce = 0;
+String CompassRead= "";
+String BankRead= "";
+String PitchRead= "";
+
+int AltOld = 0;
+int AltNew = 0;
+double VarioOld = 0.0;
+double VarioNew = 0.0;
+int SpeedOld = 0;
+int SpeedNew = 0;
+int CompOld=0;
+int CompNew=0;
+int Bankint=0;
+int Pitchint=0;
+int Compassint=0;
 
 
 void setup()
@@ -194,11 +207,11 @@ void setup()
     tm4.setupDisplay(true, 2);
     tm3.clearDisplay();
     tm4.clearDisplay();
-    tm3.setDisplayToString("SPD", 0, 0);
-    tm4.setDisplayToString("ALT", 0, 0);
+   // tm3.setDisplayToString("Condor 2", 0, 0);
+   // tm4.setDisplayToString("Arduino", 0, 0);
   }
 
-  Serial.begin(9600);
+  Serial.begin(19200);
 }
 
 void loop()
@@ -246,10 +259,13 @@ void loop()
     // Set the VARIO
     MyServo.write(Vario * StepVario + 100); //
 
-   if (TM1638on)
+    if (TM1638on)
     {
-    //  TMDisplay(AltRead, SpeedRead);
+       TMDisplay1("P", PitchRead);
+       TMDisplay2("B", BankRead);
+       
     }
+   
   }
 }
 
@@ -283,13 +299,16 @@ void EQUALS() // used here for setting servo to zero position. I have no auto ze
   }
 }
 
+//<S0085<V+2.8<E+2.9<I+2.8<A0749<K109<B-0032<P-014<G+0.7
+// Speed, Vario, Elec vario, Indicated, Altitude, heading Compass, Bank, Pitch, Gforce
+
 void LESSTHAN()
 { // The first identifier was "<"
-  CodeIn = getChar(); // Get another character" //"B" or "G"
+  CodeIn = getChar(); // Get another character to identify the type
   switch (CodeIn)
   { // Now lets find what to do with it
-    // example input string <S0139<V-2.5<A1470<G+1.5
-    case 'V': // here we decode our vario data // for example:<V-3.6
+    
+    case 'V': //Vario raw data eg:<V-3.6
       {
         VarioRead = "";
         VarioRead += getChar(); // "-" or "+"
@@ -297,41 +316,105 @@ void LESSTHAN()
         VarioRead += getChar(); // "-3."
         VarioRead += getChar(); // "-3.6"
         Vario = VarioRead.toDouble();
-        //LCD_B(VarioRead);
+        
+       //LCD_A(VarioRead);
         break;
       }
-    case 'S': //Found the second identifier (Speed) //format <S123
+      case 'E': //Vario raw data eg:<V-3.6
       {
+        eVarioRead = "";
+        eVarioRead += getChar(); // "-" or "+"
+        eVarioRead += getChar(); // 1e char "-3"
+        eVarioRead += getChar(); // "-3."
+        eVarioRead += getChar(); // "-3.6"
+        eVario = eVarioRead.toDouble();
+        
+        //LCD_B(eVarioRead);
+        break;
+      }
+
+      case 'I': //Vario raw data eg:<V-3.6
+      {
+        iVarioRead = "";
+        iVarioRead += getChar(); // "-" or "+"
+        iVarioRead += getChar(); // 1e char "-3"
+        iVarioRead += getChar(); // "-3."
+        iVarioRead += getChar(); // "-3.6"
+        iVario = iVarioRead.toDouble();
+ 
+        LCD_A(iVarioRead);
+        break;
+      }
+    case 'S': //Found the second identifier (Speed) //format <S1234
+      {
+        SpeedRead = "";
         SpeedRead += getChar();//"1"
         SpeedRead += getChar();//"12"
         SpeedRead += getChar();//"123"
         SpeedRead += getChar();//"1234"
         SpeedNew = SpeedRead.toInt();//1234
-        LCD_A(SpeedRead);
-        TMDisplay1(SpeedRead);
-        SpeedRead = "";
+        
+        //LCD_A(SpeedRead);
         break;
       }
     case 'A': //Found the second identifier (Altitude) //format <A1234
       {
+        AltRead = "";
         AltRead += getChar();//"1"
         AltRead += getChar();//"12"
         AltRead += getChar();//"123"
         AltRead += getChar();//"1234"
         AltNew = AltRead.toInt();//1234
-        TMDisplay2(AltRead);
-        AltRead = "";
+        
         break;
       }
+      
       case 'G': // here we decode our Gforce // for example:<G-1.6
       {
+        GforceRead = "";
         GforceRead += getChar(); // "-" or "+"
         GforceRead += getChar(); // 1e char "-3"
         GforceRead += getChar(); // "-3."
         GforceRead += getChar(); // "-3.6"
         Gforce = GforceRead.toDouble();
-        LCD_B(GforceRead);
-         GforceRead = "";
+        
+        //LCD_B(GforceRead);
+        break;
+      }
+//      <K109
+       case 'K': // here we decode our compass heading <K109
+      {
+        CompassRead = "";
+        CompassRead += getChar(); // 1
+        CompassRead += getChar(); // 10
+        CompassRead += getChar(); // 109
+        Compassint = CompassRead.toInt();
+        LCD_B(CompassRead);
+        
+        break;
+      }
+      //<B-0032
+      case 'B': //Decode the Bankangle +0045
+      {
+        BankRead = "";
+        BankRead += getChar();//"+"
+        BankRead += getChar();//"+1"
+        BankRead += getChar();//"+12"
+        BankRead += getChar();//"+123"
+        BankRead += getChar();//"+1234"
+        Bankint = BankRead.toInt();//1234
+       
+        break;
+      }
+      case 'P': //Decode the Bankangle -180 +180
+      {
+        PitchRead = "";
+        PitchRead += getChar();//"-"
+        PitchRead += getChar();//"-1"
+        PitchRead += getChar();//"-12"
+        PitchRead += getChar();//"-123"
+        Pitchint = PitchRead.toInt();//12
+       
         break;
       }
   }
@@ -367,7 +450,7 @@ void LCD_A(String a)
 }
 void LCD_B(String b)
 {
- lcd.setCursor(9, 1);
+ lcd.setCursor(13, 1);
  lcd.print(b);
 }
 void TMDisplay(String a, String b)
@@ -375,11 +458,13 @@ void TMDisplay(String a, String b)
   tm3.setDisplayToString(b, 0, 4);
   tm4.setDisplayToString(a, 0, 4);
 }
-void TMDisplay1(String a)
+void TMDisplay1(String a, String b)
 {
-  tm3.setDisplayToString(a, 0, 4);
+  tm3.setDisplayToString(a, 0, 0);
+  tm3.setDisplayToString(b, 0, 3);
 }
-void TMDisplay2(String a)
+void TMDisplay2(String a, String b)
 {
-  tm4.setDisplayToString(a, 0, 4);
+    tm4.setDisplayToString(a, 0, 0);
+    tm4.setDisplayToString(b, 0, 3);
 }
