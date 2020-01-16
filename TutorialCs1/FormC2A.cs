@@ -10,37 +10,47 @@ using System.Net;
 using System.Net.Sockets;
 using System.Globalization;
 using System.IO.Ports; // for the serial port connections
-using System.Threading; // threading
+using System.Threading; // threading to prevent blocking
 
 namespace Condor2Arduino
 {
 
-    public struct planedata
+    public struct planedata //For now the communication to Arduino is by string. Option I want to explore is using bytes. ToDo
     {
-        public string speed;
-        public string altitudebaro;
-        public string bank;
-        public string varioraw;
-        public string variointegrated;
-        public string varioelec;
-        public string gforce;
+        public string speed; // converted to km/h
+        public string altitudebaro; // m or feet depends on Condor setting
+        public string bank; // converted to degrees
+        public string varioraw; //pneumatic variometer reading
+        public string variointegrated; //vario integrator value
+        public string varioelec; //electronic variometer reading
+        public string gforce; 
+        public string kompas;
+    }
+
+    public struct sendbytes // first attempt in sending and converting data with bytes. ToDo!!
+    {
+        public Byte Speed;
+        public Byte Altitudbaro;
+        public Byte speed; // converted to km/h
+        public Byte altitudebaro; // m or feet depends on Condor setting
+        public Byte bank; // converted to degrees
+        public Byte varioraw; //pneumatic variometer reading
+        public Byte variointegrated; //vario integrator value
+        public Byte varioelec; //electronic variometer reading
+        public Byte gforce;
+        public Byte kompas;
     }
     
     public partial class Form1 : Form
     {
-        
-      public Form1()
 
+        public Form1()
         {
             InitializeComponent();
-            Portfiller();
-            backgroundWorker1.WorkerReportsProgress = true;
-            backgroundWorker1.WorkerSupportsCancellation = true;
-            backgroundWorker2.WorkerReportsProgress = true;
-            backgroundWorker2.WorkerSupportsCancellation = true;
-        }
+            Portfiller(); // Get the Serial ports
+        }  
        
-        public SerialPort port;
+        public SerialPort port; 
         public bool arduino = false;
         int speedkmph;
         string condordata; 
@@ -50,14 +60,14 @@ namespace Condor2Arduino
 
         public void btnConnect_Click(object sender, EventArgs e) //event when buttonConnect UDP is clicked
         {
-                if (!serialconnect.connected)
+                if (!serialconnect.connected) //if not connected then..
                 {
                     backgroundWorker1.RunWorkerAsync();
                     label1.Text = "Connected";
                     btnConnect.Text = "Disconnect";
                     timer1.Enabled = true;
                 }
-                else // we are connected so we disconnect
+                else // we are connected so ..
                 {
                     backgroundWorker2.CancelAsync();
                     backgroundWorker1.CancelAsync();
@@ -73,28 +83,32 @@ namespace Condor2Arduino
            // if (serialconnect.connected) condordata = serialconnect.GetCondorData();
             textBox2.Text = condordata;
 
-            if (condordata != "-1") 
+            if (condordata != "-1") // -1 is my primitive exception handler. Send "-1" when something goes wrong.
             {
                 label1.Text = "Receiving data";
                 if (condordata!=null)
+                {
                 ConvertCondorData(condordata);
                 ShowConvertedData(PlaneData);
                 
+               
                 // ************** Build & Send Arduino Serial String
                 string Send2Arduino =
                     "<S" + PlaneData.speed
                     + "<V" + PlaneData.varioraw
+                   // + "<E" + PlaneData.varioelec
+                  //  + "<I"+ PlaneData.variointegrated
                     + "<A" + PlaneData.altitudebaro
+                   // + "<B" + PlaneData.bank
                     + "<G" + PlaneData.gforce;
-                    // the actual string to send to the serial port
-
                 if (arduino)
                 {
                     port.Write(Send2Arduino); // send it
-                    textBoxTestData.Text = Send2Arduino;
-                } // show it. testing only
+                    textBoxTestData.Text = Send2Arduino; // show it. for testing only
+                }
+                }
             }
-            else
+            else // something went wrong
             {
                 label1.Text = "No Data Received";
 
@@ -170,7 +184,7 @@ namespace Condor2Arduino
             // electronic variometer reading (m/s)
             if (s.Contains("evario"))
             {
-                int pos1 = s.IndexOf("evario="); // posnumber where altitude starts
+                int pos1 = s.IndexOf("evario="); // posnumber where string starts
                 if (s.Substring(pos1 + 7, 1) == "-")
                     PlaneData.varioelec = s.Substring(pos1 + 7, 4);
                 else
@@ -180,7 +194,7 @@ namespace Condor2Arduino
             // Integrated vario (m/s)
             if (s.Contains("integrator"))
             {
-                int pos1 = s.IndexOf("integrator="); // posnumber where altitude starts
+                int pos1 = s.IndexOf("integrator="); // posnumber where string starts
                 if (s.Substring(pos1 + 11, 1) == "-")
                     PlaneData.variointegrated = s.Substring(pos1 + 11, 4);
                 else
@@ -190,11 +204,21 @@ namespace Condor2Arduino
             // Gforce (G)
             if (s.Contains("gforce"))
             {
-                int pos1 = s.IndexOf("gforce="); // posnumber where altitude starts
+                int pos1 = s.IndexOf("gforce="); // posnumber where string starts
                  if (s.Substring(pos1 + 7, 1) == "-")
                     PlaneData.gforce = s.Substring(pos1 + 7, 4);
                 else
                     PlaneData.gforce= "+" + s.Substring(pos1 + 7, 3);
+            }
+
+            // Heading Compass
+            if (s.Contains("compass")) //degrees
+            {
+                int pos1 = s.IndexOf("compass="); // posnumber where string starts
+                extract = s.Substring(pos1 + 8, 5);    
+                double temp = double.Parse(extract, CultureInfo.InvariantCulture.NumberFormat); // complicated mess...everyone has a regional difference in decimal.. . or ,
+                Int32 temp2 = Convert.ToInt32(Math.Round(temp));
+                PlaneData.kompas = temp2.ToString();
             }
 
         }
@@ -208,6 +232,7 @@ namespace Condor2Arduino
             textBoxSpeedkmh.Text = a.speed;
             textBoxHeight.Text = a.altitudebaro;
             textBoxGforce.Text = a.gforce;
+            textBoxCompass.Text = a.kompas;
         }
 
         public void Send2Arduino(string str)
@@ -279,8 +304,6 @@ namespace Condor2Arduino
                 condordata = serialconnect.GetCondorData();
             }
         }
-
-        
+       
     }
-     
 }
