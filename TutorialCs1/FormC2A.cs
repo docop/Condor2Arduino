@@ -99,7 +99,7 @@ namespace Condor2Arduino
                         + "<V" + PlaneData.varioraw //I have limited  it to +9.9 and -9.9
                         + "<E" + PlaneData.varioelec//I have  limited it to +9.9 and -9.9
                         + "<I" + PlaneData.variointegrated//I have limited it to +9.9 and -9.9
-                        + "<A" + PlaneData.altitudebaro//-0099 9999
+                        + "<A" + PlaneData.altitudebaro//0000 9999
                         + "<K" + PlaneData.kompas//000 360
                         + "<B" + PlaneData.bank//-180+180
                         + "<P" + PlaneData.pitch//-090 +090
@@ -160,11 +160,10 @@ namespace Condor2Arduino
                     extract = s.Substring(pos1 + 9, 6);
 
                     int a = Convert.ToInt32((double.Parse(extract, CultureInfo.InvariantCulture.NumberFormat))); // meters afgerond naar beneden 
-                    if (a < -10 && a >= -99)
-                        PlaneData.altitudebaro = "-0" + (a * -1).ToString();//-099 max negative. we keep 4 chars in the altitude value
-                    if (a < 0 && a >= -10)
-                        PlaneData.altitudebaro = "-00" + (a * -1).ToString(); //-009 we keep 4 chars in the altitude value
-                    if (a < 10 && a >= 0)
+                    
+                    if (a <= 0)
+                        PlaneData.altitudebaro = "0000"; //no negative alt to arduino
+                    if (a < 10 && a > 0)
                         PlaneData.altitudebaro = "000" + a.ToString(); // alt 9m--> 0009m - we want 4 chars in the string
                     if (a < 100 && a >= 10)
                         PlaneData.altitudebaro = "00" + a.ToString(); // alt 90m --> 0090m
