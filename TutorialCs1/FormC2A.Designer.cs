@@ -66,6 +66,17 @@
             this.timer1 = new System.Windows.Forms.Timer(this.components);
             this.backgroundWorker1 = new System.ComponentModel.BackgroundWorker();
             this.backgroundWorker2 = new System.ComponentModel.BackgroundWorker();
+            this.textBoxDecodeBank = new System.Windows.Forms.TextBox();
+            this.textBoxDecodeCompass = new System.Windows.Forms.TextBox();
+            this.textBoxDecodePitch = new System.Windows.Forms.TextBox();
+            this.textboxDecodeSpeed = new System.Windows.Forms.TextBox();
+            this.textBoxDecodeGforce = new System.Windows.Forms.TextBox();
+            this.textBoxDecodevarElec = new System.Windows.Forms.TextBox();
+            this.textBoxDecodeVarint = new System.Windows.Forms.TextBox();
+            this.textBoxDecodeVarraw = new System.Windows.Forms.TextBox();
+            this.textBoxDecodeAlt = new System.Windows.Forms.TextBox();
+            this.label2 = new System.Windows.Forms.Label();
+            this.label6 = new System.Windows.Forms.Label();
             this.groupBox1.SuspendLayout();
             this.groupBox2.SuspendLayout();
             this.groupBoxSerial.SuspendLayout();
@@ -126,6 +137,17 @@
             // 
             // groupBox2
             // 
+            this.groupBox2.Controls.Add(this.label6);
+            this.groupBox2.Controls.Add(this.label2);
+            this.groupBox2.Controls.Add(this.textBoxDecodeBank);
+            this.groupBox2.Controls.Add(this.textBoxDecodeCompass);
+            this.groupBox2.Controls.Add(this.textBoxDecodePitch);
+            this.groupBox2.Controls.Add(this.textboxDecodeSpeed);
+            this.groupBox2.Controls.Add(this.textBoxDecodeGforce);
+            this.groupBox2.Controls.Add(this.textBoxDecodevarElec);
+            this.groupBox2.Controls.Add(this.textBoxDecodeVarint);
+            this.groupBox2.Controls.Add(this.textBoxDecodeVarraw);
+            this.groupBox2.Controls.Add(this.textBoxDecodeAlt);
             this.groupBox2.Controls.Add(this.textBoxBankdeg);
             this.groupBox2.Controls.Add(this.textBoxCompass);
             this.groupBox2.Controls.Add(this.textBoxPitch);
@@ -395,6 +417,7 @@
             // 
             // timer1
             // 
+            this.timer1.Interval = 10;
             this.timer1.Tick += new System.EventHandler(this.timer1_Tick);
             // 
             // backgroundWorker1
@@ -408,6 +431,87 @@
             this.backgroundWorker2.WorkerReportsProgress = true;
             this.backgroundWorker2.WorkerSupportsCancellation = true;
             this.backgroundWorker2.DoWork += new System.ComponentModel.DoWorkEventHandler(this.backgroundWorker2_DoWork);
+            // 
+            // textBoxDecodeBank
+            // 
+            this.textBoxDecodeBank.Location = new System.Drawing.Point(231, 190);
+            this.textBoxDecodeBank.Name = "textBoxDecodeBank";
+            this.textBoxDecodeBank.Size = new System.Drawing.Size(70, 20);
+            this.textBoxDecodeBank.TabIndex = 32;
+            // 
+            // textBoxDecodeCompass
+            // 
+            this.textBoxDecodeCompass.Location = new System.Drawing.Point(231, 242);
+            this.textBoxDecodeCompass.Name = "textBoxDecodeCompass";
+            this.textBoxDecodeCompass.Size = new System.Drawing.Size(70, 20);
+            this.textBoxDecodeCompass.TabIndex = 31;
+            // 
+            // textBoxDecodePitch
+            // 
+            this.textBoxDecodePitch.Location = new System.Drawing.Point(231, 216);
+            this.textBoxDecodePitch.Name = "textBoxDecodePitch";
+            this.textBoxDecodePitch.Size = new System.Drawing.Size(70, 20);
+            this.textBoxDecodePitch.TabIndex = 30;
+            // 
+            // textboxDecodeSpeed
+            // 
+            this.textboxDecodeSpeed.Location = new System.Drawing.Point(231, 33);
+            this.textboxDecodeSpeed.Name = "textboxDecodeSpeed";
+            this.textboxDecodeSpeed.Size = new System.Drawing.Size(70, 20);
+            this.textboxDecodeSpeed.TabIndex = 29;
+            // 
+            // textBoxDecodeGforce
+            // 
+            this.textBoxDecodeGforce.Location = new System.Drawing.Point(231, 163);
+            this.textBoxDecodeGforce.Name = "textBoxDecodeGforce";
+            this.textBoxDecodeGforce.Size = new System.Drawing.Size(70, 20);
+            this.textBoxDecodeGforce.TabIndex = 27;
+            // 
+            // textBoxDecodevarElec
+            // 
+            this.textBoxDecodevarElec.Location = new System.Drawing.Point(231, 137);
+            this.textBoxDecodevarElec.Name = "textBoxDecodevarElec";
+            this.textBoxDecodevarElec.Size = new System.Drawing.Size(70, 20);
+            this.textBoxDecodevarElec.TabIndex = 26;
+            // 
+            // textBoxDecodeVarint
+            // 
+            this.textBoxDecodeVarint.Location = new System.Drawing.Point(231, 111);
+            this.textBoxDecodeVarint.Name = "textBoxDecodeVarint";
+            this.textBoxDecodeVarint.Size = new System.Drawing.Size(70, 20);
+            this.textBoxDecodeVarint.TabIndex = 25;
+            // 
+            // textBoxDecodeVarraw
+            // 
+            this.textBoxDecodeVarraw.Location = new System.Drawing.Point(231, 85);
+            this.textBoxDecodeVarraw.Name = "textBoxDecodeVarraw";
+            this.textBoxDecodeVarraw.Size = new System.Drawing.Size(70, 20);
+            this.textBoxDecodeVarraw.TabIndex = 24;
+            // 
+            // textBoxDecodeAlt
+            // 
+            this.textBoxDecodeAlt.Location = new System.Drawing.Point(231, 59);
+            this.textBoxDecodeAlt.Name = "textBoxDecodeAlt";
+            this.textBoxDecodeAlt.Size = new System.Drawing.Size(70, 20);
+            this.textBoxDecodeAlt.TabIndex = 23;
+            // 
+            // label2
+            // 
+            this.label2.AutoSize = true;
+            this.label2.Location = new System.Drawing.Point(228, 16);
+            this.label2.Name = "label2";
+            this.label2.Size = new System.Drawing.Size(80, 13);
+            this.label2.TabIndex = 33;
+            this.label2.Text = "Decoded Bytes";
+            // 
+            // label6
+            // 
+            this.label6.AutoSize = true;
+            this.label6.Location = new System.Drawing.Point(136, 16);
+            this.label6.Name = "label6";
+            this.label6.Size = new System.Drawing.Size(81, 13);
+            this.label6.TabIndex = 34;
+            this.label6.Text = "Decoded String";
             // 
             // Form1
             // 
@@ -469,6 +573,17 @@
         public System.ComponentModel.BackgroundWorker backgroundWorker1;
         private System.ComponentModel.BackgroundWorker backgroundWorker2;
         private System.Windows.Forms.GroupBox groupBox3;
+        private System.Windows.Forms.TextBox textBoxDecodeBank;
+        private System.Windows.Forms.TextBox textBoxDecodeCompass;
+        private System.Windows.Forms.TextBox textBoxDecodePitch;
+        private System.Windows.Forms.TextBox textboxDecodeSpeed;
+        private System.Windows.Forms.TextBox textBoxDecodeGforce;
+        private System.Windows.Forms.TextBox textBoxDecodevarElec;
+        private System.Windows.Forms.TextBox textBoxDecodeVarint;
+        private System.Windows.Forms.TextBox textBoxDecodeVarraw;
+        private System.Windows.Forms.TextBox textBoxDecodeAlt;
+        private System.Windows.Forms.Label label6;
+        private System.Windows.Forms.Label label2;
     }
 }
 

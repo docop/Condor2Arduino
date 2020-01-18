@@ -22,7 +22,7 @@ namespace Condor2Arduino
         public byte[] receivedData;
         public bool connected = false;
         
-        public void CondorConnect(Int32 poortnaam) // I have put the threading in the calling as a background worker
+        public void CondorConnect(Int32 poortnaam) // I have put the asynchronous threading in the calling as a background worker
         {
             try
             {
@@ -38,7 +38,7 @@ namespace Condor2Arduino
             catch { } // no exception catch coded. 
         }
         
-        public void CondorDisConnect() // I have put the threading in the calling as a background worker
+        public void CondorDisConnect() // I have put the asynchronous threading in the calling as a background worker
         {
             try
             {
