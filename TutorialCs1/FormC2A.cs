@@ -96,10 +96,10 @@ namespace Condor2Arduino
                     ConvertCondorData(condordata);
                     MakeGliderData(glider);
                     
-                    SendConvertedData(PlaneData);
+                    //SendConvertedData(PlaneData);
                     DecodeData(serialdata);
                     ShowConvertedData(PlaneData);
-                    //SendByte2Arduino();
+                    SendByte2Arduino();
                     
                 }
             }

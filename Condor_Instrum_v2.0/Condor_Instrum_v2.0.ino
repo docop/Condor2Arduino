@@ -28,15 +28,15 @@ TM1638plus tm(STROBE_TM1, CLOCK_TM , DIO_TM); // define object of TM1638
 TM1638plus tm2(STROBE_TM2, CLOCK_TM , DIO_TM); // define object of TM1638
 //*************************************************************************
 /*
-void reset();
-void brightness(uint8_t brightness)--> Sets the brightness level on a scale of brightness = 0 to 7.
-uint8_t readButtons(void)-->Read buttons returns a byte with value of buttons 1-8 b7b6b5b4b3b2b1b0
-void setLED(uint8_t position, uint8_t value)-->Set an LED, pass it LED position 0-7 and value 0 or 1
-void displayText(const char *text)-->send Text to Seven segments, passed char array pointer
-void displayASCII(uint8_t position, uint8_t ascii)
-void displayASCIIwDot(uint8_t position, uint8_t ascii)
-void displayHex(uint8_t position, uint8_t hex)
-void display7Seg(uint8_t position, uint8_t value);
+  void reset();
+  void brightness(uint8_t brightness)--> Sets the brightness level on a scale of brightness = 0 to 7.
+  uint8_t readButtons(void)-->Read buttons returns a byte with value of buttons 1-8 b7b6b5b4b3b2b1b0
+  void setLED(uint8_t position, uint8_t value)-->Set an LED, pass it LED position 0-7 and value 0 or 1
+  void displayText(const char *text)-->send Text to Seven segments, passed char array pointer
+  void displayASCII(uint8_t position, uint8_t ascii)
+  void displayASCIIwDot(uint8_t position, uint8_t ascii)
+  void displayHex(uint8_t position, uint8_t hex)
+  void display7Seg(uint8_t position, uint8_t value);
  **************************************************************************
 */
 
@@ -147,20 +147,20 @@ bool TM1638on = true;
 
 //Vario variables
 double Vario = 0.0;
-double eVario =0.0;
-double iVario=0.0;
+double eVario = 0.0;
+double iVario = 0.0;
 double Gforce = 0;
 
 
 String SpeedRead = "";
 String VarioRead = "";
-String eVarioRead= "";
-String iVarioRead= "";
+String eVarioRead = "";
+String iVarioRead = "";
 String AltRead = "";
 String GforceRead = "";
-String CompassRead= "";
-String BankRead= "";
-String PitchRead= "";
+String CompassRead = "";
+String BankRead = "";
+String PitchRead = "";
 
 int AltOld = 0;
 int AltNew = 0;
@@ -168,11 +168,17 @@ double VarioOld = 0.0;
 double VarioNew = 0.0;
 int SpeedOld = 0;
 int SpeedNew = 0;
-int CompOld=0;
-int CompNew=0;
-int Bankint=0;
-int Pitchint=0;
-int Compassint=0;
+int CompOld = 0;
+int CompNew = 0;
+int Bankint = 0;
+int Pitchint = 0;
+int Compassint = 0;
+
+int altl, spdl, hdgl, bnkl, pitl, varrl, varel, varil, gfol;
+int alth, spdh, hdgh, bnkh, pith, varrh, vareh, varih, gfoh;
+int alt, spd, hdg, bnk, pit;
+double varr, vare, vari, gfo;
+
 
 
 void setup()
@@ -207,8 +213,8 @@ void setup()
     tm4.setupDisplay(true, 2);
     tm3.clearDisplay();
     tm4.clearDisplay();
-   // tm3.setDisplayToString("Condor 2", 0, 0);
-   // tm4.setDisplayToString("Arduino", 0, 0);
+    tm3.setDisplayToString("Condor 2", 0, 0);
+    tm4.setDisplayToString("Arduino", 0, 0);
   }
 
   Serial.begin(19200);
@@ -216,35 +222,43 @@ void setup()
 
 void loop()
 {
-  // this section is copy/pasted from link2Fs. It works perfect so no changes made to Jim's code
-  if (Serial.available())
-  //***********************************************************
-  // we send this string from condor2arduino C# program:
-  //<S0085<V+2.8<E+2.9<I+2.8<A0749<K109<B-0032<P-014<G+0.7
-  // Speed, Vario, Elec vario, Indicated, Altitude, heading Compass, Bank, Pitch, Gforce
-  //***********************************************************
-
+  if (Serial.available() > 0)
   {
-    // Serialdata is always: Ident(1) +Value(4)+Ident(1)+value(4) etc etc
-    CodeIn = getChar(); // get the first character
-    // with the first character decide where to decode what.
-    if (CodeIn == '=')
+    if (Serial.available() > 19)
     {
-      EQUALS(); // The first identifier is "="
+      if (Serial.read() == 255) //serialdata[0]
+      {
+        altl = Serial.read();//serialdata[1]
+        alth = Serial.read();//serialdata[2]
+        spdl == Serial.read();//serialdata[3]
+        spdh = Serial.read();//serialdata[4]
+        hdgl = Serial.read();//serialdata[5]
+        hdgh = Serial.read();//serialdata[6]
+        pitl = Serial.read();//serialdata[7]
+        pith = Serial.read();//serialdata[8]
+        bnkl = Serial.read();//serialdata[9]
+        bnkh = Serial.read();//serialdata[10]
+        varrl = Serial.read();//serialdata[11]
+        varrh = Serial.read();//serialdata[12]
+        varel = Serial.read();//serialdata[13]
+        vareh = Serial.read();//serialdata[14]
+        varil = Serial.read();//serialdata[15]
+        varih = Serial.read();//serialdata[16]
+        gfol = Serial.read();//serialdata[17]
+        gfoh = Serial.read();//serialdata[18]
+
+        alt = altl << 8 | alth; //decode altitude
+        spd = spdl << 8 | spdh; //decode speed (kmph)
+        hdg = hdgl << 8 | hdgh; //decode compass
+        pit = pitl << 8 | pith - 90; //decode pitch (deg)
+        bnk = bnkl << 8 | bnkh - 180; ////decode bank (deg)
+        varr = ((varrl << 8 | varrh) / 10.0) - 99.9; //decode raw vario m/s
+        vare = ((varel << 8 | vareh) / 10.0) - 99.9; //decode elec vario m/s
+        vari = ((varil << 8 | varih) / 10.0) - 99.9; //decode integrated vario m/s
+        gfo = ((gfol << 8 | gfoh) / 10.0) - 9.9; //decode gforce
+      }
     }
-    if (CodeIn == '<')
-    {
-      LESSTHAN(); // The first identifier is "<"
-    }
-    if (CodeIn == '?')
-    {
-      QUESTION(); // The first identifier is "?"
-    }
-    if (CodeIn == '/')
-    {
-      SLASH(); // The first identifier is "/" (Annunciators)
-    }
-  } // end if serial available
+  }
 
   if (homing) // used to set the speed to zero position with software.
   {
@@ -253,33 +267,27 @@ void loop()
   else //normal situation.
   {
     // Set the SPEED
+    SpeedNew=spd;
     ACSpeedStepper.moveTo(SpeedNew * stpSpeed); // where to go
     ACSpeedStepper.run(); //go
 
     // Set the VARIO
+    Vario=vari;
     MyServo.write(Vario * StepVario + 100); //
 
-    if (TM1638on)
+    if (lcdon)
     {
-       TMDisplay1("P", PitchRead);
-       TMDisplay2("B", BankRead);
-       
+     lcd.setCursor(0, 1);
+     lcd.print(spd);
+     lcd.setCursor(13, 1);
+     lcd.print(alt);
     }
-   
+
   }
 }
 
 
-char getChar()// Get a character from the serial buffer
-{
-  while (Serial.available() == 0); // wait for data
-  return ((char)Serial.read()); // Thanks Doug (Jim's comment)
-}
-
-void EQUALS() // used here for setting servo to zero position. I have no auto zero option yet.
-{ // The first identifier was "="
-  CodeIn = getChar(); // Get another character
-  switch (CodeIn) { // Now lets find what to do with it
+/*
     case 'A'://Found the second identifier
       {
         homing = true;
@@ -292,155 +300,8 @@ void EQUALS() // used here for setting servo to zero position. I have no auto ze
         ACSpeedStepper.setCurrentPosition(0);
         ACSpeedStepper.setSpeed(400);
         break;
-      }
-    case 'C':
-      //Do something
-      break;
-  }
-}
+*/
 
-//<S0085<V+2.8<E+2.9<I+2.8<A0749<K109<B-0032<P-014<G+0.7
-// Speed, Vario, Elec vario, Indicated, Altitude, heading Compass, Bank, Pitch, Gforce
-
-void LESSTHAN()
-{ // The first identifier was "<"
-  CodeIn = getChar(); // Get another character to identify the type
-  switch (CodeIn)
-  { // Now lets find what to do with it
-    
-    case 'V': //Vario raw data eg:<V-3.6
-      {
-        VarioRead = "";
-        VarioRead += getChar(); // "-" or "+"
-        VarioRead += getChar(); // 1e char "-3"
-        VarioRead += getChar(); // "-3."
-        VarioRead += getChar(); // "-3.6"
-        Vario = VarioRead.toDouble();
-        
-       //LCD_A(VarioRead);
-        break;
-      }
-      case 'E': //Vario raw data eg:<V-3.6
-      {
-        eVarioRead = "";
-        eVarioRead += getChar(); // "-" or "+"
-        eVarioRead += getChar(); // 1e char "-3"
-        eVarioRead += getChar(); // "-3."
-        eVarioRead += getChar(); // "-3.6"
-        eVario = eVarioRead.toDouble();
-        
-        //LCD_B(eVarioRead);
-        break;
-      }
-
-      case 'I': //Vario raw data eg:<V-3.6
-      {
-        iVarioRead = "";
-        iVarioRead += getChar(); // "-" or "+"
-        iVarioRead += getChar(); // 1e char "-3"
-        iVarioRead += getChar(); // "-3."
-        iVarioRead += getChar(); // "-3.6"
-        iVario = iVarioRead.toDouble();
- 
-        LCD_A(iVarioRead);
-        break;
-      }
-    case 'S': //Found the second identifier (Speed) //format <S1234
-      {
-        SpeedRead = "";
-        SpeedRead += getChar();//"1"
-        SpeedRead += getChar();//"12"
-        SpeedRead += getChar();//"123"
-        SpeedRead += getChar();//"1234"
-        SpeedNew = SpeedRead.toInt();//1234
-        
-        //LCD_A(SpeedRead);
-        break;
-      }
-    case 'A': //Found the second identifier (Altitude) //format <A1234
-      {
-        AltRead = "";
-        AltRead += getChar();//"1"
-        AltRead += getChar();//"12"
-        AltRead += getChar();//"123"
-        AltRead += getChar();//"1234"
-        AltNew = AltRead.toInt();//1234
-        
-        break;
-      }
-      
-      case 'G': // here we decode our Gforce // for example:<G-1.6
-      {
-        GforceRead = "";
-        GforceRead += getChar(); // "-" or "+"
-        GforceRead += getChar(); // 1e char "-3"
-        GforceRead += getChar(); // "-3."
-        GforceRead += getChar(); // "-3.6"
-        Gforce = GforceRead.toDouble();
-        
-        //LCD_B(GforceRead);
-        break;
-      }
-//      <K109
-       case 'K': // here we decode our compass heading <K109
-      {
-        CompassRead = "";
-        CompassRead += getChar(); // 1
-        CompassRead += getChar(); // 10
-        CompassRead += getChar(); // 109
-        Compassint = CompassRead.toInt();
-        LCD_B(CompassRead);
-        
-        break;
-      }
-      //<B-0032
-      case 'B': //Decode the Bankangle +0045
-      {
-        BankRead = "";
-        BankRead += getChar();//"+"
-        BankRead += getChar();//"+1"
-        BankRead += getChar();//"+12"
-        BankRead += getChar();//"+123"
-        BankRead += getChar();//"+1234"
-        Bankint = BankRead.toInt();//1234
-       
-        break;
-      }
-      case 'P': //Decode the Bankangle -180 +180
-      {
-        PitchRead = "";
-        PitchRead += getChar();//"-"
-        PitchRead += getChar();//"-1"
-        PitchRead += getChar();//"-12"
-        PitchRead += getChar();//"-123"
-        Pitchint = PitchRead.toInt();//12
-       
-        break;
-      }
-  }
-}
-
-void QUESTION()
-{ // The first identifier was "?"
-  CodeIn = getChar(); // Get another character
-  switch (CodeIn)
-  { // Now lets find what to do with it
-    case 'A'://Found the second identifier
-      //Do something
-      break;
-
-    case 'B':
-      //Do something
-      break;
-
-    case 'C':
-      //Do something
-      break;
-  }
-}
-void SLASH() {   // The first identifier was "/" (Annunciator)
-  //Do something
-}
 
 void LCD_A(String a)
 {
@@ -450,8 +311,8 @@ void LCD_A(String a)
 }
 void LCD_B(String b)
 {
- lcd.setCursor(13, 1);
- lcd.print(b);
+  lcd.setCursor(13, 1);
+  lcd.print(b);
 }
 void TMDisplay(String a, String b)
 {
@@ -465,6 +326,6 @@ void TMDisplay1(String a, String b)
 }
 void TMDisplay2(String a, String b)
 {
-    tm4.setDisplayToString(a, 0, 0);
-    tm4.setDisplayToString(b, 0, 3);
+  tm4.setDisplayToString(a, 0, 0);
+  tm4.setDisplayToString(b, 0, 3);
 }
