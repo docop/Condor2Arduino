@@ -117,19 +117,21 @@ AccelStepper ACSpeedStepper(AccelStepper::FULL4WIRE, 8, 10, 9, 11); // refer to 
 // *********************************************
 float stpSpeed = 10.50; //how many steps per km/h
 
-uint8_t buttons;
+uint8_t bbuttons;
 
-byte bbuttons, oldbuttons, page;
+byte buttons, oldbuttons, page;
+unsigned long milstart, milstart2 = 0;
+bool changed;
+
 bool homing = false;
 bool lcdon = false;
 bool TM1638on = true;
-bool changed;
 
 int altl, spdl, hdgl, bnkl, pitl, varrl, varel, varil, gfol;
 int alth, spdh, hdgh, bnkh, pith, varrh, vareh, varih, gfoh;
 int alt, spd, hdg, bnk, pit;
 double varr, vare, vari, gfo;
-
+int show = 0;
 
 void setup()
 {
@@ -140,7 +142,9 @@ void setup()
   ACSpeedStepper.setAcceleration(400.0); // I dont want accel/decel
   ACSpeedStepper.setSpeed(400.0); // set it at max
   ACSpeedStepper.setCurrentPosition(0); // this needs to be in a homing routine. For now I assume the current position = 0 km/h
-
+  ACSpeedStepper.moveTo(10); // where to go
+  ACSpeedStepper.run(); //go
+  
   if (lcdon)
   {
     lcd.init();                  // initialiseer het LCD scherm
@@ -182,7 +186,7 @@ void loop()
       {
         altl = Serial.read();//serialdata[1]
         alth = Serial.read();//serialdata[2]
-        spdl == Serial.read();//serialdata[3]
+        spdl = Serial.read();//serialdata[3]
         spdh = Serial.read();//serialdata[4]
         hdgl = Serial.read();//serialdata[5]
         hdgh = Serial.read();//serialdata[6]
@@ -219,67 +223,68 @@ void loop()
           // lcd.print(gfo);
           // lcd.print(bnk);
           //  lcd.print(pit); // max4
-          lcd.print(varr);
+          lcd.print(spd);
         }
         if (TM1638on)
-          TMD();
+        {
+          TMDspd(tm3);
+          TMDalt(tm4);
+        }
+       
       }
     }
   }
-  if (homing) // used to set the speed to zero position with software.
-  {
-    ACSpeedStepper.runSpeed();
-  }
-  else //normal situation.
-  {
-    // Set the SPEED
-    ACSpeedStepper.moveTo(spd * stpSpeed); // where to go
-    ACSpeedStepper.run(); //go
+ // Set the SPEED
+        ACSpeedStepper.moveTo(spd * stpSpeed); // where to go
+        ACSpeedStepper.run(); //go
+        // Set the VARIO
+        MyServo.write(varr * StepVario + 100); //
+}//end loop
 
-    // Set the VARIO
-    MyServo.write(varr * StepVario + 100); //
-  }
-}
 
-void TMD()
+void TMDspd(TM1638 m)
 {
-  tm3.setDisplayToString("alt", 0, 0);
-  tm4.setDisplayToString("spd", 0, 0);
+  m.setDisplayToString("spd", 0, 0);
   if (spd < 10)
   {
-    tm4.clearDisplayDigit(5, false);
-    tm4.clearDisplayDigit(6, false);
-    tm4.setDisplayToString(String(spd, DEC), 0, 7);
+    m.clearDisplayDigit(5, false);
+    m.clearDisplayDigit(6, false);
+    m.setDisplayToString(String(spd, DEC), 0, 7);
   }
   if (spd >= 10 && spd < 100)
   {
-    tm4.clearDisplayDigit(5, false);
-    tm4.setDisplayToString(String(spd, DEC), 0, 6);
+    m.clearDisplayDigit(5, false);
+    m.setDisplayToString(String(spd, DEC), 0, 6);
   }
-  if (spd > 100)
+  if (spd >= 100)
   {
-    tm4.setDisplayToString(String(spd, DEC), 0, 5);
+    m.setDisplayToString(String(spd, DEC), 0, 5);
   }
+}
+
+void TMDalt(TM1638 m)
+{
+  m.setDisplayToString("alt", 0, 0);
   if (alt < 10)
   {
-    tm3.clearDisplayDigit(4, false);
-    tm3.clearDisplayDigit(5, false);
-    tm3.clearDisplayDigit(6, false);
-    tm3.setDisplayToString(String(alt, DEC), 0, 7);
+    m.clearDisplayDigit(4, false);
+    m.clearDisplayDigit(5, false);
+    m.clearDisplayDigit(6, false);
+    m.setDisplayToString(String(alt, DEC), 0, 7);
   }
   if (alt < 100 && alt >= 10)
   {
-    tm3.clearDisplayDigit(4, false);
-    tm3.clearDisplayDigit(5, false);
-    tm3.setDisplayToString(String(alt, DEC), 0, 6);
+    m.clearDisplayDigit(4, false);
+    m.clearDisplayDigit(5, false);
+    m.setDisplayToString(String(alt, DEC), 0, 6);
   }
   if (alt < 1000 && alt >= 100)
   {
-    tm3.clearDisplayDigit(4, false);
-    tm3.setDisplayToString(String(alt, DEC), 0, 5);
+    m.clearDisplayDigit(4, false);
+    m.setDisplayToString(String(alt, DEC), 0, 5);
   }
   if (alt < 10000 && alt >= 1000)
   {
-    tm3.setDisplayToString(String(alt, DEC), 0, 4);
+    m.setDisplayToString(String(alt, DEC), 0, 4);
   }
 }
