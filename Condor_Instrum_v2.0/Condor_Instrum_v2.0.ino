@@ -128,10 +128,10 @@ bool homing = false;
 bool lcdon = true;
 bool TM1638on = true;
 
-int altl, spdl, hdgl, bnkl, pitl, varrl, varel, varil, gfol;
-int alth, spdh, hdgh, bnkh, pith, varrh, vareh, varih, gfoh;
+int altl, spdl, hdgl, bnkl, pitl, varrl, varel, varil, gfol,yawl;
+int alth, spdh, hdgh, bnkh, pith, varrh, vareh, varih, gfoh,yawh;
 int alt, spd, hdg, bnk, pit;
-double varr, vare, vari, gfo;
+double varr, vare, vari, gfo,yaw;
 
 
 void setup()
@@ -184,7 +184,7 @@ void loop()
 {
   if (Serial.available() > 0)
   {
-    if (Serial.available() > 19)
+    if (Serial.available() > 21)
     {
       if (Serial.read() == 255) //serialdata[0]
       {
@@ -206,8 +206,8 @@ void loop()
         varih = Serial.read();//serialdata[16]
         gfol = Serial.read();//serialdata[17]
         gfoh = Serial.read();//serialdata[18]
-
-
+        yawl = Serial.read(); //serialdata[19]
+        yawh = Serial.read(); //serialdata[20]
         alt = altl << 8 | alth; //decode altitude
         spd = spdl << 8 | spdh; //decode speed (kmph)
         hdg = hdgl << 8 | hdgh; //decode compass
@@ -217,7 +217,7 @@ void loop()
         vare = ((varel << 8 | vareh) / 10.0) - 99.9; //decode elec vario m/s
         vari = ((varil << 8 | varih) / 10.0) - 99.9; //decode integrated vario m/s
         gfo = ((gfol << 8 | gfoh) / 10.0) - 9.9; //decode gforce
-
+        yaw = ((yawl << 8 | yawh)/100) -10.0;//decode ywa 0.01
         //debug info
         if (lcdon)
         {
@@ -228,7 +228,7 @@ void loop()
           // lcd.print(bnk);
           //  lcd.print(pit); // max4
           //lcd.print(spd);
-          lcd.print(bnk);
+          lcd.print(yaw);
         }
         if (TM1638on)
         {
@@ -296,20 +296,20 @@ void loop()
         tm4.setLED(TM1638_COLOR_GREEN, 6);
         break;
       }
-      case 64: // button 7
+    case 64: // button 7
       {
         tm4.setDisplayToString("run", 0, 0);
         tm4.setLED(TM1638_COLOR_RED, 6);
         tm4.setLED(TM1638_COLOR_GREEN, 7);
         ACSpeedStepper.setSpeed(100);
-        homing=true;
+        homing = true;
         break;
       }
-      case 128: // button 8
+    case 128: // button 8
       {
         tm4.setDisplayToString("go", 0, 0);
         tm4.setLED(TM1638_COLOR_RED, 7);
-        homing=false;
+        homing = false;
         ACSpeedStepper.setCurrentPosition(0);
         ACSpeedStepper.setSpeed(400);
         break;
@@ -318,18 +318,18 @@ void loop()
 
 
 
-// Set the SPEEDdial
-if (homing)
-{
-  ACSpeedStepper.runSpeed();
-}
-else
-{
-  ACSpeedStepper.moveTo(spd * stpSpeed); // where to go
-  ACSpeedStepper.run(); //go
-}
-// Set the VARIO
-MyServo.write(varr * StepVario + 100); //
+  // Set the SPEEDdial
+  if (homing)
+  {
+    ACSpeedStepper.runSpeed();
+  }
+  else
+  {
+    ACSpeedStepper.moveTo(spd * stpSpeed); // where to go
+    ACSpeedStepper.run(); //go
+  }
+  // Set the VARIO
+  MyServo.write(varr * StepVario + 100); //
 }//end loop
 
 void TMDfloat(TM1638 m, String v, double val)
