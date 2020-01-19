@@ -128,10 +128,10 @@ bool homing = false;
 bool lcdon = true;
 bool TM1638on = true;
 
-int altl, spdl, hdgl, bnkl, pitl, varrl, varel, varil, gfol,yawl;
-int alth, spdh, hdgh, bnkh, pith, varrh, vareh, varih, gfoh,yawh;
+int altl, spdl, hdgl, bnkl, pitl, varrl, varel, varil, gfol, yawl;
+int alth, spdh, hdgh, bnkh, pith, varrh, vareh, varih, gfoh, yawh;
 int alt, spd, hdg, bnk, pit;
-double varr, vare, vari, gfo,yaw;
+double varr, vare, vari, gfo, yaw;
 
 
 void setup()
@@ -184,9 +184,9 @@ void loop()
 {
   if (Serial.available() > 0)
   {
-    if (Serial.available() > 21)
+    if (Serial.available() > 21) // not sure here why it is >21.. I think it should be >=21
     {
-      if (Serial.read() == 255) //serialdata[0]
+      if (Serial.read() == 255) //we founf the start serialdata[0]
       {
         altl = Serial.read();//serialdata[1]
         alth = Serial.read();//serialdata[2]
@@ -213,123 +213,94 @@ void loop()
         hdg = hdgl << 8 | hdgh; //decode compass
         pit = (pitl << 8 | pith) - 90; //decode pitch (deg)
         bnk = (bnkl << 8 | bnkh) - 180; ////decode bank (deg)
-        varr = ((varrl << 8 | varrh) / 10.0) - 99.9; //decode raw vario m/s
-        vare = ((varel << 8 | vareh) / 10.0) - 99.9; //decode elec vario m/s
-        vari = ((varil << 8 | varih) / 10.0) - 99.9; //decode integrated vario m/s
-        gfo = ((gfol << 8 | gfoh) / 10.0) - 9.9; //decode gforce
-        yaw = ((yawl << 8 | yawh)/100) -10.0;//decode ywa 0.01
+        varr = ((varrl << 8 | varrh) / 10.0) - 100.0; //decode raw vario m/s
+        vare = ((varel << 8 | vareh) / 10.0) - 100.0; //decode elec vario m/s
+        vari = ((varil << 8 | varih) / 10.0) - 100.0; //decode integrated vario m/s
+        gfo = ((gfol << 8 | gfoh) / 10.0) - 10.0; //decode gforce
+        yaw = ((yawl << 8 | yawh)) - 50.0; //decode ywa 0.01
+
         //debug info
         if (lcdon)
         {
           lcd.setCursor(0, 0);
           //   lcd.print(spd);
-          //   lcd.print(alt);
-          // lcd.print(gfo);
-          // lcd.print(bnk);
-          //  lcd.print(pit); // max4
-          //lcd.print(spd);
-          lcd.print(yaw);
-        }
-        if (TM1638on)
-        {
-          // TMDspd(tm3);
-          // TMDalt(tm4);
-        }
 
+        }
       }
     }
   }
 
-  buttons2 = tm4.getButtons();
-  if (buttons2 != 0)
-  {
-    if (buttons2 != oldbuttons2)
-    {
-      oldbuttons2 = buttons2;
-      page2 = buttons2;
-      tm4.clearDisplay();
-      tm4.setLEDs(0);
-    }
-  }
-  switch (page2)
-  {
-    case 1: //left most button
-      {
-        TMDint(tm4, "spd", spd);
-        tm4.setLED(TM1638_COLOR_RED, 0);
-        tm4.setLED(TM1638_COLOR_GREEN, 6);
-        break;
-      }
-    case 2: // button 2
-      {
-        TMDint(tm4, "alt", alt);
-        tm4.setLED(TM1638_COLOR_RED, 1);
-        tm4.setLED(TM1638_COLOR_GREEN, 6);
-        break;
-      }
-    case 4: // button 3
-      {
-        TMDint(tm4, "bank", bnk);
-        tm4.setLED(TM1638_COLOR_RED, 2);
-        tm4.setLED(TM1638_COLOR_GREEN, 6);
-        break;
-      }
-    case 8: // button 4
-      {
-        TMDint(tm4, "pit", pit);
-        tm4.setLED(TM1638_COLOR_RED, 3);
-        tm4.setLED(TM1638_COLOR_GREEN, 6);
-        break;
-      }
-    case 16: // button 5
-      {
-        TMDint(tm4, "hdg", hdg);
-        tm4.setLED(TM1638_COLOR_RED, 4);
-        tm4.setLED(TM1638_COLOR_GREEN, 6);
-        break;
-      }
-    case 32: // button 6
-      {
-        TMDfloat(tm4, "air", varr);
-        TMDfloat(tm3, "int", vari);
-        tm4.setLED(TM1638_COLOR_RED, 5);
-        tm4.setLED(TM1638_COLOR_GREEN, 6);
-        break;
-      }
-    case 64: // button 7
-      {
-        tm4.setDisplayToString("run", 0, 0);
-        tm4.setLED(TM1638_COLOR_RED, 6);
-        tm4.setLED(TM1638_COLOR_GREEN, 7);
-        ACSpeedStepper.setSpeed(100);
-        homing = true;
-        break;
-      }
-    case 128: // button 8
-      {
-        tm4.setDisplayToString("go", 0, 0);
-        tm4.setLED(TM1638_COLOR_RED, 7);
-        homing = false;
-        ACSpeedStepper.setCurrentPosition(0);
-        ACSpeedStepper.setSpeed(400);
-        break;
-      }
-  }
+  //Set the Speeddial
+  ACSpeedStepper.moveTo(spd * stpSpeed); // where to go
+  ACSpeedStepper.run(); //go
 
-
-
-  // Set the SPEEDdial
-  if (homing)
-  {
-    ACSpeedStepper.runSpeed();
-  }
-  else
-  {
-    ACSpeedStepper.moveTo(spd * stpSpeed); // where to go
-    ACSpeedStepper.run(); //go
-  }
   // Set the VARIO
   MyServo.write(varr * StepVario + 100); //
+
+  if (TM1638on)
+  {
+    buttons2 = tm4.getButtons();
+    if (buttons2 != 0)
+    {
+      if (buttons2 != oldbuttons2)
+      {
+        oldbuttons2 = buttons2;
+        page2 = buttons2;
+        tm3.clearDisplay();
+        tm4.clearDisplay();
+        tm4.setLEDs(0);
+      }
+    }
+
+    switch (page2)
+    {
+      case 1: //left most button
+        {
+          TMDint(tm4, "spd", spd);
+          tm4.setLED(TM1638_COLOR_RED, 0);
+          tm4.setLED(TM1638_COLOR_GREEN, 6);
+          break;
+        }
+      case 2: // button 2
+        {
+          TMDint(tm4, "alt", alt);
+          tm4.setLED(TM1638_COLOR_RED, 1);
+          tm4.setLED(TM1638_COLOR_GREEN, 6);
+          break;
+        }
+      case 4: // button 3
+        {
+          TMDint(tm4, "bank", bnk);
+          tm4.setLED(TM1638_COLOR_RED, 2);
+          tm4.setLED(TM1638_COLOR_GREEN, 6);
+          break;
+        }
+      case 8: // button 4
+        {
+          TMDint(tm4, "pit", pit);
+          tm4.setLED(TM1638_COLOR_RED, 3);
+          tm4.setLED(TM1638_COLOR_GREEN, 6);
+          break;
+        }
+      case 16: // button 5
+        {
+          TMDint(tm4, "hdg", hdg);
+          tm4.setLED(TM1638_COLOR_RED, 4);
+          tm4.setLED(TM1638_COLOR_GREEN, 6);
+          break;
+        }
+      case 32: // button 6
+        {
+          TMDfloat(tm4, "G", gfo);
+          TMDfloat(tm3, "G", gfo);
+          tm4.setLED(TM1638_COLOR_RED, 5);
+          tm4.setLED(TM1638_COLOR_GREEN, 6);
+          break;
+        }
+    }
+  }
+
+
 }//end loop
 
 void TMDfloat(TM1638 m, String v, double val)

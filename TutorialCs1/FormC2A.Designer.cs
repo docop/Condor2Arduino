@@ -34,6 +34,10 @@
             this.textBox2 = new System.Windows.Forms.TextBox();
             this.label1 = new System.Windows.Forms.Label();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
+            this.groupBoxSerial = new System.Windows.Forms.GroupBox();
+            this.buttonCom = new System.Windows.Forms.Button();
+            this.textBoxBaud = new System.Windows.Forms.TextBox();
+            this.comboBoxCom = new System.Windows.Forms.ComboBox();
             this.groupBox2 = new System.Windows.Forms.GroupBox();
             this.label2 = new System.Windows.Forms.Label();
             this.textBoxDecodeBank = new System.Windows.Forms.TextBox();
@@ -56,16 +60,15 @@
             this.labelVario = new System.Windows.Forms.Label();
             this.labelHeight = new System.Windows.Forms.Label();
             this.labelSpeed = new System.Windows.Forms.Label();
-            this.groupBoxSerial = new System.Windows.Forms.GroupBox();
-            this.buttonCom = new System.Windows.Forms.Button();
-            this.textBoxBaud = new System.Windows.Forms.TextBox();
-            this.comboBoxCom = new System.Windows.Forms.ComboBox();
             this.timer1 = new System.Windows.Forms.Timer(this.components);
             this.backgroundWorker1 = new System.ComponentModel.BackgroundWorker();
             this.backgroundWorker2 = new System.ComponentModel.BackgroundWorker();
+            this.comboBox1 = new System.Windows.Forms.ComboBox();
+            this.Button_Arduino = new System.Windows.Forms.Button();
+            this.comboBox2 = new System.Windows.Forms.ComboBox();
             this.groupBox1.SuspendLayout();
-            this.groupBox2.SuspendLayout();
             this.groupBoxSerial.SuspendLayout();
+            this.groupBox2.SuspendLayout();
             this.SuspendLayout();
             // 
             // textBox1
@@ -79,9 +82,9 @@
             // btnConnect
             // 
             this.btnConnect.ImageAlign = System.Drawing.ContentAlignment.MiddleRight;
-            this.btnConnect.Location = new System.Drawing.Point(64, 18);
+            this.btnConnect.Location = new System.Drawing.Point(64, 14);
             this.btnConnect.Name = "btnConnect";
-            this.btnConnect.Size = new System.Drawing.Size(107, 20);
+            this.btnConnect.Size = new System.Drawing.Size(107, 24);
             this.btnConnect.TabIndex = 1;
             this.btnConnect.Text = "Connect";
             this.btnConnect.UseVisualStyleBackColor = true;
@@ -121,6 +124,44 @@
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "Condor data";
             // 
+            // groupBoxSerial
+            // 
+            this.groupBoxSerial.Controls.Add(this.buttonCom);
+            this.groupBoxSerial.Controls.Add(this.textBoxBaud);
+            this.groupBoxSerial.Controls.Add(this.comboBoxCom);
+            this.groupBoxSerial.Location = new System.Drawing.Point(285, 551);
+            this.groupBoxSerial.Name = "groupBoxSerial";
+            this.groupBoxSerial.Size = new System.Drawing.Size(365, 79);
+            this.groupBoxSerial.TabIndex = 6;
+            this.groupBoxSerial.TabStop = false;
+            this.groupBoxSerial.Text = "Serial Connect";
+            // 
+            // buttonCom
+            // 
+            this.buttonCom.Location = new System.Drawing.Point(273, 29);
+            this.buttonCom.Name = "buttonCom";
+            this.buttonCom.Size = new System.Drawing.Size(70, 21);
+            this.buttonCom.TabIndex = 2;
+            this.buttonCom.Text = "Connect";
+            this.buttonCom.UseVisualStyleBackColor = true;
+            this.buttonCom.Click += new System.EventHandler(this.buttonCom_Click);
+            // 
+            // textBoxBaud
+            // 
+            this.textBoxBaud.Location = new System.Drawing.Point(180, 29);
+            this.textBoxBaud.Name = "textBoxBaud";
+            this.textBoxBaud.Size = new System.Drawing.Size(70, 20);
+            this.textBoxBaud.TabIndex = 1;
+            this.textBoxBaud.Text = "19200";
+            // 
+            // comboBoxCom
+            // 
+            this.comboBoxCom.FormattingEnabled = true;
+            this.comboBoxCom.Location = new System.Drawing.Point(15, 29);
+            this.comboBoxCom.Name = "comboBoxCom";
+            this.comboBoxCom.Size = new System.Drawing.Size(96, 21);
+            this.comboBoxCom.TabIndex = 0;
+            // 
             // groupBox2
             // 
             this.groupBox2.Controls.Add(this.label2);
@@ -146,7 +187,7 @@
             this.groupBox2.Controls.Add(this.labelSpeed);
             this.groupBox2.Location = new System.Drawing.Point(304, 47);
             this.groupBox2.Name = "groupBox2";
-            this.groupBox2.Size = new System.Drawing.Size(250, 593);
+            this.groupBox2.Size = new System.Drawing.Size(250, 312);
             this.groupBox2.TabIndex = 5;
             this.groupBox2.TabStop = false;
             this.groupBox2.Text = "Conversie";
@@ -320,47 +361,9 @@
             this.labelSpeed.TabIndex = 0;
             this.labelSpeed.Text = "Speed";
             // 
-            // groupBoxSerial
-            // 
-            this.groupBoxSerial.Controls.Add(this.buttonCom);
-            this.groupBoxSerial.Controls.Add(this.textBoxBaud);
-            this.groupBoxSerial.Controls.Add(this.comboBoxCom);
-            this.groupBoxSerial.Location = new System.Drawing.Point(285, 551);
-            this.groupBoxSerial.Name = "groupBoxSerial";
-            this.groupBoxSerial.Size = new System.Drawing.Size(365, 79);
-            this.groupBoxSerial.TabIndex = 6;
-            this.groupBoxSerial.TabStop = false;
-            this.groupBoxSerial.Text = "Serial Connect";
-            // 
-            // buttonCom
-            // 
-            this.buttonCom.Location = new System.Drawing.Point(273, 29);
-            this.buttonCom.Name = "buttonCom";
-            this.buttonCom.Size = new System.Drawing.Size(70, 21);
-            this.buttonCom.TabIndex = 2;
-            this.buttonCom.Text = "Connect";
-            this.buttonCom.UseVisualStyleBackColor = true;
-            this.buttonCom.Click += new System.EventHandler(this.buttonCom_Click);
-            // 
-            // textBoxBaud
-            // 
-            this.textBoxBaud.Location = new System.Drawing.Point(180, 29);
-            this.textBoxBaud.Name = "textBoxBaud";
-            this.textBoxBaud.Size = new System.Drawing.Size(70, 20);
-            this.textBoxBaud.TabIndex = 1;
-            this.textBoxBaud.Text = "19200";
-            // 
-            // comboBoxCom
-            // 
-            this.comboBoxCom.FormattingEnabled = true;
-            this.comboBoxCom.Location = new System.Drawing.Point(15, 29);
-            this.comboBoxCom.Name = "comboBoxCom";
-            this.comboBoxCom.Size = new System.Drawing.Size(96, 21);
-            this.comboBoxCom.TabIndex = 0;
-            // 
             // timer1
             // 
-            this.timer1.Interval = 10;
+            this.timer1.Interval = 50;
             this.timer1.Tick += new System.EventHandler(this.timer1_Tick);
             // 
             // backgroundWorker1
@@ -375,21 +378,53 @@
             this.backgroundWorker2.WorkerSupportsCancellation = true;
             this.backgroundWorker2.DoWork += new System.ComponentModel.DoWorkEventHandler(this.backgroundWorker2_DoWork);
             // 
+            // comboBox1
+            // 
+            this.comboBox1.FormattingEnabled = true;
+            this.comboBox1.Location = new System.Drawing.Point(304, 375);
+            this.comboBox1.Name = "comboBox1";
+            this.comboBox1.Size = new System.Drawing.Size(59, 21);
+            this.comboBox1.TabIndex = 6;
+            // 
+            // Button_Arduino
+            // 
+            this.Button_Arduino.Location = new System.Drawing.Point(465, 375);
+            this.Button_Arduino.Name = "Button_Arduino";
+            this.Button_Arduino.Size = new System.Drawing.Size(88, 21);
+            this.Button_Arduino.TabIndex = 7;
+            this.Button_Arduino.Text = "Connect";
+            this.Button_Arduino.UseVisualStyleBackColor = true;
+            this.Button_Arduino.Click += new System.EventHandler(this.buttonCom_Click);
+            // 
+            // comboBox2
+            // 
+            this.comboBox2.FormattingEnabled = true;
+            this.comboBox2.Items.AddRange(new object[] {
+            "19200",
+            "9600"});
+            this.comboBox2.Location = new System.Drawing.Point(369, 376);
+            this.comboBox2.Name = "comboBox2";
+            this.comboBox2.Size = new System.Drawing.Size(87, 21);
+            this.comboBox2.TabIndex = 8;
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(565, 644);
+            this.Controls.Add(this.comboBox2);
+            this.Controls.Add(this.Button_Arduino);
+            this.Controls.Add(this.comboBox1);
             this.Controls.Add(this.groupBox2);
             this.Controls.Add(this.groupBox1);
             this.Name = "Form1";
             this.Text = "C2A Interface";
             this.groupBox1.ResumeLayout(false);
             this.groupBox1.PerformLayout();
-            this.groupBox2.ResumeLayout(false);
-            this.groupBox2.PerformLayout();
             this.groupBoxSerial.ResumeLayout(false);
             this.groupBoxSerial.PerformLayout();
+            this.groupBox2.ResumeLayout(false);
+            this.groupBox2.PerformLayout();
             this.ResumeLayout(false);
 
         }
@@ -430,6 +465,9 @@
         private System.Windows.Forms.TextBox textBoxDecodeVarraw;
         private System.Windows.Forms.TextBox textBoxDecodeAlt;
         private System.Windows.Forms.Label label2;
+        private System.Windows.Forms.ComboBox comboBox1;
+        private System.Windows.Forms.Button Button_Arduino;
+        private System.Windows.Forms.ComboBox comboBox2;
     }
 }
 
