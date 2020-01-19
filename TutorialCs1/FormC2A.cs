@@ -191,7 +191,7 @@ namespace Condor2Arduino
                     else
                     {
                         double a = double.Parse(extract, CultureInfo.InvariantCulture.NumberFormat);
-                        Int16 b = (Convert.ToInt16(a * 57.2957));
+                        Int16 b = (Convert.ToInt16(a * -57.2957));
                         
                         glider.bank = b;// range [-180, 180]
 

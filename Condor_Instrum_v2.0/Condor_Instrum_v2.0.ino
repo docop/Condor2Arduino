@@ -1,12 +1,5 @@
-
-/*
-    This code is based on Jim's great "Link2fs_Multi". Without Jim I would still be in the dark.
-    Jimspage.co.nz
-*/
-
 #include <Servo.h> // link to the servo library. 
 #include <AccelStepper.h> // link to the advanced Stepper library. Accelstepper is not default you need to install it.
-
 #include <Wire.h> // needed for the liquid crystal display (LCD)
 #include <LiquidCrystal_I2C.h> // LCD display
 #include <TM1638.h> //older library for the 8 segments display / 8 buttons, 8 led red/green 
@@ -24,6 +17,7 @@
 
 TM1638 tm3(DIO_TM, CLOCK_TM, STROBE_TM1);
 TM1638 tm4(DIO_TM, CLOCK_TM, STROBE_TM2);
+
 /*Set the display (segments and LEDs) active or off and intensity (range from 0-7).
   setupDisplay(boolean active, byte intensity)
   Set a single display at pos (starting at 0) to a digit (left to right)
@@ -117,21 +111,28 @@ AccelStepper ACSpeedStepper(AccelStepper::FULL4WIRE, 8, 10, 9, 11); // refer to 
 // *********************************************
 float stpSpeed = 10.50; //how many steps per km/h
 
-uint8_t bbuttons;
+byte buttons1 = 0;
+byte buttons2 = 0;
+//byte buttons3=0;
+byte oldbuttons1 = 0;
+byte oldbuttons2 = 0;
+//byte oldbuttons3=0;
+byte page1 = 1;
+byte page2 = 1;
+//byte page3=1;
 
-byte buttons, oldbuttons, page;
 unsigned long milstart, milstart2 = 0;
 bool changed;
 
 bool homing = false;
-bool lcdon = false;
+bool lcdon = true;
 bool TM1638on = true;
 
 int altl, spdl, hdgl, bnkl, pitl, varrl, varel, varil, gfol;
 int alth, spdh, hdgh, bnkh, pith, varrh, vareh, varih, gfoh;
 int alt, spd, hdg, bnk, pit;
 double varr, vare, vari, gfo;
-int show = 0;
+
 
 void setup()
 {
@@ -144,7 +145,7 @@ void setup()
   ACSpeedStepper.setCurrentPosition(0); // this needs to be in a homing routine. For now I assume the current position = 0 km/h
   ACSpeedStepper.moveTo(10); // where to go
   ACSpeedStepper.run(); //go
-  
+
   if (lcdon)
   {
     lcd.init();                  // initialiseer het LCD scherm
@@ -164,6 +165,9 @@ void setup()
     tm4.setupDisplay(true, 2);
     tm3.clearDisplay();
     tm4.clearDisplay();
+    tm3.setLEDs(0);
+    tm4.setLEDs(0);
+
   }
   else // its off
   {
@@ -207,8 +211,8 @@ void loop()
         alt = altl << 8 | alth; //decode altitude
         spd = spdl << 8 | spdh; //decode speed (kmph)
         hdg = hdgl << 8 | hdgh; //decode compass
-        pit = pitl << 8 | pith - 90; //decode pitch (deg)
-        bnk = bnkl << 8 | bnkh - 180; ////decode bank (deg)
+        pit = (pitl << 8 | pith) - 90; //decode pitch (deg)
+        bnk = (bnkl << 8 | bnkh) - 180; ////decode bank (deg)
         varr = ((varrl << 8 | varrh) / 10.0) - 99.9; //decode raw vario m/s
         vare = ((varel << 8 | vareh) / 10.0) - 99.9; //decode elec vario m/s
         vari = ((varil << 8 | varih) / 10.0) - 99.9; //decode integrated vario m/s
@@ -223,68 +227,156 @@ void loop()
           // lcd.print(gfo);
           // lcd.print(bnk);
           //  lcd.print(pit); // max4
-          lcd.print(spd);
+          //lcd.print(spd);
+          lcd.print(bnk);
         }
         if (TM1638on)
         {
-          TMDspd(tm3);
-          TMDalt(tm4);
+          // TMDspd(tm3);
+          // TMDalt(tm4);
         }
-       
+
       }
     }
   }
- // Set the SPEED
-        ACSpeedStepper.moveTo(spd * stpSpeed); // where to go
-        ACSpeedStepper.run(); //go
-        // Set the VARIO
-        MyServo.write(varr * StepVario + 100); //
+
+  buttons2 = tm4.getButtons();
+  if (buttons2 != 0)
+  {
+    if (buttons2 != oldbuttons2)
+    {
+      oldbuttons2 = buttons2;
+      page2 = buttons2;
+      tm4.clearDisplay();
+      tm4.setLEDs(0);
+    }
+  }
+  switch (page2)
+  {
+    case 1: //left most button
+      {
+        TMDint(tm4, "spd", spd);
+        tm4.setLED(TM1638_COLOR_RED, 0);
+        tm4.setLED(TM1638_COLOR_GREEN, 6);
+        break;
+      }
+    case 2: // button 2
+      {
+        TMDint(tm4, "alt", alt);
+        tm4.setLED(TM1638_COLOR_RED, 1);
+        tm4.setLED(TM1638_COLOR_GREEN, 6);
+        break;
+      }
+    case 4: // button 3
+      {
+        TMDint(tm4, "bank", bnk);
+        tm4.setLED(TM1638_COLOR_RED, 2);
+        tm4.setLED(TM1638_COLOR_GREEN, 6);
+        break;
+      }
+    case 8: // button 4
+      {
+        TMDint(tm4, "pit", pit);
+        tm4.setLED(TM1638_COLOR_RED, 3);
+        tm4.setLED(TM1638_COLOR_GREEN, 6);
+        break;
+      }
+    case 16: // button 5
+      {
+        TMDint(tm4, "hdg", hdg);
+        tm4.setLED(TM1638_COLOR_RED, 4);
+        tm4.setLED(TM1638_COLOR_GREEN, 6);
+        break;
+      }
+    case 32: // button 6
+      {
+        TMDfloat(tm4, "air", varr);
+        TMDfloat(tm3, "int", vari);
+        tm4.setLED(TM1638_COLOR_RED, 5);
+        tm4.setLED(TM1638_COLOR_GREEN, 6);
+        break;
+      }
+      case 64: // button 7
+      {
+        tm4.setDisplayToString("run", 0, 0);
+        tm4.setLED(TM1638_COLOR_RED, 6);
+        tm4.setLED(TM1638_COLOR_GREEN, 7);
+        ACSpeedStepper.setSpeed(100);
+        homing=true;
+        break;
+      }
+      case 128: // button 8
+      {
+        tm4.setDisplayToString("go", 0, 0);
+        tm4.setLED(TM1638_COLOR_RED, 7);
+        homing=false;
+        ACSpeedStepper.setCurrentPosition(0);
+        ACSpeedStepper.setSpeed(400);
+        break;
+      }
+  }
+
+
+
+// Set the SPEEDdial
+if (homing)
+{
+  ACSpeedStepper.runSpeed();
+}
+else
+{
+  ACSpeedStepper.moveTo(spd * stpSpeed); // where to go
+  ACSpeedStepper.run(); //go
+}
+// Set the VARIO
+MyServo.write(varr * StepVario + 100); //
 }//end loop
 
-
-void TMDspd(TM1638 m)
+void TMDfloat(TM1638 m, String v, double val)
 {
-  m.setDisplayToString("spd", 0, 0);
-  if (spd < 10)
-  {
-    m.clearDisplayDigit(5, false);
-    m.clearDisplayDigit(6, false);
-    m.setDisplayToString(String(spd, DEC), 0, 7);
-  }
-  if (spd >= 10 && spd < 100)
-  {
-    m.clearDisplayDigit(5, false);
-    m.setDisplayToString(String(spd, DEC), 0, 6);
-  }
-  if (spd >= 100)
-  {
-    m.setDisplayToString(String(spd, DEC), 0, 5);
-  }
+
+  m.setDisplayToString(v, 0, 0);
+  m.setDisplayToString(String(val, 1), 0, 4);
 }
 
-void TMDalt(TM1638 m)
+void TMDint(TM1638 m, String v, int val)
 {
-  m.setDisplayToString("alt", 0, 0);
-  if (alt < 10)
+  m.setDisplayToString(v, 0, 0);
+  if (val <= -100 && val > -1000)
+  {
+    m.setDisplayToString(String(val, DEC), 0, 4);
+  }
+  if (val <= -10 && val > -100)
+  {
+    m.clearDisplayDigit(4, false);
+    m.setDisplayToString(String(val, DEC), 0, 5);
+  }
+  if (val < 0 && val > -10)
+  {
+    m.clearDisplayDigit(4, false);
+    m.clearDisplayDigit(5, false);
+    m.setDisplayToString(String(val, DEC), 0, 6);
+  }
+  if (val < 10 && val >= 0)
   {
     m.clearDisplayDigit(4, false);
     m.clearDisplayDigit(5, false);
     m.clearDisplayDigit(6, false);
-    m.setDisplayToString(String(alt, DEC), 0, 7);
+    m.setDisplayToString(String(val, DEC), 0, 7);
   }
-  if (alt < 100 && alt >= 10)
+  if (val < 100 && val >= 10)
   {
     m.clearDisplayDigit(4, false);
     m.clearDisplayDigit(5, false);
-    m.setDisplayToString(String(alt, DEC), 0, 6);
+    m.setDisplayToString(String(val, DEC), 0, 6);
   }
-  if (alt < 1000 && alt >= 100)
+  if (val < 1000 && val >= 100)
   {
     m.clearDisplayDigit(4, false);
-    m.setDisplayToString(String(alt, DEC), 0, 5);
+    m.setDisplayToString(String(val, DEC), 0, 5);
   }
-  if (alt < 10000 && alt >= 1000)
+  if (val < 10000 && val >= 1000)
   {
-    m.setDisplayToString(String(alt, DEC), 0, 4);
+    m.setDisplayToString(String(val, DEC), 0, 4);
   }
 }
