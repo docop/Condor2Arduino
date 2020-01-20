@@ -63,9 +63,6 @@ namespace Condor2Arduino
                 return "-1";
             }
         }
-
-        
-   
     } // end class
 } // end namespace
 

@@ -2,7 +2,7 @@
 #include <AccelStepper.h> // link to the advanced Stepper library. Accelstepper is not default you need to install it.
 #include <Wire.h> // needed for the liquid crystal display (LCD)
 #include <LiquidCrystal_I2C.h> // LCD display
-#include <TM1638.h> //older library for the 8 segments display / 8 buttons, 8 led red/green 
+#include <TM1638.h> // library for the 8 segments display / 8 buttons, 8 led red/green 
 
 #define motorPin1  8      // IN1 on the ULN2003 driver
 #define motorPin2  9      // IN2 on the ULN2003 driver
@@ -15,19 +15,24 @@
 #define  DIO_TM 3         // DIO of all boards is on pin 3
 #define TM_BRT 0x02       // set the brightness of board (0-7)
 
-TM1638 tm3(DIO_TM, CLOCK_TM, STROBE_TM1);
-TM1638 tm4(DIO_TM, CLOCK_TM, STROBE_TM2);
+TM1638 tm1(DIO_TM, CLOCK_TM, STROBE_TM1);
+TM1638 tm2(DIO_TM, CLOCK_TM, STROBE_TM2);
 
 /*Set the display (segments and LEDs) active or off and intensity (range from 0-7).
   setupDisplay(boolean active, byte intensity)
+
   Set a single display at pos (starting at 0) to a digit (left to right)
   setDisplayDigit(byte digit, byte pos, boolean dot, const byte numberFont[] = NUMBER_FONT)
+
   Clear  a single display at pos (starting at 0, left to right)
   clearDisplayDigit(byte pos, boolean dot)
+
   Set the display to the values (left to right)
   setDisplay(const byte values[], unsigned int length = 8)
+
   Clear the display
   clearDisplay()
+
   Set the display to the string (defaults to built in font)
   setDisplayToString(const char* string, const word dots = 0, const byte pos = 0,
     const byte font[] = FONT_DEFAULT)
@@ -36,22 +41,25 @@ TM1638 tm4(DIO_TM, CLOCK_TM, STROBE_TM2);
     TM1638(byte dataPin, byte clockPin, byte strobePin, boolean activateDisplay = true, byte intensity = 7)
 
     /** Set the display to a unsigned hexadecimal number (with or without leading zeros)
-    void setDisplayToHexNumber(unsigned long number, byte dots, boolean leadingZeros = true,
+    setDisplayToHexNumber(unsigned long number, byte dots, boolean leadingZeros = true,
     const byte numberFont[] = NUMBER_FONT)
+
     /** Set the display to a unsigned decimal number (with or without leading zeros)
-    void setDisplayToDecNumber(unsigned long number, byte dots, boolean leadingZeros = true,
+    setDisplayToDecNumber(unsigned long number, byte dots, boolean leadingZeros = true,
     const byte numberFont[] = NUMBER_FONT)
+
     /** Set the display to a signed decimal number (with or without leading zeros)
-    void setDisplayToSignedDecNumber(signed long number, byte dots, boolean leadingZeros = true,
+   setDisplayToSignedDecNumber(signed long number, byte dots, boolean leadingZeros = true,
     const byte numberFont[] = NUMBER_FONT)
+
     /** Set the display to a unsigned binary number
-    void setDisplayToBinNumber(byte number, byte dots,
+    setDisplayToBinNumber(byte number, byte dots,
     const byte numberFont[] = NUMBER_FONT)
 
     /** Set the LED at pos to color (TM1638_COLOR_RED, TM1638_COLOR_GREEN or both)
-    virtual void setLED(byte color, byte pos)
+   setLED(byte color, byte pos)
     /** Set the LEDs. MSB byte for the green LEDs, LSB for the red LEDs
-    void setLEDs(word led)
+    setLEDs(word led)
 
     /** Returns the pressed buttons as a bit set (left to right)
     virtual byte getButtons()
@@ -86,7 +94,7 @@ LiquidCrystal_I2C lcd(0x3F, 16, 2);  // define object of LCD
 */
 Servo MyServo; // define an object of servomotor
 // *********************************************
-// My Servo is a Hitec HS-211 servo
+// My Servo is a Hitec HS-211 servo. Not the fastest but for prototyping it will do.
 // Datasheet shows Max Travel (out of box)202 deg
 // Vario Range will be -5 <> +5
 // range 10 m/s for 200 deg
@@ -125,7 +133,7 @@ unsigned long milstart, milstart2 = 0;
 bool changed;
 
 bool homing = false;
-bool lcdon = true;
+bool lcdon = false;
 bool TM1638on = true;
 
 int altl, spdl, hdgl, bnkl, pitl, varrl, varel, varil, gfol, yawl;
@@ -161,20 +169,23 @@ void setup()
 
   if (TM1638on)
   {
-    tm3.setupDisplay(true, 2);
-    tm4.setupDisplay(true, 2);
-    tm3.clearDisplay();
-    tm4.clearDisplay();
-    tm3.setLEDs(0);
-    tm4.setLEDs(0);
+    tm1.setupDisplay(true, 2);
+    tm2.setupDisplay(true, 2);
+    
+    tm1.clearDisplay();
+    tm2.clearDisplay();
+    
+    tm1.setLEDs(0);
+    tm2.setLEDs(0);
 
   }
   else // its off
   {
-    tm3.clearDisplay();
-    tm4.clearDisplay();
-    tm3.setupDisplay(false, 2);
-    tm4.setupDisplay(false, 2);
+    tm1.clearDisplay();
+    tm2.clearDisplay();
+    
+    tm1.setupDisplay(false, 2);
+    tm2.setupDisplay(false, 2);
   }
 
   Serial.begin(19200);
@@ -182,50 +193,60 @@ void setup()
 
 void loop()
 {
-  if (Serial.available() > 0)
+  if (Serial.available() > 0) // there is data in the buffer
   {
-    if (Serial.available() > 21) // not sure here why it is >21.. I think it should be >=21
+    if (Serial.available() > 21) // wait until it is filled with all the bytes we need. (21 total)
     {
-      if (Serial.read() == 255) //we founf the start serialdata[0]
+      if (Serial.read() == 255) //we found the start serialdata[0]
       {
-        altl = Serial.read();//serialdata[1]
+        altl = Serial.read();//serialdata[1] // read altitute
         alth = Serial.read();//serialdata[2]
-        spdl = Serial.read();//serialdata[3]
+        spdl = Serial.read();//serialdata[3]// read speed
         spdh = Serial.read();//serialdata[4]
-        hdgl = Serial.read();//serialdata[5]
+        hdgl = Serial.read();//serialdata[5]// read compass
         hdgh = Serial.read();//serialdata[6]
-        pitl = Serial.read();//serialdata[7]
+        pitl = Serial.read();//serialdata[7]// read pitch
         pith = Serial.read();//serialdata[8]
-        bnkl = Serial.read();//serialdata[9]
+        bnkl = Serial.read();//serialdata[9]// read bank
         bnkh = Serial.read();//serialdata[10]
-        varrl = Serial.read();//serialdata[11]
+        varrl = Serial.read();//serialdata[11] // read vario raw
         varrh = Serial.read();//serialdata[12]
-        varel = Serial.read();//serialdata[13]
+        varel = Serial.read();//serialdata[13]// read vario elec
         vareh = Serial.read();//serialdata[14]
-        varil = Serial.read();//serialdata[15]
+        varil = Serial.read();//serialdata[15]// read vario integrated
         varih = Serial.read();//serialdata[16]
-        gfol = Serial.read();//serialdata[17]
+        gfol = Serial.read();//serialdata[17]// read Gforce
         gfoh = Serial.read();//serialdata[18]
-        yawl = Serial.read(); //serialdata[19]
+        yawl = Serial.read(); //serialdata[19] // read yawstringangle
         yawh = Serial.read(); //serialdata[20]
-        alt = altl << 8 | alth; //decode altitude
-        spd = spdl << 8 | spdh; //decode speed (kmph)
-        hdg = hdgl << 8 | hdgh; //decode compass
+        //All is read --> convert the bytes into proper data
+        alt = altl << 8 | alth; //decode altitude (m)
+        spd = spdl << 8 | spdh; //decode speed (in kmph)
+        hdg = hdgl << 8 | hdgh; //decode compass (deg)
         pit = (pitl << 8 | pith) - 90; //decode pitch (deg)
         bnk = (bnkl << 8 | bnkh) - 180; ////decode bank (deg)
-        varr = ((varrl << 8 | varrh) / 10.0) - 100.0; //decode raw vario m/s
-        vare = ((varel << 8 | vareh) / 10.0) - 100.0; //decode elec vario m/s
-        vari = ((varil << 8 | varih) / 10.0) - 100.0; //decode integrated vario m/s
+        varr = ((varrl << 8 | varrh) / 10.0) - 100.0; //decode raw vario (m/s)
+        vare = ((varel << 8 | vareh) / 10.0) - 100.0; //decode elec vario (m/s)
+        vari = ((varil << 8 | varih) / 10.0) - 100.0; //decode integrated vario (m/s)
         gfo = ((gfol << 8 | gfoh) / 10.0) - 10.0; //decode gforce
-        yaw = ((yawl << 8 | yawh)) - 50.0; //decode ywa 0.01
+        yaw = ((yawl << 8 | yawh)) - 50.0; //decode yawstringangle (deg)
 
         //debug info
         if (lcdon)
         {
           lcd.setCursor(0, 0);
-          //   lcd.print(spd);
-
+          lcd.print("var:"+String(varr)); //or (String(val, DEC)
+          lcd.setCursor(0, 1);
+          lcd.print("var i:"+String(vari)); // for floats.
         }
+
+        if (TM1638on)
+        {
+          tm1.setDisplayToSignedDecNumber(spd, 0,false);
+          tm2.setDisplayToSignedDecNumber(alt, 0,false);
+          
+          }
+        
       }
     }
   }
@@ -237,18 +258,21 @@ void loop()
   // Set the VARIO
   MyServo.write(varr * StepVario + 100); //
 
+ /*
   if (TM1638on)
   {
-    buttons2 = tm4.getButtons();
-    if (buttons2 != 0)
+    
+    buttons2 = tm2.getButtons();
+    if (buttons2 != 0) //buttons are pressed sir
     {
-      if (buttons2 != oldbuttons2)
+      if (buttons2 != oldbuttons2) //and it is not the same one
       {
         oldbuttons2 = buttons2;
         page2 = buttons2;
-        tm3.clearDisplay();
-        tm4.clearDisplay();
-        tm4.setLEDs(0);
+        tm1.clearDisplay();
+        tm2.clearDisplay();
+        tm1.setLEDs(0);
+        tm2.setLEDs(0);
       }
     }
 
@@ -256,50 +280,38 @@ void loop()
     {
       case 1: //left most button
         {
-          TMDint(tm4, "spd", spd);
-          tm4.setLED(TM1638_COLOR_RED, 0);
-          tm4.setLED(TM1638_COLOR_GREEN, 6);
+          TMDint(tm1, "spd", spd);
           break;
         }
       case 2: // button 2
         {
-          TMDint(tm4, "alt", alt);
-          tm4.setLED(TM1638_COLOR_RED, 1);
-          tm4.setLED(TM1638_COLOR_GREEN, 6);
+          TMDint(tm2, "alt", alt);
           break;
         }
       case 4: // button 3
         {
-          TMDint(tm4, "bank", bnk);
-          tm4.setLED(TM1638_COLOR_RED, 2);
-          tm4.setLED(TM1638_COLOR_GREEN, 6);
+          TMDint(tm2, "bank", bnk);
           break;
         }
       case 8: // button 4
         {
-          TMDint(tm4, "pit", pit);
-          tm4.setLED(TM1638_COLOR_RED, 3);
-          tm4.setLED(TM1638_COLOR_GREEN, 6);
+          TMDint(tm2, "pit", pit);
           break;
         }
       case 16: // button 5
         {
-          TMDint(tm4, "hdg", hdg);
-          tm4.setLED(TM1638_COLOR_RED, 4);
-          tm4.setLED(TM1638_COLOR_GREEN, 6);
+          TMDint(tm2, "hdg", hdg);
           break;
         }
       case 32: // button 6
         {
-          TMDfloat(tm4, "G", gfo);
-          TMDfloat(tm3, "G", gfo);
-          tm4.setLED(TM1638_COLOR_RED, 5);
-          tm4.setLED(TM1638_COLOR_GREEN, 6);
+          TMDfloat(tm1, "G", gfo);
           break;
         }
     }
+   
   }
-
+*/
 
 }//end loop
 

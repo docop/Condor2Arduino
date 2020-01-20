@@ -21,11 +21,12 @@ namespace Condor2Arduino
         public int bank;
         public int pitch;
         public int compass;
+        public int yawstring;
         public double varioraw;
         public double varioint;
         public double varioelec;
         public double gforce;
-        public int yawstring;
+       
     }
     
 
@@ -35,17 +36,19 @@ namespace Condor2Arduino
         public Form1()
         {
             InitializeComponent();
-            Portfiller(); // Get the Serial ports
+            Portfiller(); // Get the available COM ports and fill them in the dropdown
+            comboBoxBaudrate.SelectedIndex = 0;
+            comboBoxComPort.SelectedIndex = 0;
         }  
        
         public SerialPort port; 
         public bool arduino = false;
         public double rad2deg = 57.2957;
        
-        string condordata; 
-        string extract;
+        string condordata=""; 
+        string extract="";
     
-        public PLANEDATA glider,decoded;
+        public PLANEDATA glider,decoded,simulated;
         byte[] serialdata = new byte[21];
         SerialConnect serialconnect = new SerialConnect();
 
@@ -54,16 +57,15 @@ namespace Condor2Arduino
                 if (!serialconnect.connected) //if not connected then..
                 {
                     backgroundWorker1.RunWorkerAsync();
-                    label1.Text = "Connected";
-                    btnConnect.Text = "Disconnect";
+                    btnConnectCondor.Text = "Disconnect";
                     timer1.Enabled = true;
                 }
                 else // we are connected so ..
                 {
                     backgroundWorker2.CancelAsync();
                     backgroundWorker1.CancelAsync();
-                    label1.Text = "disconnected";
-                    btnConnect.Text = "Connect";
+                    labelStatus.Text = "disconnected";
+                    btnConnectCondor.Text = "Connect";
                     serialconnect.CondorDisConnect();
                     timer1.Enabled = false;
                 }
@@ -71,33 +73,32 @@ namespace Condor2Arduino
 
         private void timer1_Tick(object sender, EventArgs e)
         {
-            // if (serialconnect.connected) condordata = serialconnect.GetCondorData();
-            textBox2.Text = condordata;
+            textBox2.Text = condordata; // show the condordata
 
             if (condordata != "-1") // -1 is my primitive exception handler. Send "-1" when something goes wrong.
             {
-                label1.Text = "Receiving data";
-                if (condordata != null)
+                labelStatus.Text = "Receiving data";
+                if (condordata != "") // condordata is filled
                 {
-                    ConvertCondorData(condordata);
-                    MakeGliderData(glider);
-                    
-                    //SendConvertedData(PlaneData);
-                    DecodeData(serialdata);
-                    ShowConvertedData(decoded);
-                    SendByte2Arduino();
+                    ConvertCondorData(condordata); //Break the CondorString into Planedata. Results in a filled glider Struct
+                    MakeGliderData(glider); //Convert the glider struct data into bytes. This data is sent to the arduino
+                    SendByte2Arduino(); // Send the converted Bytes to the Arduino.
+                    DecodeData(serialdata); // For debugging only. Convert the data as it should be converted in the Arduino 
+                    ShowConvertedData(decoded); // For debugging only. Show the converted data on screen
                 }
             }
             else // something went wrong
             {
-                label1.Text = "No Data Received";
+                labelStatus.Text = "No Data Received"; // and no condordata is sent to the arduino
+                
             }
         }
-
-        public void Portfiller()
+        
+      public void Portfiller()
         {
             foreach (string s in SerialPort.GetPortNames())
-                comboBox1.Items.Add(s);
+                comboBoxComPort.Items.Add(s);
+            
         }
 
 
@@ -127,7 +128,7 @@ namespace Condor2Arduino
                     int pos1 = s.IndexOf("altitude="); // posnumber where altitude starts
                     extract = s.Substring(pos1 + 9, 6);
                     int a = Convert.ToInt16((double.Parse(extract, CultureInfo.InvariantCulture.NumberFormat))); // meters afgerond naar beneden 
-                    if (a < 0) a = 0; //I dont want negative or too big altitude. so I limit the range
+                    if (a <= 0) a = 0; //I dont want negative or too big altitude. so I limit the range
                     if (a >= 10000) a = 9999;
                     glider.altitudebaro = a;
                 }
@@ -141,7 +142,7 @@ namespace Condor2Arduino
                     int pos1 = s.IndexOf("bank="); // posnumber where bank starts
                     extract = s.Substring(pos1 + 5, 6);
                     double a = double.Parse(extract, CultureInfo.InvariantCulture.NumberFormat);
-                    Int16 b = (Convert.ToInt16(a * -57.2957)); // I want leftbank to be negative value
+                    Int16 b = (Convert.ToInt16(a * -1 * rad2deg)); // I want leftbank to be negative value
                     glider.bank = b;// range [-180, 180]
                 }
                 catch { }
@@ -153,7 +154,7 @@ namespace Condor2Arduino
                     int pos1 = s.IndexOf("pitch="); // posnumber where pitch starts
                     extract = s.Substring(pos1 + 6, 6);
                     double a = double.Parse(extract, CultureInfo.InvariantCulture.NumberFormat);
-                    Int16 b = (Convert.ToInt16(a * 57.2957)); // convert from rads to degrees
+                    Int16 b = (Convert.ToInt16(a * rad2deg)); // convert from rads to degrees
                     glider.pitch = b; //range [-90, 90]
                 }
                 catch { }
@@ -227,7 +228,8 @@ namespace Condor2Arduino
 
         private void MakeGliderData(PLANEDATA a)
         {
-            //range of byte = 0-255. So if the data exceeds this we are fucked. we-are-fucked. this will not work.. yes it will!
+            // Converts the Planedata structure values into Bytes.
+
             // https://www.thethingsnetwork.org/docs/devices/bytes.html
             //*****************************************************
             //Encode:
@@ -237,7 +239,6 @@ namespace Condor2Arduino
             // Decode: 
             // int myVal = ((int)(MyByte[0]) << 8)+MyByte[1]
             int temp = 0;
-            
             serialdata[0] = 255; // for decoding in Arduino to check where to begin;
             
             //Altitudebaro [1][2] Range [0,9999]
@@ -286,6 +287,7 @@ namespace Condor2Arduino
             temp = Convert.ToInt16(Math.Round(a.yawstring + 50.0)); //decode in Arduino!
             serialdata[19] = Convert.ToByte((temp >> 8) & 0x00FF);
             serialdata[20] = Convert.ToByte(temp & 0x00FF);
+            int lengte = serialdata.Length; // debug only
         }
             // extra info on logic behind this: A Byte cannot hold doubles. it is an unsigned int. 
             // floats are multiplied to get rid of the decima: 1.45 * 100 = 145
@@ -318,7 +320,6 @@ namespace Condor2Arduino
             textBoxDecodeVarint.Text = a.varioint.ToString();
             textBoxDecodeVarraw.Text = a.varioraw.ToString();
             textBoxDecodePitch.Text = a.pitch.ToString();
-            
             textBoxyawstring.Text = a.yawstring.ToString();
         }
 
@@ -326,18 +327,20 @@ namespace Condor2Arduino
         {
             try
             {
-                if (Button_Arduino.Text == "Connect")
+                if (BtnConnectArduino.Text == "Connect")
                 {
-                    port = new SerialPort(comboBox1.Text, Convert.ToInt32(comboBox2.Text), Parity.None, 8, StopBits.One);
+                    port = new SerialPort(comboBoxComPort.Text, Convert.ToInt32(comboBoxBaudrate.Text), Parity.None, 8, StopBits.One);
                     port.Open();
-                    Button_Arduino.Text = "Disconnect";
+                    BtnConnectArduino.Text = "Disconnect";
+                    labelStatusArduino.Text = "Connected";
                     arduino = true;
                 }
                 else
                 {
                     port.Close();
                     port.Dispose();
-                    Button_Arduino.Text = "Connect";
+                    BtnConnectArduino.Text = "Connect";
+                    labelStatusArduino.Text = "Disconnected";
                     arduino = false;
                 }
             }
@@ -346,16 +349,21 @@ namespace Condor2Arduino
          
         private void SendByte2Arduino()
          {
-             if (arduino) // if connected to arduino
+             try
              {
-                 port.Write(serialdata, 0, 21); // send it
+                 if (arduino) // if connected to arduino
+                 {
+                     port.Write(serialdata, 0, 21); // send it
+                     labelStatusArduino.Text = "sending data";
+                 }
              }
+             catch { labelStatusArduino.Text = "error connection Arduino"; }
          }    
         private void backgroundWorker1_DoWork(object sender, DoWorkEventArgs e)
         {
             if (!serialconnect.connected)
             {
-                serialconnect.CondorConnect(Convert.ToInt32(textBox1.Text));
+                serialconnect.CondorConnect(Convert.ToInt32(textBoxPortCondor.Text));
                 backgroundWorker2.RunWorkerAsync();
             }
         }
