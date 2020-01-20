@@ -243,7 +243,7 @@ void loop()
         if (TM1638on)
         {
           tm1.setDisplayToSignedDecNumber(spd, 0,false);
-          tm2.setDisplayToSignedDecNumber(alt, 0,false);
+          tm2.setDisplayToSignedDecNumber(bnk, 0,false);
           
           }
         
