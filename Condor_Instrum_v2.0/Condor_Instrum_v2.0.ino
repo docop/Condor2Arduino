@@ -217,7 +217,7 @@ void loop()
         varih = Serial.read();//serialdata[16]
         gfol = Serial.read();//serialdata[17]// read Gforce
         gfoh = Serial.read();//serialdata[18]
-        yawl = Serial.read(); //serialdata[19] // read yawstringangle
+        yawl = Serial.read(); //serialdata[19] // read yawstringangle 
         yawh = Serial.read(); //serialdata[20]
         //All is read --> convert the bytes into proper data
         alt = altl << 8 | alth; //decode altitude (m)
@@ -229,7 +229,7 @@ void loop()
         vare = ((varel << 8 | vareh) / 10.0) - 100.0; //decode elec vario (m/s)
         vari = ((varil << 8 | varih) / 10.0) - 100.0; //decode integrated vario (m/s)
         gfo = ((gfol << 8 | gfoh) / 10.0) - 10.0; //decode gforce
-        yaw = ((yawl << 8 | yawh)) - 50.0; //decode yawstringangle (deg)
+        yaw = ((yawl << 8 | yawh)) - 50.0; //decode yawstringangle (deg) [-99,99] but more in the range of [-10 , 10]
 
         //debug info
         if (lcdon)
@@ -243,7 +243,7 @@ void loop()
         if (TM1638on)
         {
           tm1.setDisplayToSignedDecNumber(spd, 0,false);
-          tm2.setDisplayToSignedDecNumber(bnk, 0,false);
+          tm2.setDisplayToSignedDecNumber(yaw, 0,false);
           
           }
         
@@ -257,7 +257,7 @@ void loop()
 
   // Set the VARIO
   MyServo.write(varr * StepVario + 100); //
-
+  YawLeds(tm2, yaw);
  /*
   if (TM1638on)
   {
@@ -314,6 +314,22 @@ void loop()
 */
 
 }//end loop
+void YawLeds(TM1638 m, double a)
+{ 
+// werkt niet. flasht teveel
+m.setLEDs(0);
+ 
+if (a<-4) m.setLED(TM1638_COLOR_GREEN,0);
+if (a<-2 && a >=-4) m.setLED(TM1638_COLOR_GREEN,1);
+if (a<-1 && a >=-2) m.setLED(TM1638_COLOR_GREEN,2);
+if (a<0 && a >=-1) m.setLED(TM1638_COLOR_GREEN,3);
+
+if (a>4) m.setLED(TM1638_COLOR_GREEN,7);
+if (a>2 && a <=4) m.setLED(TM1638_COLOR_GREEN,6);
+if (a>1 && a <=2) m.setLED(TM1638_COLOR_GREEN,5);
+if (a>0 && a <=1) m.setLED(TM1638_COLOR_GREEN,4);
+}
+
 
 void TMDfloat(TM1638 m, String v, double val)
 {

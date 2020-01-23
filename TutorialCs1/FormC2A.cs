@@ -284,10 +284,11 @@ namespace Condor2Arduino
             serialdata[18] = Convert.ToByte(temp & 0x00FF);
             
             //Yawstring [19][20] Range [-50, 50]-->[0-100]
-            temp = Convert.ToInt16(Math.Round(a.yawstring + 50.0)); //decode in Arduino!
-            serialdata[19] = Convert.ToByte((temp >> 8) & 0x00FF);
-            serialdata[20] = Convert.ToByte(temp & 0x00FF);
-            int lengte = serialdata.Length; // debug only
+             temp = Convert.ToInt16(Math.Round(a.yawstring + 50.0)); //decode in Arduino!
+             serialdata[19] = Convert.ToByte((temp >> 8) & 0x00FF);
+             serialdata[20] = Convert.ToByte(temp & 0x00FF);
+           
+            int lengte = serialdata.Length; // for debug only
         }
             // extra info on logic behind this: A Byte cannot hold doubles. it is an unsigned int. 
             // floats are multiplied to get rid of the decima: 1.45 * 100 = 145
