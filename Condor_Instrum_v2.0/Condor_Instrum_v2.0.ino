@@ -17,6 +17,8 @@
 
 TM1638 tm1(DIO_TM, CLOCK_TM, STROBE_TM1);
 TM1638 tm2(DIO_TM, CLOCK_TM, STROBE_TM2);
+word leds [17] = {0, 256, 768, 1792, 3840, 7936, 16128, 32512, 65280, 1, 3, 7, 15, 31, 63, 127, 255};
+//https://tronixstuff.com/2012/03/11/arduino-and-tm1638-led-display-modules/
 
 /*Set the display (segments and LEDs) active or off and intensity (range from 0-7).
   setupDisplay(boolean active, byte intensity)
@@ -169,23 +171,26 @@ void setup()
 
   if (TM1638on)
   {
-    tm1.setupDisplay(true, 2);
-    tm2.setupDisplay(true, 2);
-    
+    tm1.setupDisplay(true, 3);
+    tm2.setupDisplay(true, 3);
+
     tm1.clearDisplay();
     tm2.clearDisplay();
-    
-    tm1.setLEDs(0);
-    tm2.setLEDs(0);
 
+
+    tm2.setLEDs(0xFF00);
+    byte values[] = { 99, 99, 99, 99, 99, 99, 99, 99 };
+    tm1.setDisplay(values);
+    tm2.setDisplay(values);
   }
   else // its off
   {
-    tm1.clearDisplay();
+    tm1.clearDisplay(); // clears the display, ot the leds
     tm2.clearDisplay();
-    
+
     tm1.setupDisplay(false, 2);
     tm2.setupDisplay(false, 2);
+
   }
 
   Serial.begin(19200);
@@ -217,7 +222,7 @@ void loop()
         varih = Serial.read();//serialdata[16]
         gfol = Serial.read();//serialdata[17]// read Gforce
         gfoh = Serial.read();//serialdata[18]
-        yawl = Serial.read(); //serialdata[19] // read yawstringangle 
+        yawl = Serial.read(); //serialdata[19] // read yawstringangle
         yawh = Serial.read(); //serialdata[20]
         //All is read --> convert the bytes into proper data
         alt = altl << 8 | alth; //decode altitude (m)
@@ -235,99 +240,105 @@ void loop()
         if (lcdon)
         {
           lcd.setCursor(0, 0);
-          lcd.print("var:"+String(varr)); //or (String(val, DEC)
+          lcd.print("var:" + String(varr)); //or (String(val, DEC)
           lcd.setCursor(0, 1);
-          lcd.print("var i:"+String(vari)); // for floats.
+          lcd.print("var i:" + String(vari)); // for floats.
         }
 
         if (TM1638on)
         {
-          tm1.setDisplayToSignedDecNumber(spd, 0,false);
-          tm2.setDisplayToSignedDecNumber(yaw, 0,false);
-          
-          }
-        
+          tm1.setDisplayToSignedDecNumber(alt, 0, false);
+          tm2.setDisplayToSignedDecNumber(spd, 0, false);
+          // Set the Yawstring
+          YawLeds (tm2, yaw);
+        }
       }
     }
   }
 
   //Set the Speeddial
+  //*****************
   ACSpeedStepper.moveTo(spd * stpSpeed); // where to go
   ACSpeedStepper.run(); //go
 
   // Set the VARIO
+  //*****************
   MyServo.write(varr * StepVario + 100); //
-  YawLeds(tm2, yaw);
- /*
-  if (TM1638on)
-  {
-    
-    buttons2 = tm2.getButtons();
-    if (buttons2 != 0) //buttons are pressed sir
-    {
-      if (buttons2 != oldbuttons2) //and it is not the same one
-      {
-        oldbuttons2 = buttons2;
-        page2 = buttons2;
-        tm1.clearDisplay();
-        tm2.clearDisplay();
-        tm1.setLEDs(0);
-        tm2.setLEDs(0);
-      }
-    }
 
-    switch (page2)
+  /*
+    if (TM1638on)
     {
-      case 1: //left most button
-        {
-          TMDint(tm1, "spd", spd);
-          break;
-        }
-      case 2: // button 2
-        {
-          TMDint(tm2, "alt", alt);
-          break;
-        }
-      case 4: // button 3
-        {
-          TMDint(tm2, "bank", bnk);
-          break;
-        }
-      case 8: // button 4
-        {
-          TMDint(tm2, "pit", pit);
-          break;
-        }
-      case 16: // button 5
-        {
-          TMDint(tm2, "hdg", hdg);
-          break;
-        }
-      case 32: // button 6
-        {
-          TMDfloat(tm1, "G", gfo);
-          break;
-        }
+
+     buttons2 = tm2.getButtons();
+     if (buttons2 != 0) //buttons are pressed sir
+     {
+       if (buttons2 != oldbuttons2) //and it is not the same one
+       {
+         oldbuttons2 = buttons2;
+         page2 = buttons2;
+         tm1.clearDisplay();
+         tm2.clearDisplay();
+         tm1.setLEDs(0);
+         tm2.setLEDs(0);
+       }
+     }
+
+     switch (page2)
+     {
+       case 1: //left most button
+         {
+           TMDint(tm1, "spd", spd);
+           break;
+         }
+       case 2: // button 2
+         {
+           TMDint(tm2, "alt", alt);
+           break;
+         }
+       case 4: // button 3
+         {
+           TMDint(tm2, "bank", bnk);
+           break;
+         }
+       case 8: // button 4
+         {
+           TMDint(tm2, "pit", pit);
+           break;
+         }
+       case 16: // button 5
+         {
+           TMDint(tm2, "hdg", hdg);
+           break;
+         }
+       case 32: // button 6
+         {
+           TMDfloat(tm1, "G", gfo);
+           break;
+         }
+     }
+
     }
-   
-  }
-*/
+  */
 
 }//end loop
-void YawLeds(TM1638 m, double a)
-{ 
-// werkt niet. flasht teveel
-m.setLEDs(0);
- 
-if (a<-4) m.setLED(TM1638_COLOR_GREEN,0);
-if (a<-2 && a >=-4) m.setLED(TM1638_COLOR_GREEN,1);
-if (a<-1 && a >=-2) m.setLED(TM1638_COLOR_GREEN,2);
-if (a<0 && a >=-1) m.setLED(TM1638_COLOR_GREEN,3);
 
-if (a>4) m.setLED(TM1638_COLOR_GREEN,7);
-if (a>2 && a <=4) m.setLED(TM1638_COLOR_GREEN,6);
-if (a>1 && a <=2) m.setLED(TM1638_COLOR_GREEN,5);
-if (a>0 && a <=1) m.setLED(TM1638_COLOR_GREEN,4);
+void YawLeds(TM1638 m, double a)
+{
+  // Set the Yawstring
+  //*****************
+  //https://www.mathsisfun.com/binary-decimal-hexadecimal-converter.html
+
+  if (a == 0) m.setLEDs(0);
+  //Yaw Right:
+  if (a > 0.0 && a < 2.0) m.setLEDs(4096);
+  if (a >= 2.0 && a < 4.0) m.setLEDs(8192);
+  if (a >= 4.0 && a < 6.0) m.setLEDs(16384);
+  if (a >= 8.0) m.setLEDs(32768);
+  //Yaw Left:
+  if (a <= -8.0) m.setLEDs(256);
+  if (a >= -6.0 && a < -4.0) m.setLEDs(512);
+  if (a >= -4.0 && a < -2.0) m.setLEDs(1024);
+  if (a >= -2.0 && a < 0.0) m.setLEDs(2048);
 }
 
 
