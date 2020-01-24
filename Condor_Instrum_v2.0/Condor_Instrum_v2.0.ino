@@ -109,8 +109,12 @@ Servo MyServo2; // define an object of servomotor
 // + 5 m/s = 5 * 20 + 100 = 200
 // -5 m/s = -5 * 20 + 100 = 0
 // X m/s = X * StpVario + 100;
+// 1 step = 0,05 m/s
+//
+//-1.3 m/s = -1.3 * 20 +100 = -26+100=74
+//-1.4 m/s = -1.4 * 20 + 100 =-28+100=72
 // *********************************************
-int StepVario = 20; // 1 ms/s = 20 steps on the servo
+int StepVario = 20; // 1 ms/s = 20 steps on the servo --> 0.1 m/s = 2 steps on the servo
 
 AccelStepper ACSpeedStepper(AccelStepper::FULL4WIRE, 8, 10, 9, 11); // refer to the accelstepper library how to set up your stepepr motor
 // 12 rpm. rotations per minute.
@@ -260,6 +264,9 @@ void loop()
           tm1.setDisplayToSignedDecNumber(alt, 0, false);
           tm2.setDisplayToSignedDecNumber(spd, 0, false);
           tm3.setDisplayToSignedDecNumber(hdg, 0, false);
+          tm1.setLEDs(0);
+          tm3.setLEDs(0);
+          
           // Set the Yawstring
           YawLeds (tm2, yaw);
         }
@@ -274,8 +281,8 @@ void loop()
 
   // Set the VARIO
   //*****************
-  MyServo.write(varr * StepVario + 100); //
-  MyServo2.write(varr * StepVario + 100); //
+  MyServo.write(varr * StepVario + 100); //0.1 m/s *20 +100 = 102
+  MyServo2.write(vari * StepVario + 100); //
   /*
     if (TM1638on)
     {
