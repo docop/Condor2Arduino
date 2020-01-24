@@ -11,12 +11,15 @@
 #define Servopin 7        // Pin 7 PWM on Arduino
 #define  STROBE_TM1 4     // STRB0 of board1 is om pin 4
 #define  STROBE_TM2 5     // STRB1 of board 2 is on pin 5
+#define  STROBE_TM3 12     // STRB1 of board 3 is on pin 12
+
 #define  CLOCK_TM 2       // CLK of all boards is on pin 2
 #define  DIO_TM 3         // DIO of all boards is on pin 3
 #define TM_BRT 0x02       // set the brightness of board (0-7)
 
 TM1638 tm1(DIO_TM, CLOCK_TM, STROBE_TM1);
 TM1638 tm2(DIO_TM, CLOCK_TM, STROBE_TM2);
+TM1638 tm3(DIO_TM, CLOCK_TM, STROBE_TM3);
 word leds [17] = {0, 256, 768, 1792, 3840, 7936, 16128, 32512, 65280, 1, 3, 7, 15, 31, 63, 127, 255};
 //https://tronixstuff.com/2012/03/11/arduino-and-tm1638-led-display-modules/
 
@@ -95,6 +98,7 @@ LiquidCrystal_I2C lcd(0x3F, 16, 2);  // define object of LCD
 
 */
 Servo MyServo; // define an object of servomotor
+Servo MyServo2; // define an object of servomotor
 // *********************************************
 // My Servo is a Hitec HS-211 servo. Not the fastest but for prototyping it will do.
 // Datasheet shows Max Travel (out of box)202 deg
@@ -148,6 +152,8 @@ void setup()
 {
   MyServo.attach(Servopin); // my servo is attached to pin 7
   MyServo.write(100);// Range is 0-200. Zero point is halfway = 100
+  MyServo2.attach(6); // my s2nd servo is attached to pin 6
+  MyServo2.write(100);// Range is 0-200. Zero point is halfway = 100
 
   ACSpeedStepper.setMaxSpeed(400.0); //maxium number of steps per second. must be >0. my motor: 5 seconds for 2048 steps. == 2048/5 = 409,6 steps per sec
   ACSpeedStepper.setAcceleration(400.0); // I dont want accel/decel
@@ -173,15 +179,19 @@ void setup()
   {
     tm1.setupDisplay(true, 3);
     tm2.setupDisplay(true, 3);
+    tm3.setupDisplay(true, 3);
 
     tm1.clearDisplay();
     tm2.clearDisplay();
+    tm3.clearDisplay();
 
-
+    tm1.setLEDs(0xFF00);
     tm2.setLEDs(0xFF00);
+    tm3.setLEDs(0xFF00);
     byte values[] = { 99, 99, 99, 99, 99, 99, 99, 99 };
     tm1.setDisplay(values);
     tm2.setDisplay(values);
+    tm3.setDisplay(values);
   }
   else // its off
   {
@@ -249,6 +259,7 @@ void loop()
         {
           tm1.setDisplayToSignedDecNumber(alt, 0, false);
           tm2.setDisplayToSignedDecNumber(spd, 0, false);
+          tm3.setDisplayToSignedDecNumber(hdg, 0, false);
           // Set the Yawstring
           YawLeds (tm2, yaw);
         }
@@ -264,7 +275,7 @@ void loop()
   // Set the VARIO
   //*****************
   MyServo.write(varr * StepVario + 100); //
-
+  MyServo2.write(varr * StepVario + 100); //
   /*
     if (TM1638on)
     {
