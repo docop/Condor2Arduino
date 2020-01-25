@@ -113,21 +113,17 @@ Servo MyServo2; // define an object of servomotor
 //
 //-1.3 m/s = -1.3 * 20 +100 = -26+100=74
 //-1.4 m/s = -1.4 * 20 + 100 =-28+100=72
-// *********************************************
+// *********************************************600
 int StepVario = 20; // 1 ms/s = 20 steps on the servo --> 0.1 m/s = 2 steps on the servo
 
-AccelStepper ACSpeedStepper(AccelStepper::FULL4WIRE, 8, 10, 9, 11); // refer to the accelstepper library how to set up your stepepr motor
-// 12 rpm. rotations per minute.
-// 1 rotation is 5 sec with my motor (i timed it).
-// 60/5 = 12 revolutions per minute.
+AccelStepper ACSpeedStepper(AccelStepper::FULL4WIRE, 8, 10, 9, 11); 
 // *********************************************
-// 1 revolution = 195 km/h (for an ASK-21 gauge)
+// 1 revolution = 200 km/h (for my gauge)
 // 1 rev = 2048 steps (for my steppermotor)
-// 2048 steps = 195 km/h
-//  2048/195 = 1 km/h results in
-// 10,50 steps = 1 km/h
+// 2048 steps = 200 km/h
+// 2048/200 = 1 km/h results in 10,24 steps per 1 km/h
 // *********************************************
-float stpSpeed = 10.50; //how many steps per km/h
+float stpSpeed = 10.24; //how many steps per km/h
 
 byte buttons1 = 0;
 byte buttons2 = 0;
@@ -159,12 +155,9 @@ void setup()
   MyServo2.attach(6); // my s2nd servo is attached to pin 6
   MyServo2.write(100);// Range is 0-200. Zero point is halfway = 100
 
-  ACSpeedStepper.setMaxSpeed(400.0); //maxium number of steps per second. must be >0. my motor: 5 seconds for 2048 steps. == 2048/5 = 409,6 steps per sec
-  ACSpeedStepper.setAcceleration(400.0); // I dont want accel/decel
-  ACSpeedStepper.setSpeed(400.0); // set it at max
+  ACSpeedStepper.setMaxSpeed(600.0); //maxium number of steps per second. must be >0. my motor: 3 seconds for 2048 steps. == 2048/3 = 620.6 steps per sec
+  ACSpeedStepper.setAcceleration(1000.0); // I dont want accel/decel
   ACSpeedStepper.setCurrentPosition(0); // this needs to be in a homing routine. For now I assume the current position = 0 km/h
-  ACSpeedStepper.moveTo(10); // where to go
-  ACSpeedStepper.run(); //go
 
   if (lcdon)
   {
@@ -276,6 +269,7 @@ void loop()
 
   //Set the Speeddial
   //*****************
+  if (ACSpeedStepper.distanceToGo() == 0)
   ACSpeedStepper.moveTo(spd * stpSpeed); // where to go
   ACSpeedStepper.run(); //go
 
