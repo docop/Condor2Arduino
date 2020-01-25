@@ -116,7 +116,7 @@ Servo MyServo2; // define an object of servomotor
 // *********************************************600
 int StepVario = 20; // 1 ms/s = 20 steps on the servo --> 0.1 m/s = 2 steps on the servo
 
-AccelStepper ACSpeedStepper(AccelStepper::FULL4WIRE, 8, 10, 9, 11); 
+AccelStepper ACSpeedStepper(AccelStepper::FULL4WIRE, 8, 10, 9, 11);
 // *********************************************
 // 1 revolution = 200 km/h (for my gauge)
 // 1 rev = 2048 steps (for my steppermotor)
@@ -156,7 +156,7 @@ void setup()
   MyServo2.write(100);// Range is 0-200. Zero point is halfway = 100
 
   ACSpeedStepper.setMaxSpeed(600.0); //maxium number of steps per second. must be >0. my motor: 3 seconds for 2048 steps. == 2048/3 = 620.6 steps per sec
-  ACSpeedStepper.setAcceleration(1000.0); // I dont want accel/decel
+  ACSpeedStepper.setAcceleration(600.0); // I dont want accel/decel
   ACSpeedStepper.setCurrentPosition(0); // this needs to be in a homing routine. For now I assume the current position = 0 km/h
 
   if (lcdon)
@@ -174,9 +174,9 @@ void setup()
 
   if (TM1638on)
   {
-    tm1.setupDisplay(true, 3);
-    tm2.setupDisplay(true, 3);
-    tm3.setupDisplay(true, 3);
+    tm1.setupDisplay(true, 1);
+    tm2.setupDisplay(true, 1);
+    tm3.setupDisplay(true, 1);
 
     tm1.clearDisplay();
     tm2.clearDisplay();
@@ -243,6 +243,12 @@ void loop()
         gfo = ((gfol << 8 | gfoh) / 10.0) - 10.0; //decode gforce
         yaw = ((yawl << 8 | yawh)) - 50.0; //decode yawstringangle (deg) [-99,99] but more in the range of [-10 , 10]
 
+        int temp = spd * stpSpeed;
+        ACSpeedStepper.moveTo(temp); // where to go
+        
+        if (vari < -5) vari = -4.9;
+        if (vari > 5) vari = 4.9;
+
         //debug info
         if (lcdon)
         {
@@ -259,7 +265,7 @@ void loop()
           tm3.setDisplayToSignedDecNumber(hdg, 0, false);
           tm1.setLEDs(0);
           tm3.setLEDs(0);
-          
+
           // Set the Yawstring
           YawLeds (tm2, yaw);
         }
@@ -269,8 +275,7 @@ void loop()
 
   //Set the Speeddial
   //*****************
-  if (ACSpeedStepper.distanceToGo() == 0)
-  ACSpeedStepper.moveTo(spd * stpSpeed); // where to go
+
   ACSpeedStepper.run(); //go
 
   // Set the VARIO
