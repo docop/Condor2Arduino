@@ -11,12 +11,15 @@
 #define Servopin 7        // Pin 7 PWM on Arduino
 #define  STROBE_TM1 4     // STRB0 of board1 is om pin 4
 #define  STROBE_TM2 5     // STRB1 of board 2 is on pin 5
+#define  STROBE_TM3 12     // STRB1 of board 3 is on pin 12
+
 #define  CLOCK_TM 2       // CLK of all boards is on pin 2
 #define  DIO_TM 3         // DIO of all boards is on pin 3
 #define TM_BRT 0x02       // set the brightness of board (0-7)
 
 TM1638 tm1(DIO_TM, CLOCK_TM, STROBE_TM1);
 TM1638 tm2(DIO_TM, CLOCK_TM, STROBE_TM2);
+TM1638 tm3(DIO_TM, CLOCK_TM, STROBE_TM3);
 word leds [17] = {0, 256, 768, 1792, 3840, 7936, 16128, 32512, 65280, 1, 3, 7, 15, 31, 63, 127, 255};
 //https://tronixstuff.com/2012/03/11/arduino-and-tm1638-led-display-modules/
 
@@ -95,6 +98,7 @@ LiquidCrystal_I2C lcd(0x3F, 16, 2);  // define object of LCD
 
 */
 Servo MyServo; // define an object of servomotor
+Servo MyServo2; // define an object of servomotor
 // *********************************************
 // My Servo is a Hitec HS-211 servo. Not the fastest but for prototyping it will do.
 // Datasheet shows Max Travel (out of box)202 deg
@@ -105,21 +109,21 @@ Servo MyServo; // define an object of servomotor
 // + 5 m/s = 5 * 20 + 100 = 200
 // -5 m/s = -5 * 20 + 100 = 0
 // X m/s = X * StpVario + 100;
-// *********************************************
-int StepVario = 20; // 1 ms/s = 20 steps on the servo
+// 1 step = 0,05 m/s
+//
+//-1.3 m/s = -1.3 * 20 +100 = -26+100=74
+//-1.4 m/s = -1.4 * 20 + 100 =-28+100=72
+// *********************************************600
+int StepVario = 20; // 1 ms/s = 20 steps on the servo --> 0.1 m/s = 2 steps on the servo
 
-AccelStepper ACSpeedStepper(AccelStepper::FULL4WIRE, 8, 10, 9, 11); // refer to the accelstepper library how to set up your stepepr motor
-// 12 rpm. rotations per minute.
-// 1 rotation is 5 sec with my motor (i timed it).
-// 60/5 = 12 revolutions per minute.
+AccelStepper ACSpeedStepper(AccelStepper::FULL4WIRE, 8, 10, 9, 11);
 // *********************************************
-// 1 revolution = 195 km/h (for an ASK-21 gauge)
+// 1 revolution = 200 km/h (for my gauge)
 // 1 rev = 2048 steps (for my steppermotor)
-// 2048 steps = 195 km/h
-//  2048/195 = 1 km/h results in
-// 10,50 steps = 1 km/h
+// 2048 steps = 200 km/h
+// 2048/200 = 1 km/h results in 10,24 steps per 1 km/h
 // *********************************************
-float stpSpeed = 10.50; //how many steps per km/h
+float stpSpeed = 10.24; //how many steps per km/h
 
 byte buttons1 = 0;
 byte buttons2 = 0;
@@ -148,13 +152,12 @@ void setup()
 {
   MyServo.attach(Servopin); // my servo is attached to pin 7
   MyServo.write(100);// Range is 0-200. Zero point is halfway = 100
+  MyServo2.attach(6); // my s2nd servo is attached to pin 6
+  MyServo2.write(100);// Range is 0-200. Zero point is halfway = 100
 
-  ACSpeedStepper.setMaxSpeed(400.0); //maxium number of steps per second. must be >0. my motor: 5 seconds for 2048 steps. == 2048/5 = 409,6 steps per sec
-  ACSpeedStepper.setAcceleration(400.0); // I dont want accel/decel
-  ACSpeedStepper.setSpeed(400.0); // set it at max
+  ACSpeedStepper.setMaxSpeed(600.0); //maxium number of steps per second. must be >0. my motor: 3 seconds for 2048 steps. == 2048/3 = 620.6 steps per sec
+  ACSpeedStepper.setAcceleration(600.0); // I dont want accel/decel
   ACSpeedStepper.setCurrentPosition(0); // this needs to be in a homing routine. For now I assume the current position = 0 km/h
-  ACSpeedStepper.moveTo(10); // where to go
-  ACSpeedStepper.run(); //go
 
   if (lcdon)
   {
@@ -171,17 +174,21 @@ void setup()
 
   if (TM1638on)
   {
-    tm1.setupDisplay(true, 3);
-    tm2.setupDisplay(true, 3);
+    tm1.setupDisplay(true, 1);
+    tm2.setupDisplay(true, 1);
+    tm3.setupDisplay(true, 1);
 
     tm1.clearDisplay();
     tm2.clearDisplay();
+    tm3.clearDisplay();
 
-
+    tm1.setLEDs(0xFF00);
     tm2.setLEDs(0xFF00);
+    tm3.setLEDs(0xFF00);
     byte values[] = { 99, 99, 99, 99, 99, 99, 99, 99 };
     tm1.setDisplay(values);
     tm2.setDisplay(values);
+    tm3.setDisplay(values);
   }
   else // its off
   {
@@ -236,6 +243,12 @@ void loop()
         gfo = ((gfol << 8 | gfoh) / 10.0) - 10.0; //decode gforce
         yaw = ((yawl << 8 | yawh)) - 50.0; //decode yawstringangle (deg) [-99,99] but more in the range of [-10 , 10]
 
+        int temp = spd * stpSpeed;
+        ACSpeedStepper.moveTo(temp); // where to go
+        
+        if (vari < -5) vari = -4.9;
+        if (vari > 5) vari = 4.9;
+
         //debug info
         if (lcdon)
         {
@@ -249,6 +262,10 @@ void loop()
         {
           tm1.setDisplayToSignedDecNumber(alt, 0, false);
           tm2.setDisplayToSignedDecNumber(spd, 0, false);
+          tm3.setDisplayToSignedDecNumber(hdg, 0, false);
+          tm1.setLEDs(0);
+          tm3.setLEDs(0);
+
           // Set the Yawstring
           YawLeds (tm2, yaw);
         }
@@ -258,13 +275,13 @@ void loop()
 
   //Set the Speeddial
   //*****************
-  ACSpeedStepper.moveTo(spd * stpSpeed); // where to go
+
   ACSpeedStepper.run(); //go
 
   // Set the VARIO
   //*****************
-  MyServo.write(varr * StepVario + 100); //
-
+  MyServo.write(varr * StepVario + 100); //0.1 m/s *20 +100 = 102
+  MyServo2.write(vari * StepVario + 100); //
   /*
     if (TM1638on)
     {
