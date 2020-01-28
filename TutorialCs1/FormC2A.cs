@@ -39,6 +39,7 @@ namespace Condor2Arduino
             Portfiller(); // Get the available COM ports and fill them in the dropdown
             comboBoxBaudrate.SelectedIndex = 0;
             comboBoxComPort.SelectedIndex = 0;
+            labelTick.Text = trackBar1.Value.ToString();
         }  
        
         public SerialPort port; 
@@ -375,6 +376,12 @@ namespace Condor2Arduino
             {
                 condordata = serialconnect.GetCondorData();
             }
+        }
+
+        private void trackBar1_Scroll(object sender, EventArgs e)
+        {
+            labelTick.Text = trackBar1.Value.ToString();
+            timer1.Interval = trackBar1.Value;
         }
        
     }

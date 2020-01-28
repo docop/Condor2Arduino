@@ -67,9 +67,12 @@
             this.BtnConnectArduino = new System.Windows.Forms.Button();
             this.comboBoxBaudrate = new System.Windows.Forms.ComboBox();
             this.labelStatusArduino = new System.Windows.Forms.Label();
+            this.trackBar1 = new System.Windows.Forms.TrackBar();
+            this.labelTick = new System.Windows.Forms.Label();
             this.groupBox1.SuspendLayout();
             this.groupBoxSerial.SuspendLayout();
             this.groupBoxConversie.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.trackBar1)).BeginInit();
             this.SuspendLayout();
             // 
             // textBoxPortCondor
@@ -364,7 +367,7 @@
             // 
             // timer1
             // 
-            this.timer1.Interval = 50;
+            this.timer1.Interval = 10;
             this.timer1.Tick += new System.EventHandler(this.timer1_Tick);
             // 
             // backgroundWorker1
@@ -417,11 +420,35 @@
             this.labelStatusArduino.TabIndex = 9;
             this.labelStatusArduino.Text = "status:";
             // 
+            // trackBar1
+            // 
+            this.trackBar1.Location = new System.Drawing.Point(304, 476);
+            this.trackBar1.Maximum = 300;
+            this.trackBar1.Minimum = 10;
+            this.trackBar1.Name = "trackBar1";
+            this.trackBar1.Size = new System.Drawing.Size(246, 45);
+            this.trackBar1.SmallChange = 20;
+            this.trackBar1.TabIndex = 25;
+            this.trackBar1.TickFrequency = 20;
+            this.trackBar1.Value = 10;
+            this.trackBar1.Scroll += new System.EventHandler(this.trackBar1_Scroll);
+            // 
+            // labelTick
+            // 
+            this.labelTick.AutoSize = true;
+            this.labelTick.Location = new System.Drawing.Point(301, 460);
+            this.labelTick.Name = "labelTick";
+            this.labelTick.Size = new System.Drawing.Size(35, 13);
+            this.labelTick.TabIndex = 26;
+            this.labelTick.Text = "label1";
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(565, 644);
+            this.Controls.Add(this.labelTick);
+            this.Controls.Add(this.trackBar1);
             this.Controls.Add(this.labelStatusArduino);
             this.Controls.Add(this.comboBoxBaudrate);
             this.Controls.Add(this.BtnConnectArduino);
@@ -436,6 +463,7 @@
             this.groupBoxSerial.PerformLayout();
             this.groupBoxConversie.ResumeLayout(false);
             this.groupBoxConversie.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.trackBar1)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -481,6 +509,8 @@
         private System.Windows.Forms.Button BtnConnectArduino;
         private System.Windows.Forms.ComboBox comboBoxBaudrate;
         private System.Windows.Forms.Label labelStatusArduino;
+        private System.Windows.Forms.TrackBar trackBar1;
+        private System.Windows.Forms.Label labelTick;
     }
 }
 
