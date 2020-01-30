@@ -430,7 +430,7 @@
             this.trackBar1.SmallChange = 20;
             this.trackBar1.TabIndex = 25;
             this.trackBar1.TickFrequency = 20;
-            this.trackBar1.Value = 10;
+            this.trackBar1.Value = 25;
             this.trackBar1.Scroll += new System.EventHandler(this.trackBar1_Scroll);
             // 
             // labelTick
