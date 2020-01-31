@@ -26,7 +26,6 @@ namespace Condor2Arduino
         public double varioint;
         public double varioelec;
         public double gforce;
-       
     }
     
 
@@ -40,10 +39,10 @@ namespace Condor2Arduino
             comboBoxBaudrate.SelectedIndex = 0;
             comboBoxComPort.SelectedIndex = 0;
             labelTick.Text = trackBar1.Value.ToString();
+            timer1.Interval = trackBar1.Value;
         }  
        
-        public SerialPort port; 
-        public bool arduino = false;
+        
         public double rad2deg = 57.2957;
        
         string condordata=""; 
@@ -51,11 +50,12 @@ namespace Condor2Arduino
     
         public PLANEDATA glider,decoded,simulated;
         byte[] serialdata = new byte[21];
-        SerialConnect serialconnect = new SerialConnect();
+        CondorConnect condorconnect = new CondorConnect();
+        Send2Arduino send2arduino = new Send2Arduino();
 
         public void btnConnect_Click(object sender, EventArgs e) //event when buttonConnect UDP is clicked
         {
-                if (!serialconnect.connected) //if not connected then..
+                if (!condorconnect.connected) //if not connected then..
                 {
                     backgroundWorker1.RunWorkerAsync();
                     btnConnectCondor.Text = "Disconnect";
@@ -67,7 +67,7 @@ namespace Condor2Arduino
                     backgroundWorker1.CancelAsync();
                     labelStatus.Text = "disconnected";
                     btnConnectCondor.Text = "Connect";
-                    serialconnect.CondorDisConnect();
+                    condorconnect.CondorDisConnect();
                     timer1.Enabled = false;
                 }
         }
@@ -240,6 +240,7 @@ namespace Condor2Arduino
             // Decode: 
             // int myVal = ((int)(MyByte[0]) << 8)+MyByte[1]
             int temp = 0;
+            
             serialdata[0] = 255; // for decoding in Arduino to check where to begin;
             
             //Altitudebaro [1][2] Range [0,9999]
@@ -329,52 +330,55 @@ namespace Condor2Arduino
         {
             try
             {
-                if (BtnConnectArduino.Text == "Connect")
+                if (send2arduino.arduino == false) // not connected
                 {
-                    port = new SerialPort(comboBoxComPort.Text, Convert.ToInt32(comboBoxBaudrate.Text), Parity.None, 8, StopBits.One);
-                    port.Open();
-                    BtnConnectArduino.Text = "Disconnect";
-                    labelStatusArduino.Text = "Connected";
-                    arduino = true;
+                    if (send2arduino.ArduinoConnect(comboBoxComPort.Text, Convert.ToInt32(comboBoxBaudrate.Text)))
+                    {
+                        BtnConnectArduino.Text = "Disconnect";
+                        labelStatusArduino.Text = "Connected";
+                    }
+                    else labelStatusArduino.Text = "error arduino connect"; 
                 }
-                else
-                {
-                    port.Close();
-                    port.Dispose();
-                    BtnConnectArduino.Text = "Connect";
-                    labelStatusArduino.Text = "Disconnected";
-                    arduino = false;
+                else // we are connected lets disconnect 
+                    if (send2arduino.ArduinoDisconnect())
+                    {
+                            BtnConnectArduino.Text = "Connect";
+                            labelStatusArduino.Text = "Disconnected";
+                    }
+                    else labelStatusArduino.Text = "error arduino disconnect"; 
                 }
+            catch 
+            {
+                labelStatusArduino.Text = "unknown error arduino connection"; 
             }
-            catch (Exception f) { }
         }
          
         private void SendByte2Arduino()
          {
              try
              {
-                 if (arduino) // if connected to arduino
-                 {
-                     port.Write(serialdata, 0, 21); // send it
-                     labelStatusArduino.Text = "sending data";
-                 }
+                 if (send2arduino.SendByte2Arduino(serialdata, serialdata.Length))
+                 labelStatusArduino.Text = "sending arduinodata";
+                 else
+                 labelStatusArduino.Text = "error sending arduino data";
              }
-             catch { labelStatusArduino.Text = "error connection Arduino"; }
+             
+             catch { labelStatusArduino.Text = "unknown error Arduino"; }
          }    
         private void backgroundWorker1_DoWork(object sender, DoWorkEventArgs e)
         {
-            if (!serialconnect.connected)
+            if (!condorconnect.connected)
             {
-                serialconnect.CondorConnect(Convert.ToInt32(textBoxPortCondor.Text));
+                condorconnect.CondorConnector(Convert.ToInt32(textBoxPortCondor.Text));
                 backgroundWorker2.RunWorkerAsync();
             }
         }
 
         private void backgroundWorker2_DoWork(object sender, DoWorkEventArgs e)
         {
-            while (serialconnect.connected)
+            while (condorconnect.connected)
             {
-                condordata = serialconnect.GetCondorData();
+                condordata = condorconnect.GetCondorData();
             }
         }
 

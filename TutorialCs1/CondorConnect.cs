@@ -15,14 +15,14 @@ using System.Threading; // threading
 
 namespace Condor2Arduino
 {
-    class SerialConnect
+    class CondorConnect
     {
         public UdpClient Ontvanger = null;
         public IPEndPoint listenEndPoint=null;
         public byte[] receivedData;
         public bool connected = false;
         
-        public void CondorConnect(Int32 poortnaam) // I have put the asynchronous threading in the calling as a background worker
+        public void CondorConnector(Int32 poortnaam) // I have put the asynchronous threading in the calling as a background worker
         {
             try
             {

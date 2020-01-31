@@ -424,13 +424,13 @@
             // 
             this.trackBar1.Location = new System.Drawing.Point(304, 476);
             this.trackBar1.Maximum = 300;
-            this.trackBar1.Minimum = 10;
+            this.trackBar1.Minimum = 25;
             this.trackBar1.Name = "trackBar1";
             this.trackBar1.Size = new System.Drawing.Size(246, 45);
-            this.trackBar1.SmallChange = 20;
+            this.trackBar1.SmallChange = 10;
             this.trackBar1.TabIndex = 25;
             this.trackBar1.TickFrequency = 20;
-            this.trackBar1.Value = 25;
+            this.trackBar1.Value = 60;
             this.trackBar1.Scroll += new System.EventHandler(this.trackBar1_Scroll);
             // 
             // labelTick
