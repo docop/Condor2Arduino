@@ -53,7 +53,9 @@ namespace Condor2Arduino
                     Ontvanger.Client.SetSocketOption(SocketOptionLevel.Socket, SocketOptionName.ReceiveTimeout, 100);
                     listenEndPoint = new IPEndPoint(IPAddress.Any, poortnaam);
                     condorconnected = true;
+                    // important!
                     converted.serialdata = new byte[21];
+                    // **********************************
                 }
                 
             }
@@ -77,6 +79,8 @@ namespace Condor2Arduino
             string extract = "";
             string s = "";
             int tempi = 0;
+            int pos1;
+            double temp;
 
             try
             {
@@ -91,7 +95,7 @@ namespace Condor2Arduino
                     // Altitude (m or ft according to units selected)
                     if (s.Contains("altitude"))
                     {
-                        int pos1 = s.IndexOf("altitude="); // posnumber where altitude starts
+                        pos1 = s.IndexOf("altitude="); // posnumber where altitude starts
                         extract = s.Substring(pos1 + 9, 6);
                         int a = Convert.ToInt16((double.Parse(extract, CultureInfo.InvariantCulture.NumberFormat))); // meters afgerond naar beneden 
                         if (a <= 0) a = 0; //I dont want negative or too big altitude. so I limit the range
@@ -103,12 +107,12 @@ namespace Condor2Arduino
                     } 
                     if (s.Contains("airspeed"))
                     {
-                        int pos1 = s.IndexOf("airspeed="); // posnumber where airspeed starts
+                        pos1 = s.IndexOf("airspeed="); // posnumber where airspeed starts
                         extract = s.Substring(pos1 + 9, 4);
-                        double a = (double.Parse(extract, CultureInfo.InvariantCulture.NumberFormat)) * 3.6; // in km/h
-                        if (a < 0) a = 0.0; //I dont want negative or too big speeds. so I limit the range
-                        if (a >= 1000) a = 999.0;
-                        converted.speedias = Convert.ToInt16(a);
+                        temp = (double.Parse(extract, CultureInfo.InvariantCulture.NumberFormat)) * 3.6; // in km/h
+                        if (temp < 0) temp = 0.0; //I dont want negative or too big speeds. so I limit the range
+                        if (temp >= 1000) temp = 999.0;
+                        converted.speedias = Convert.ToInt16(temp);
                         //Speed [3][4] Range [0, 999]
                         converted.serialdata[3] = Convert.ToByte((converted.speedias >> 8) & 0x00FF);
                         converted.serialdata[4] = Convert.ToByte(converted.speedias & 0x00FF);
@@ -117,9 +121,9 @@ namespace Condor2Arduino
                     // Heading Compass
                     if (s.Contains("compass")) //degrees
                     {
-                        int pos1 = s.IndexOf("compass="); // posnumber where string starts
+                        pos1 = s.IndexOf("compass="); // posnumber where string starts
                         extract = s.Substring(pos1 + 8, 5);
-                        double temp = double.Parse(extract, CultureInfo.InvariantCulture.NumberFormat);
+                        temp = double.Parse(extract, CultureInfo.InvariantCulture.NumberFormat);
                         converted.compass = Convert.ToInt16(Math.Round(temp)); //range [0, 359]
                         //Compass [5] [6] Range [0,360]
                         converted.serialdata[5] = Convert.ToByte((converted.compass >> 8) & 0x00FF);
@@ -128,10 +132,10 @@ namespace Condor2Arduino
                     // pitchangle (radians) --> deg
                     if (s.Contains("pitch"))
                     {
-                        int pos1 = s.IndexOf("pitch="); // posnumber where pitch starts
+                        pos1 = s.IndexOf("pitch="); // posnumber where pitch starts
                         extract = s.Substring(pos1 + 6, 6);
-                        double a = double.Parse(extract, CultureInfo.InvariantCulture.NumberFormat);
-                        Int16 b = (Convert.ToInt16(a * rad2deg)); // convert from rads to degrees
+                        temp = double.Parse(extract, CultureInfo.InvariantCulture.NumberFormat);
+                        Int16 b = (Convert.ToInt16(temp * rad2deg)); // convert from rads to degrees
                         converted.pitch = b; //range [-90, 90]
                         //Pitch [7][8] Range [-90,90]
                         tempi = Convert.ToInt16(Math.Round(converted.pitch + 90.0)); //decode in Arduino!
@@ -141,10 +145,10 @@ namespace Condor2Arduino
                     // Bankangle (radians) --> deg
                     if (s.Contains("bank"))
                     {
-                        int pos1 = s.IndexOf("bank="); // posnumber where bank starts
+                        pos1 = s.IndexOf("bank="); // posnumber where bank starts
                         extract = s.Substring(pos1 + 5, 6);
-                        double a = double.Parse(extract, CultureInfo.InvariantCulture.NumberFormat);
-                        Int16 b = (Convert.ToInt16(a * -1 * rad2deg)); // I want leftbank to be negative value
+                        temp = double.Parse(extract, CultureInfo.InvariantCulture.NumberFormat);
+                        Int16 b = (Convert.ToInt16(temp * -1 * rad2deg)); // I want leftbank to be negative value
                         converted.bank = b;// range [-180, 180]
                         //Bank [9][10] Range [-180,180]
                         tempi = Convert.ToInt16(Math.Round(converted.bank + 180.0)); //decode in Arduino!
@@ -155,7 +159,7 @@ namespace Condor2Arduino
                     // pneumatic variometer reading (m/s)
                     if (s.Contains("vario"))
                     {
-                        int pos1 = s.IndexOf("vario="); // posnumber where vario starts
+                        pos1 = s.IndexOf("vario="); // posnumber where vario starts
                         converted.varioraw = double.Parse(s.Substring(pos1 + 6, 5), CultureInfo.InvariantCulture.NumberFormat);
                         if (converted.varioraw >= 10) converted.varioraw = 9.9; // I want to linit the data
                         if (converted.varioraw <= -10) converted.varioraw = -9.9; // I want to linit the data
@@ -167,7 +171,7 @@ namespace Condor2Arduino
                     // electronic variometer reading (m/s)
                     if (s.Contains("evario"))
                     {
-                        int pos1 = s.IndexOf("evario="); // posnumber where string starts
+                        pos1 = s.IndexOf("evario="); // posnumber where string starts
                         converted.varioelec = double.Parse(s.Substring(pos1 + 7, 5), CultureInfo.InvariantCulture.NumberFormat);
                         if (converted.varioelec >= 10) converted.varioelec = 9.9;// I want to linit the data
                         if (converted.varioelec <= -10) converted.varioelec = -9.9;// I want to linit the data
@@ -179,7 +183,7 @@ namespace Condor2Arduino
                     // integrated vario (m/s)
                     if (s.Contains("integrator"))
                     {
-                        int pos1 = s.IndexOf("integrator="); // posnumber where string starts
+                        pos1 = s.IndexOf("integrator="); // posnumber where string starts
                         converted.varioint = double.Parse(s.Substring(pos1 + 11, 5), CultureInfo.InvariantCulture.NumberFormat); //-1.23 or 1.234
                         if (converted.varioint >= 10) converted.varioint = 9.9;// I want to linit the data
                         if (converted.varioint <= -10) converted.varioint = -9.9;// I want to linit the data
@@ -191,7 +195,7 @@ namespace Condor2Arduino
                     // Gforce (G)
                     if (s.Contains("gforce"))
                     {
-                        int pos1 = s.IndexOf("gforce="); // posnumber where string starts
+                        pos1 = s.IndexOf("gforce="); // posnumber where string starts
                         converted.gforce = double.Parse(s.Substring(pos1 + 7, 4), CultureInfo.InvariantCulture.NumberFormat);
                         if (converted.gforce >= 10) converted.gforce = 9.9;// I want to linit the data
                         if (converted.gforce <= -10) converted.gforce = -9.9;// I want to linit the data
@@ -204,9 +208,9 @@ namespace Condor2Arduino
                     // Yawstring
                     if (s.Contains("yawstringangle"))
                     {
-                        int pos1 = s.IndexOf("yawstringangle="); // posnumber where string starts
-                        double a = double.Parse(s.Substring(pos1 + 15, 5), CultureInfo.InvariantCulture.NumberFormat);
-                        converted.yawstring = (Convert.ToInt16(a * rad2deg)); // yawstring angle in degrees (int)
+                        pos1 = s.IndexOf("yawstringangle="); // posnumber where string starts
+                        temp = double.Parse(s.Substring(pos1 + 15, 5), CultureInfo.InvariantCulture.NumberFormat);
+                        converted.yawstring = (Convert.ToInt16(temp * rad2deg)); // yawstring angle in degrees (int)
                         //Yawstring [19][20] Range [-50, 50]-->[0-100]
                         tempi = Convert.ToInt16(Math.Round(converted.yawstring + 50.0)); //decode in Arduino!
                         converted.serialdata[19] = Convert.ToByte((tempi >> 8) & 0x00FF);
