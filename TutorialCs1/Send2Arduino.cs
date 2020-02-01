@@ -17,10 +17,12 @@ namespace Condor2Arduino
 {
     class Send2Arduino
     {
-        public SerialPort port;
-        public bool arduino = false;
-
-        public bool ArduinoConnect(String name,Int32 baud)
+       public SerialPort port;
+       public bool arduino = false;
+       public byte[] serialdata = new byte[21];
+        
+        
+       public bool ArduinoConnect(String name,Int32 baud)
         {
             try
             {
@@ -60,8 +62,6 @@ namespace Condor2Arduino
                     return false;
             }
             catch { return false; }
-        }    
-    }
-
-
-}
+        }
+    }//end class
+}//end namespace
