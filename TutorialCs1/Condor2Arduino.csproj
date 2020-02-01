@@ -72,6 +72,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Send2Arduino.cs" />
     <Compile Include="FormC2A.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -80,7 +81,7 @@
     </Compile>
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="SerialConnect.cs" />
+    <Compile Include="CondorConnect.cs" />
     <EmbeddedResource Include="FormC2A.resx">
       <DependentUpon>FormC2A.cs</DependentUpon>
     </EmbeddedResource>

@@ -67,9 +67,23 @@
             this.BtnConnectArduino = new System.Windows.Forms.Button();
             this.comboBoxBaudrate = new System.Windows.Forms.ComboBox();
             this.labelStatusArduino = new System.Windows.Forms.Label();
+            this.trackBar1 = new System.Windows.Forms.TrackBar();
+            this.labelTick = new System.Windows.Forms.Label();
+            this.label1 = new System.Windows.Forms.Label();
+            this.TBSbank = new System.Windows.Forms.TextBox();
+            this.TBScompass = new System.Windows.Forms.TextBox();
+            this.TBSpitch = new System.Windows.Forms.TextBox();
+            this.TBSspeed = new System.Windows.Forms.TextBox();
+            this.TBSgforce = new System.Windows.Forms.TextBox();
+            this.TBSvarelec = new System.Windows.Forms.TextBox();
+            this.TBSvarint = new System.Windows.Forms.TextBox();
+            this.TBSvarraw = new System.Windows.Forms.TextBox();
+            this.TBSaltitude = new System.Windows.Forms.TextBox();
+            this.TBSyawstring = new System.Windows.Forms.TextBox();
             this.groupBox1.SuspendLayout();
             this.groupBoxSerial.SuspendLayout();
             this.groupBoxConversie.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.trackBar1)).BeginInit();
             this.SuspendLayout();
             // 
             // textBoxPortCondor
@@ -165,6 +179,17 @@
             // 
             // groupBoxConversie
             // 
+            this.groupBoxConversie.Controls.Add(this.label1);
+            this.groupBoxConversie.Controls.Add(this.TBSbank);
+            this.groupBoxConversie.Controls.Add(this.TBScompass);
+            this.groupBoxConversie.Controls.Add(this.TBSpitch);
+            this.groupBoxConversie.Controls.Add(this.TBSspeed);
+            this.groupBoxConversie.Controls.Add(this.TBSgforce);
+            this.groupBoxConversie.Controls.Add(this.TBSvarelec);
+            this.groupBoxConversie.Controls.Add(this.TBSvarint);
+            this.groupBoxConversie.Controls.Add(this.TBSvarraw);
+            this.groupBoxConversie.Controls.Add(this.TBSaltitude);
+            this.groupBoxConversie.Controls.Add(this.TBSyawstring);
             this.groupBoxConversie.Controls.Add(this.label2);
             this.groupBoxConversie.Controls.Add(this.textBoxDecodeBank);
             this.groupBoxConversie.Controls.Add(this.textBoxDecodeCompass);
@@ -188,7 +213,7 @@
             this.groupBoxConversie.Controls.Add(this.labelSpeed);
             this.groupBoxConversie.Location = new System.Drawing.Point(304, 2);
             this.groupBoxConversie.Name = "groupBoxConversie";
-            this.groupBoxConversie.Size = new System.Drawing.Size(250, 347);
+            this.groupBoxConversie.Size = new System.Drawing.Size(311, 347);
             this.groupBoxConversie.TabIndex = 5;
             this.groupBoxConversie.TabStop = false;
             this.groupBoxConversie.Text = "Conversie";
@@ -196,7 +221,7 @@
             // label2
             // 
             this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(99, 53);
+            this.label2.Location = new System.Drawing.Point(213, 48);
             this.label2.Name = "label2";
             this.label2.Size = new System.Drawing.Size(80, 13);
             this.label2.TabIndex = 33;
@@ -204,63 +229,63 @@
             // 
             // textBoxDecodeBank
             // 
-            this.textBoxDecodeBank.Location = new System.Drawing.Point(102, 227);
+            this.textBoxDecodeBank.Location = new System.Drawing.Point(216, 222);
             this.textBoxDecodeBank.Name = "textBoxDecodeBank";
             this.textBoxDecodeBank.Size = new System.Drawing.Size(70, 20);
             this.textBoxDecodeBank.TabIndex = 32;
             // 
             // textBoxDecodeCompass
             // 
-            this.textBoxDecodeCompass.Location = new System.Drawing.Point(102, 279);
+            this.textBoxDecodeCompass.Location = new System.Drawing.Point(216, 274);
             this.textBoxDecodeCompass.Name = "textBoxDecodeCompass";
             this.textBoxDecodeCompass.Size = new System.Drawing.Size(70, 20);
             this.textBoxDecodeCompass.TabIndex = 31;
             // 
             // textBoxDecodePitch
             // 
-            this.textBoxDecodePitch.Location = new System.Drawing.Point(102, 253);
+            this.textBoxDecodePitch.Location = new System.Drawing.Point(216, 248);
             this.textBoxDecodePitch.Name = "textBoxDecodePitch";
             this.textBoxDecodePitch.Size = new System.Drawing.Size(70, 20);
             this.textBoxDecodePitch.TabIndex = 30;
             // 
             // textboxDecodeSpeed
             // 
-            this.textboxDecodeSpeed.Location = new System.Drawing.Point(102, 70);
+            this.textboxDecodeSpeed.Location = new System.Drawing.Point(216, 65);
             this.textboxDecodeSpeed.Name = "textboxDecodeSpeed";
             this.textboxDecodeSpeed.Size = new System.Drawing.Size(70, 20);
             this.textboxDecodeSpeed.TabIndex = 29;
             // 
             // textBoxDecodeGforce
             // 
-            this.textBoxDecodeGforce.Location = new System.Drawing.Point(102, 200);
+            this.textBoxDecodeGforce.Location = new System.Drawing.Point(216, 195);
             this.textBoxDecodeGforce.Name = "textBoxDecodeGforce";
             this.textBoxDecodeGforce.Size = new System.Drawing.Size(70, 20);
             this.textBoxDecodeGforce.TabIndex = 27;
             // 
             // textBoxDecodevarElec
             // 
-            this.textBoxDecodevarElec.Location = new System.Drawing.Point(102, 174);
+            this.textBoxDecodevarElec.Location = new System.Drawing.Point(216, 169);
             this.textBoxDecodevarElec.Name = "textBoxDecodevarElec";
             this.textBoxDecodevarElec.Size = new System.Drawing.Size(70, 20);
             this.textBoxDecodevarElec.TabIndex = 26;
             // 
             // textBoxDecodeVarint
             // 
-            this.textBoxDecodeVarint.Location = new System.Drawing.Point(102, 148);
+            this.textBoxDecodeVarint.Location = new System.Drawing.Point(216, 143);
             this.textBoxDecodeVarint.Name = "textBoxDecodeVarint";
             this.textBoxDecodeVarint.Size = new System.Drawing.Size(70, 20);
             this.textBoxDecodeVarint.TabIndex = 25;
             // 
             // textBoxDecodeVarraw
             // 
-            this.textBoxDecodeVarraw.Location = new System.Drawing.Point(102, 122);
+            this.textBoxDecodeVarraw.Location = new System.Drawing.Point(216, 117);
             this.textBoxDecodeVarraw.Name = "textBoxDecodeVarraw";
             this.textBoxDecodeVarraw.Size = new System.Drawing.Size(70, 20);
             this.textBoxDecodeVarraw.TabIndex = 24;
             // 
             // textBoxDecodeAlt
             // 
-            this.textBoxDecodeAlt.Location = new System.Drawing.Point(102, 96);
+            this.textBoxDecodeAlt.Location = new System.Drawing.Point(216, 91);
             this.textBoxDecodeAlt.Name = "textBoxDecodeAlt";
             this.textBoxDecodeAlt.Size = new System.Drawing.Size(70, 20);
             this.textBoxDecodeAlt.TabIndex = 23;
@@ -294,7 +319,7 @@
             // 
             // textBoxyawstring
             // 
-            this.textBoxyawstring.Location = new System.Drawing.Point(102, 305);
+            this.textBoxyawstring.Location = new System.Drawing.Point(216, 300);
             this.textBoxyawstring.Name = "textBoxyawstring";
             this.textBoxyawstring.Size = new System.Drawing.Size(70, 20);
             this.textBoxyawstring.TabIndex = 13;
@@ -364,7 +389,7 @@
             // 
             // timer1
             // 
-            this.timer1.Interval = 50;
+            this.timer1.Interval = 10;
             this.timer1.Tick += new System.EventHandler(this.timer1_Tick);
             // 
             // backgroundWorker1
@@ -417,11 +442,114 @@
             this.labelStatusArduino.TabIndex = 9;
             this.labelStatusArduino.Text = "status:";
             // 
+            // trackBar1
+            // 
+            this.trackBar1.Location = new System.Drawing.Point(304, 476);
+            this.trackBar1.Maximum = 300;
+            this.trackBar1.Minimum = 25;
+            this.trackBar1.Name = "trackBar1";
+            this.trackBar1.Size = new System.Drawing.Size(246, 45);
+            this.trackBar1.SmallChange = 10;
+            this.trackBar1.TabIndex = 25;
+            this.trackBar1.TickFrequency = 20;
+            this.trackBar1.Value = 60;
+            this.trackBar1.Scroll += new System.EventHandler(this.trackBar1_Scroll);
+            // 
+            // labelTick
+            // 
+            this.labelTick.AutoSize = true;
+            this.labelTick.Location = new System.Drawing.Point(301, 460);
+            this.labelTick.Name = "labelTick";
+            this.labelTick.Size = new System.Drawing.Size(35, 13);
+            this.labelTick.TabIndex = 26;
+            this.labelTick.Text = "label1";
+            // 
+            // label1
+            // 
+            this.label1.AutoSize = true;
+            this.label1.Location = new System.Drawing.Point(127, 48);
+            this.label1.Name = "label1";
+            this.label1.Size = new System.Drawing.Size(81, 13);
+            this.label1.TabIndex = 44;
+            this.label1.Text = "Decoded String";
+            // 
+            // TBSbank
+            // 
+            this.TBSbank.Location = new System.Drawing.Point(130, 222);
+            this.TBSbank.Name = "TBSbank";
+            this.TBSbank.Size = new System.Drawing.Size(70, 20);
+            this.TBSbank.TabIndex = 43;
+            // 
+            // TBScompass
+            // 
+            this.TBScompass.Location = new System.Drawing.Point(130, 274);
+            this.TBScompass.Name = "TBScompass";
+            this.TBScompass.Size = new System.Drawing.Size(70, 20);
+            this.TBScompass.TabIndex = 42;
+            // 
+            // TBSpitch
+            // 
+            this.TBSpitch.Location = new System.Drawing.Point(130, 248);
+            this.TBSpitch.Name = "TBSpitch";
+            this.TBSpitch.Size = new System.Drawing.Size(70, 20);
+            this.TBSpitch.TabIndex = 41;
+            // 
+            // TBSspeed
+            // 
+            this.TBSspeed.Location = new System.Drawing.Point(130, 65);
+            this.TBSspeed.Name = "TBSspeed";
+            this.TBSspeed.Size = new System.Drawing.Size(70, 20);
+            this.TBSspeed.TabIndex = 40;
+            // 
+            // TBSgforce
+            // 
+            this.TBSgforce.Location = new System.Drawing.Point(130, 195);
+            this.TBSgforce.Name = "TBSgforce";
+            this.TBSgforce.Size = new System.Drawing.Size(70, 20);
+            this.TBSgforce.TabIndex = 39;
+            // 
+            // TBSvarelec
+            // 
+            this.TBSvarelec.Location = new System.Drawing.Point(130, 169);
+            this.TBSvarelec.Name = "TBSvarelec";
+            this.TBSvarelec.Size = new System.Drawing.Size(70, 20);
+            this.TBSvarelec.TabIndex = 38;
+            // 
+            // TBSvarint
+            // 
+            this.TBSvarint.Location = new System.Drawing.Point(130, 143);
+            this.TBSvarint.Name = "TBSvarint";
+            this.TBSvarint.Size = new System.Drawing.Size(70, 20);
+            this.TBSvarint.TabIndex = 37;
+            // 
+            // TBSvarraw
+            // 
+            this.TBSvarraw.Location = new System.Drawing.Point(130, 117);
+            this.TBSvarraw.Name = "TBSvarraw";
+            this.TBSvarraw.Size = new System.Drawing.Size(70, 20);
+            this.TBSvarraw.TabIndex = 36;
+            // 
+            // TBSaltitude
+            // 
+            this.TBSaltitude.Location = new System.Drawing.Point(130, 91);
+            this.TBSaltitude.Name = "TBSaltitude";
+            this.TBSaltitude.Size = new System.Drawing.Size(70, 20);
+            this.TBSaltitude.TabIndex = 35;
+            // 
+            // TBSyawstring
+            // 
+            this.TBSyawstring.Location = new System.Drawing.Point(130, 300);
+            this.TBSyawstring.Name = "TBSyawstring";
+            this.TBSyawstring.Size = new System.Drawing.Size(70, 20);
+            this.TBSyawstring.TabIndex = 34;
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(565, 644);
+            this.ClientSize = new System.Drawing.Size(649, 644);
+            this.Controls.Add(this.labelTick);
+            this.Controls.Add(this.trackBar1);
             this.Controls.Add(this.labelStatusArduino);
             this.Controls.Add(this.comboBoxBaudrate);
             this.Controls.Add(this.BtnConnectArduino);
@@ -436,6 +564,7 @@
             this.groupBoxSerial.PerformLayout();
             this.groupBoxConversie.ResumeLayout(false);
             this.groupBoxConversie.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.trackBar1)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -481,6 +610,19 @@
         private System.Windows.Forms.Button BtnConnectArduino;
         private System.Windows.Forms.ComboBox comboBoxBaudrate;
         private System.Windows.Forms.Label labelStatusArduino;
+        private System.Windows.Forms.TrackBar trackBar1;
+        private System.Windows.Forms.Label labelTick;
+        private System.Windows.Forms.Label label1;
+        private System.Windows.Forms.TextBox TBSbank;
+        private System.Windows.Forms.TextBox TBScompass;
+        private System.Windows.Forms.TextBox TBSpitch;
+        private System.Windows.Forms.TextBox TBSspeed;
+        private System.Windows.Forms.TextBox TBSgforce;
+        private System.Windows.Forms.TextBox TBSvarelec;
+        private System.Windows.Forms.TextBox TBSvarint;
+        private System.Windows.Forms.TextBox TBSvarraw;
+        private System.Windows.Forms.TextBox TBSaltitude;
+        private System.Windows.Forms.TextBox TBSyawstring;
     }
 }
 
