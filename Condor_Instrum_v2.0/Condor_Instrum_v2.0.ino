@@ -3,6 +3,7 @@
 #include <Wire.h> // needed for the liquid crystal display (LCD)
 #include <LiquidCrystal_I2C.h> // LCD display
 #include <TM1638.h> // library for the 8 segments display / 8 buttons, 8 led red/green 
+#include <SwitecX25.h> // library for X27 stepper motor
 
 #define motorPin1  8      // IN1 on the ULN2003 driver
 #define motorPin2  9      // IN2 on the ULN2003 driver
@@ -16,6 +17,8 @@
 #define  CLOCK_TM 2       // CLK of all boards is on pin 2
 #define  DIO_TM 3         // DIO of all boards is on pin 3
 #define TM_BRT 0x02       // set the brightness of board (0-7)
+
+#define STEPS (315*3)
 
 TM1638 tm1(DIO_TM, CLOCK_TM, STROBE_TM1);
 TM1638 tm2(DIO_TM, CLOCK_TM, STROBE_TM2);
@@ -116,6 +119,14 @@ Servo MyServo2; // define an object of servomotor
 // *********************************************600
 int StepVario = 20; // 1 ms/s = 20 steps on the servo --> 0.1 m/s = 2 steps on the servo
 
+
+SwitecX25 ACSpeedStepper(STEPS,8,9,10,11);
+// standard X27.168 range 315 degrees at 1/3 degree steps
+// maxsteps: 945 --> X27 can only turn 315° =>  315° * 3° = 945 steps
+// max speed glider: 300 kmph --> 945/300 = 3.15 steps per km
+float stpSpeed = 3.15;
+
+/*
 AccelStepper ACSpeedStepper(AccelStepper::FULL4WIRE, 8, 10, 9, 11);
 // *********************************************
 // 1 revolution = 200 km/h (for my gauge)
@@ -124,6 +135,7 @@ AccelStepper ACSpeedStepper(AccelStepper::FULL4WIRE, 8, 10, 9, 11);
 // 2048/200 = 1 km/h results in 10,24 steps per 1 km/h
 // *********************************************
 float stpSpeed = 10.24; //how many steps per km/h
+*/
 
 byte buttons1 = 0;
 byte buttons2 = 0;
@@ -155,10 +167,13 @@ void setup()
   MyServo2.attach(6); // my s2nd servo is attached to pin 6
   MyServo2.write(100);// Range is 0-200. Zero point is halfway = 100
 
-  ACSpeedStepper.setMaxSpeed(600.0); //maxium number of steps per second. must be >0. my motor: 3 seconds for 2048 steps. == 2048/3 = 620.6 steps per sec
-  ACSpeedStepper.setAcceleration(600.0); // I dont want accel/decel
-  ACSpeedStepper.setCurrentPosition(0); // this needs to be in a homing routine. For now I assume the current position = 0 km/h
+  //ACSpeedStepper.setMaxSpeed(600.0); //maxium number of steps per second. must be >0. my motor: 3 seconds for 2048 steps. == 2048/3 = 620.6 steps per sec
+  //ACSpeedStepper.setAcceleration(600.0); // I dont want accel/decel
+  //ACSpeedStepper.setCurrentPosition(0); // this needs to be in a homing routine. For now I assume the current position = 0 km/h
 
+  ACSpeedStepper.zero();
+  ACSpeedStepper.setPosition(STEPS/2);
+  
   if (lcdon)
   {
     lcd.init();                  // initialiseer het LCD scherm
@@ -244,7 +259,8 @@ void loop()
         yaw = ((yawl << 8 | yawh)) - 50.0; //decode yawstringangle (deg) [-99,99] but more in the range of [-10 , 10]
 
         int temp = spd * stpSpeed;
-        ACSpeedStepper.moveTo(temp); // where to go
+        //ACSpeedStepper.moveTo(temp); // where to go
+        ACSpeedStepper.setPosition(temp);
         
         if (vari < -5) vari = -4.9;
         if (vari > 5) vari = 4.9;
@@ -276,8 +292,9 @@ void loop()
   //Set the Speeddial
   //*****************
 
-  ACSpeedStepper.run(); //go
-
+  //ACSpeedStepper.run(); //go
+   ACSpeedStepper.update();
+   
   // Set the VARIO
   //*****************
   MyServo.write(varr * StepVario + 100); //0.1 m/s *20 +100 = 102

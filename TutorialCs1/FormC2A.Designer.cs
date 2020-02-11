@@ -39,6 +39,17 @@
             this.textBoxBaud = new System.Windows.Forms.TextBox();
             this.comboBoxCom = new System.Windows.Forms.ComboBox();
             this.groupBoxConversie = new System.Windows.Forms.GroupBox();
+            this.label1 = new System.Windows.Forms.Label();
+            this.TBSbank = new System.Windows.Forms.TextBox();
+            this.TBScompass = new System.Windows.Forms.TextBox();
+            this.TBSpitch = new System.Windows.Forms.TextBox();
+            this.TBSspeed = new System.Windows.Forms.TextBox();
+            this.TBSgforce = new System.Windows.Forms.TextBox();
+            this.TBSvarelec = new System.Windows.Forms.TextBox();
+            this.TBSvarint = new System.Windows.Forms.TextBox();
+            this.TBSvarraw = new System.Windows.Forms.TextBox();
+            this.TBSaltitude = new System.Windows.Forms.TextBox();
+            this.TBSyawstring = new System.Windows.Forms.TextBox();
             this.label2 = new System.Windows.Forms.Label();
             this.textBoxDecodeBank = new System.Windows.Forms.TextBox();
             this.textBoxDecodeCompass = new System.Windows.Forms.TextBox();
@@ -69,21 +80,12 @@
             this.labelStatusArduino = new System.Windows.Forms.Label();
             this.trackBar1 = new System.Windows.Forms.TrackBar();
             this.labelTick = new System.Windows.Forms.Label();
-            this.label1 = new System.Windows.Forms.Label();
-            this.TBSbank = new System.Windows.Forms.TextBox();
-            this.TBScompass = new System.Windows.Forms.TextBox();
-            this.TBSpitch = new System.Windows.Forms.TextBox();
-            this.TBSspeed = new System.Windows.Forms.TextBox();
-            this.TBSgforce = new System.Windows.Forms.TextBox();
-            this.TBSvarelec = new System.Windows.Forms.TextBox();
-            this.TBSvarint = new System.Windows.Forms.TextBox();
-            this.TBSvarraw = new System.Windows.Forms.TextBox();
-            this.TBSaltitude = new System.Windows.Forms.TextBox();
-            this.TBSyawstring = new System.Windows.Forms.TextBox();
+            this.groupBoxArduino = new System.Windows.Forms.GroupBox();
             this.groupBox1.SuspendLayout();
             this.groupBoxSerial.SuspendLayout();
             this.groupBoxConversie.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.trackBar1)).BeginInit();
+            this.groupBoxArduino.SuspendLayout();
             this.SuspendLayout();
             // 
             // textBoxPortCondor
@@ -99,7 +101,7 @@
             this.btnConnectCondor.ImageAlign = System.Drawing.ContentAlignment.MiddleRight;
             this.btnConnectCondor.Location = new System.Drawing.Point(64, 19);
             this.btnConnectCondor.Name = "btnConnectCondor";
-            this.btnConnectCondor.Size = new System.Drawing.Size(85, 19);
+            this.btnConnectCondor.Size = new System.Drawing.Size(85, 20);
             this.btnConnectCondor.TabIndex = 1;
             this.btnConnectCondor.Text = "Connect";
             this.btnConnectCondor.UseVisualStyleBackColor = true;
@@ -211,12 +213,91 @@
             this.groupBoxConversie.Controls.Add(this.labelVarioR);
             this.groupBoxConversie.Controls.Add(this.labelAltitude);
             this.groupBoxConversie.Controls.Add(this.labelSpeed);
-            this.groupBoxConversie.Location = new System.Drawing.Point(304, 2);
+            this.groupBoxConversie.Location = new System.Drawing.Point(295, 2);
             this.groupBoxConversie.Name = "groupBoxConversie";
-            this.groupBoxConversie.Size = new System.Drawing.Size(311, 347);
+            this.groupBoxConversie.Size = new System.Drawing.Size(310, 418);
             this.groupBoxConversie.TabIndex = 5;
             this.groupBoxConversie.TabStop = false;
             this.groupBoxConversie.Text = "Conversie";
+            // 
+            // label1
+            // 
+            this.label1.AutoSize = true;
+            this.label1.Location = new System.Drawing.Point(127, 48);
+            this.label1.Name = "label1";
+            this.label1.Size = new System.Drawing.Size(81, 13);
+            this.label1.TabIndex = 44;
+            this.label1.Text = "Decoded String";
+            // 
+            // TBSbank
+            // 
+            this.TBSbank.Location = new System.Drawing.Point(130, 222);
+            this.TBSbank.Name = "TBSbank";
+            this.TBSbank.Size = new System.Drawing.Size(70, 20);
+            this.TBSbank.TabIndex = 43;
+            // 
+            // TBScompass
+            // 
+            this.TBScompass.Location = new System.Drawing.Point(130, 274);
+            this.TBScompass.Name = "TBScompass";
+            this.TBScompass.Size = new System.Drawing.Size(70, 20);
+            this.TBScompass.TabIndex = 42;
+            // 
+            // TBSpitch
+            // 
+            this.TBSpitch.Location = new System.Drawing.Point(130, 248);
+            this.TBSpitch.Name = "TBSpitch";
+            this.TBSpitch.Size = new System.Drawing.Size(70, 20);
+            this.TBSpitch.TabIndex = 41;
+            // 
+            // TBSspeed
+            // 
+            this.TBSspeed.Location = new System.Drawing.Point(130, 65);
+            this.TBSspeed.Name = "TBSspeed";
+            this.TBSspeed.Size = new System.Drawing.Size(70, 20);
+            this.TBSspeed.TabIndex = 40;
+            // 
+            // TBSgforce
+            // 
+            this.TBSgforce.Location = new System.Drawing.Point(130, 195);
+            this.TBSgforce.Name = "TBSgforce";
+            this.TBSgforce.Size = new System.Drawing.Size(70, 20);
+            this.TBSgforce.TabIndex = 39;
+            // 
+            // TBSvarelec
+            // 
+            this.TBSvarelec.Location = new System.Drawing.Point(130, 169);
+            this.TBSvarelec.Name = "TBSvarelec";
+            this.TBSvarelec.Size = new System.Drawing.Size(70, 20);
+            this.TBSvarelec.TabIndex = 38;
+            // 
+            // TBSvarint
+            // 
+            this.TBSvarint.Location = new System.Drawing.Point(130, 143);
+            this.TBSvarint.Name = "TBSvarint";
+            this.TBSvarint.Size = new System.Drawing.Size(70, 20);
+            this.TBSvarint.TabIndex = 37;
+            // 
+            // TBSvarraw
+            // 
+            this.TBSvarraw.Location = new System.Drawing.Point(130, 117);
+            this.TBSvarraw.Name = "TBSvarraw";
+            this.TBSvarraw.Size = new System.Drawing.Size(70, 20);
+            this.TBSvarraw.TabIndex = 36;
+            // 
+            // TBSaltitude
+            // 
+            this.TBSaltitude.Location = new System.Drawing.Point(130, 91);
+            this.TBSaltitude.Name = "TBSaltitude";
+            this.TBSaltitude.Size = new System.Drawing.Size(70, 20);
+            this.TBSaltitude.TabIndex = 35;
+            // 
+            // TBSyawstring
+            // 
+            this.TBSyawstring.Location = new System.Drawing.Point(130, 300);
+            this.TBSyawstring.Name = "TBSyawstring";
+            this.TBSyawstring.Size = new System.Drawing.Size(70, 20);
+            this.TBSyawstring.TabIndex = 34;
             // 
             // label2
             // 
@@ -407,14 +488,14 @@
             // comboBoxComPort
             // 
             this.comboBoxComPort.FormattingEnabled = true;
-            this.comboBoxComPort.Location = new System.Drawing.Point(304, 376);
+            this.comboBoxComPort.Location = new System.Drawing.Point(9, 41);
             this.comboBoxComPort.Name = "comboBoxComPort";
-            this.comboBoxComPort.Size = new System.Drawing.Size(59, 21);
+            this.comboBoxComPort.Size = new System.Drawing.Size(73, 21);
             this.comboBoxComPort.TabIndex = 6;
             // 
             // BtnConnectArduino
             // 
-            this.BtnConnectArduino.Location = new System.Drawing.Point(465, 375);
+            this.BtnConnectArduino.Location = new System.Drawing.Point(207, 41);
             this.BtnConnectArduino.Name = "BtnConnectArduino";
             this.BtnConnectArduino.Size = new System.Drawing.Size(88, 21);
             this.BtnConnectArduino.TabIndex = 7;
@@ -428,7 +509,7 @@
             this.comboBoxBaudrate.Items.AddRange(new object[] {
             "19200",
             "9600"});
-            this.comboBoxBaudrate.Location = new System.Drawing.Point(369, 376);
+            this.comboBoxBaudrate.Location = new System.Drawing.Point(99, 41);
             this.comboBoxBaudrate.Name = "comboBoxBaudrate";
             this.comboBoxBaudrate.Size = new System.Drawing.Size(87, 21);
             this.comboBoxBaudrate.TabIndex = 8;
@@ -436,7 +517,7 @@
             // labelStatusArduino
             // 
             this.labelStatusArduino.AutoSize = true;
-            this.labelStatusArduino.Location = new System.Drawing.Point(301, 410);
+            this.labelStatusArduino.Location = new System.Drawing.Point(6, 25);
             this.labelStatusArduino.Name = "labelStatusArduino";
             this.labelStatusArduino.Size = new System.Drawing.Size(38, 13);
             this.labelStatusArduino.TabIndex = 9;
@@ -444,11 +525,11 @@
             // 
             // trackBar1
             // 
-            this.trackBar1.Location = new System.Drawing.Point(304, 476);
+            this.trackBar1.Location = new System.Drawing.Point(9, 105);
             this.trackBar1.Maximum = 300;
             this.trackBar1.Minimum = 25;
             this.trackBar1.Name = "trackBar1";
-            this.trackBar1.Size = new System.Drawing.Size(246, 45);
+            this.trackBar1.Size = new System.Drawing.Size(286, 45);
             this.trackBar1.SmallChange = 10;
             this.trackBar1.TabIndex = 25;
             this.trackBar1.TickFrequency = 20;
@@ -458,102 +539,33 @@
             // labelTick
             // 
             this.labelTick.AutoSize = true;
-            this.labelTick.Location = new System.Drawing.Point(301, 460);
+            this.labelTick.Location = new System.Drawing.Point(6, 89);
             this.labelTick.Name = "labelTick";
             this.labelTick.Size = new System.Drawing.Size(35, 13);
             this.labelTick.TabIndex = 26;
             this.labelTick.Text = "label1";
             // 
-            // label1
+            // groupBoxArduino
             // 
-            this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(127, 48);
-            this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(81, 13);
-            this.label1.TabIndex = 44;
-            this.label1.Text = "Decoded String";
-            // 
-            // TBSbank
-            // 
-            this.TBSbank.Location = new System.Drawing.Point(130, 222);
-            this.TBSbank.Name = "TBSbank";
-            this.TBSbank.Size = new System.Drawing.Size(70, 20);
-            this.TBSbank.TabIndex = 43;
-            // 
-            // TBScompass
-            // 
-            this.TBScompass.Location = new System.Drawing.Point(130, 274);
-            this.TBScompass.Name = "TBScompass";
-            this.TBScompass.Size = new System.Drawing.Size(70, 20);
-            this.TBScompass.TabIndex = 42;
-            // 
-            // TBSpitch
-            // 
-            this.TBSpitch.Location = new System.Drawing.Point(130, 248);
-            this.TBSpitch.Name = "TBSpitch";
-            this.TBSpitch.Size = new System.Drawing.Size(70, 20);
-            this.TBSpitch.TabIndex = 41;
-            // 
-            // TBSspeed
-            // 
-            this.TBSspeed.Location = new System.Drawing.Point(130, 65);
-            this.TBSspeed.Name = "TBSspeed";
-            this.TBSspeed.Size = new System.Drawing.Size(70, 20);
-            this.TBSspeed.TabIndex = 40;
-            // 
-            // TBSgforce
-            // 
-            this.TBSgforce.Location = new System.Drawing.Point(130, 195);
-            this.TBSgforce.Name = "TBSgforce";
-            this.TBSgforce.Size = new System.Drawing.Size(70, 20);
-            this.TBSgforce.TabIndex = 39;
-            // 
-            // TBSvarelec
-            // 
-            this.TBSvarelec.Location = new System.Drawing.Point(130, 169);
-            this.TBSvarelec.Name = "TBSvarelec";
-            this.TBSvarelec.Size = new System.Drawing.Size(70, 20);
-            this.TBSvarelec.TabIndex = 38;
-            // 
-            // TBSvarint
-            // 
-            this.TBSvarint.Location = new System.Drawing.Point(130, 143);
-            this.TBSvarint.Name = "TBSvarint";
-            this.TBSvarint.Size = new System.Drawing.Size(70, 20);
-            this.TBSvarint.TabIndex = 37;
-            // 
-            // TBSvarraw
-            // 
-            this.TBSvarraw.Location = new System.Drawing.Point(130, 117);
-            this.TBSvarraw.Name = "TBSvarraw";
-            this.TBSvarraw.Size = new System.Drawing.Size(70, 20);
-            this.TBSvarraw.TabIndex = 36;
-            // 
-            // TBSaltitude
-            // 
-            this.TBSaltitude.Location = new System.Drawing.Point(130, 91);
-            this.TBSaltitude.Name = "TBSaltitude";
-            this.TBSaltitude.Size = new System.Drawing.Size(70, 20);
-            this.TBSaltitude.TabIndex = 35;
-            // 
-            // TBSyawstring
-            // 
-            this.TBSyawstring.Location = new System.Drawing.Point(130, 300);
-            this.TBSyawstring.Name = "TBSyawstring";
-            this.TBSyawstring.Size = new System.Drawing.Size(70, 20);
-            this.TBSyawstring.TabIndex = 34;
+            this.groupBoxArduino.Controls.Add(this.labelTick);
+            this.groupBoxArduino.Controls.Add(this.labelStatusArduino);
+            this.groupBoxArduino.Controls.Add(this.trackBar1);
+            this.groupBoxArduino.Controls.Add(this.BtnConnectArduino);
+            this.groupBoxArduino.Controls.Add(this.comboBoxBaudrate);
+            this.groupBoxArduino.Controls.Add(this.comboBoxComPort);
+            this.groupBoxArduino.Location = new System.Drawing.Point(295, 440);
+            this.groupBoxArduino.Name = "groupBoxArduino";
+            this.groupBoxArduino.Size = new System.Drawing.Size(310, 200);
+            this.groupBoxArduino.TabIndex = 27;
+            this.groupBoxArduino.TabStop = false;
+            this.groupBoxArduino.Text = "Arduino";
             // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(649, 644);
-            this.Controls.Add(this.labelTick);
-            this.Controls.Add(this.trackBar1);
-            this.Controls.Add(this.labelStatusArduino);
-            this.Controls.Add(this.comboBoxBaudrate);
-            this.Controls.Add(this.BtnConnectArduino);
-            this.Controls.Add(this.comboBoxComPort);
+            this.ClientSize = new System.Drawing.Size(609, 644);
+            this.Controls.Add(this.groupBoxArduino);
             this.Controls.Add(this.groupBoxConversie);
             this.Controls.Add(this.groupBox1);
             this.Name = "Form1";
@@ -565,8 +577,9 @@
             this.groupBoxConversie.ResumeLayout(false);
             this.groupBoxConversie.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.trackBar1)).EndInit();
+            this.groupBoxArduino.ResumeLayout(false);
+            this.groupBoxArduino.PerformLayout();
             this.ResumeLayout(false);
-            this.PerformLayout();
 
         }
 
@@ -623,6 +636,7 @@
         private System.Windows.Forms.TextBox TBSvarraw;
         private System.Windows.Forms.TextBox TBSaltitude;
         private System.Windows.Forms.TextBox TBSyawstring;
+        private System.Windows.Forms.GroupBox groupBoxArduino;
     }
 }
 

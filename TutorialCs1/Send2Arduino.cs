@@ -31,7 +31,7 @@ namespace Condor2Arduino
                 arduino = true;
                 return true;
             }
-            catch (Exception f) { return false; }
+            catch { return false; }
         }
         
         public bool ArduinoDisconnect()

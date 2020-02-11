@@ -38,7 +38,7 @@ namespace Condor2Arduino
        
         CondorConnect condorconnect = new CondorConnect();
         Send2Arduino send2arduino = new Send2Arduino();
-        CondorConnect.PLANEDATA glider,decoded; // we store all condordata into the variable 'glider'. 'decoded' is used for debugging
+        CondorConnect.PLANEDATA glider,decoded; // I store all condordata into the variable 'glider'. 'decoded' is only used for debugging
 
        
         public void btnConnect_Click(object sender, EventArgs e) //Connect - Disconnect button Condor
@@ -68,7 +68,16 @@ namespace Condor2Arduino
                 textBox2.Text = glider.raw; // show the raw data as we recieved it.
                 if (glider.check) // check = true if condordata filled. check =false if we catch exception
                 {
-                    SendByte2Arduino(); // Send the converted Bytes to the Arduino. In a timer routine because it went nuts when trying to send it in a while loop. its send and forget. no handshaking stuff.
+                    if (send2arduino.arduino) // we are connected
+                        try
+                        {
+                            if (send2arduino.SendByte2Arduino(glider.serialdata, glider.serialdata.Length)) // sending returns true
+                                labelStatusArduino.Text = "sending arduinodata";
+                            else
+                                labelStatusArduino.Text = "error sending arduino data"; // something went wrong with sending
+                        }
+
+                        catch { labelStatusArduino.Text = "unknown error Arduino"; }
                     
                     DecodeData(glider.serialdata); // For debugging only. Convert the data as it is converted in the Arduino so we can check if it is valid 
                     ShowConvertedData(decoded,glider); // For debugging only. Show the converted data on screen
@@ -87,7 +96,7 @@ namespace Condor2Arduino
                 comboBoxComPort.Items.Add(s);
        }
 
-     private void DecodeData(byte[] b) // for debugging only
+     private void DecodeData(byte[] b) // for debugging only. used to check if the arduino (de)code will work.
         {
             decoded.altitudebaro = b[1] << 8 | b[2];
             decoded.speedias = b[3] << 8 | b[4];
@@ -153,19 +162,6 @@ namespace Condor2Arduino
             }
         }
          
-        private void SendByte2Arduino() // I put this in a timer routine to limit the amount of data sent. if < 30 millsec interval the arduino goes nuts
-         {
-            if (send2arduino.arduino) // we are connected
-            try
-             {
-                 if (send2arduino.SendByte2Arduino(glider.serialdata, glider.serialdata.Length)) // sending returns true
-                 labelStatusArduino.Text = "sending arduinodata";
-                 else
-                 labelStatusArduino.Text = "error sending arduino data"; // something went wrong with sending
-             }
-             
-             catch { labelStatusArduino.Text = "unknown error Arduino"; }
-         } 
    
         private void backgroundWorker1_DoWork(object sender, DoWorkEventArgs e)
         {
