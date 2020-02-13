@@ -1,9 +1,11 @@
 #include <Servo.h> // link to the servo library. 
-#include <AccelStepper.h> // link to the advanced Stepper library. Accelstepper is not default you need to install it.
 #include <Wire.h> // needed for the liquid crystal display (LCD)
 #include <LiquidCrystal_I2C.h> // LCD display
 #include <TM1638.h> // library for the 8 segments display / 8 buttons, 8 led red/green 
+
+#include <AccelStepper.h> // link to the advanced Stepper library. Accelstepper is not default you need to install it.
 #include <SwitecX25.h> // library for X27 stepper motor
+#include <Stepper.h>
 
 #define motorPin1  8      // IN1 on the ULN2003 driver
 #define motorPin2  9      // IN2 on the ULN2003 driver
@@ -19,6 +21,8 @@
 #define TM_BRT 0x02       // set the brightness of board (0-7)
 
 #define STEPS (315*3)
+const int X27StepsPerRevolution = 720;
+const int maxSteps = 630; // X27 can only turn 315° => 720 steps * 315° / 360° = 630 steps
 
 TM1638 tm1(DIO_TM, CLOCK_TM, STROBE_TM1);
 TM1638 tm2(DIO_TM, CLOCK_TM, STROBE_TM2);
@@ -119,12 +123,18 @@ Servo MyServo2; // define an object of servomotor
 // *********************************************600
 int StepVario = 20; // 1 ms/s = 20 steps on the servo --> 0.1 m/s = 2 steps on the servo
 
-
+/*
 SwitecX25 ACSpeedStepper(STEPS, 8, 9, 10, 11);
 // standard X27.168 range 315 degrees at 1/3 degree steps
 // maxsteps: 945 --> X27 can only turn 315° =>  315° * 3° = 945 steps
 // max speed glider: 300 kmph --> 945/300 = 3.15 steps per km
-float stpSpeed = 3.15;
+// float stpSpeed = 3.15;
+// andere methode:
+// X27: rond = 600 steps = 315 deg
+// 600 steps = 300 kmph
+// 2 steps = 1 kmph
+float stpSpeed = 2.00;
+*/
 
 /*
   AccelStepper ACSpeedStepper(AccelStepper::FULL4WIRE, 8, 10, 9, 11);
@@ -136,6 +146,12 @@ float stpSpeed = 3.15;
   // *********************************************
   float stpSpeed = 10.24; //how many steps per km/h
 */
+Stepper ACSpeedStepper(X27StepsPerRevolution, 8, 9, 10, 11);
+// 1 revolution = 300 km/h (for my gauge)
+// 300 kmph = 630 steps
+// 1 kmph = 2.10 steps
+float stpSpeed = 2.10;
+
 
 byte buttons1 = 0;
 byte buttons2 = 0;
@@ -174,9 +190,12 @@ void setup()
   //ACSpeedStepper.setAcceleration(600.0); // I dont want accel/decel
   //ACSpeedStepper.setCurrentPosition(0); // this needs to be in a homing routine. For now I assume the current position = 0 km/h
 
-  ACSpeedStepper.zero();
-  ACSpeedStepper.setPosition(STEPS / 2);
-
+  //ACSpeedStepper.zero();
+  //ACSpeedStepper.setPosition(STEPS / 2);
+  
+  ACSpeedStepper.setSpeed(70);
+  ACSpeedStepper.step (-1 * (maxSteps+10));
+  
   if (lcdon)
   {
     lcd.init();                  // initialiseer het LCD scherm
@@ -261,10 +280,12 @@ void loop()
         gfo = ((gfol << 8 | gfoh) / 10.0) - 10.0; //decode gforce
         yaw = ((yawl << 8 | yawh)) - 50.0; //decode yawstringangle (deg) [-99,99] but more in the range of [-10 , 10]
 
+
         int temp = spd * stpSpeed;
         //ACSpeedStepper.moveTo(temp); // where to go
-        ACSpeedStepper.setPosition(temp);
-
+        //ACSpeedStepper.setPosition(temp);
+        ACSpeedStepper.step(temp);
+        
         if (vari < -5) vari = -4.9;
         if (vari > 5) vari = 4.9;
 
@@ -294,10 +315,10 @@ void loop()
 
   //Set the Speeddial
   //*****************
-
   //ACSpeedStepper.run(); //go
-  ACSpeedStepper.update();
-
+  //ACSpeedStepper.update();
+  
+  
   // Set the VARIO
   //*****************
   if (ServoOn)
