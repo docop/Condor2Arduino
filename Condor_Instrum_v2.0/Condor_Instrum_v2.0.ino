@@ -120,21 +120,21 @@ Servo MyServo2; // define an object of servomotor
 int StepVario = 20; // 1 ms/s = 20 steps on the servo --> 0.1 m/s = 2 steps on the servo
 
 
-SwitecX25 ACSpeedStepper(STEPS,8,9,10,11);
+SwitecX25 ACSpeedStepper(STEPS, 8, 9, 10, 11);
 // standard X27.168 range 315 degrees at 1/3 degree steps
 // maxsteps: 945 --> X27 can only turn 315° =>  315° * 3° = 945 steps
 // max speed glider: 300 kmph --> 945/300 = 3.15 steps per km
 float stpSpeed = 3.15;
 
 /*
-AccelStepper ACSpeedStepper(AccelStepper::FULL4WIRE, 8, 10, 9, 11);
-// *********************************************
-// 1 revolution = 200 km/h (for my gauge)
-// 1 rev = 2048 steps (for my steppermotor)
-// 2048 steps = 200 km/h
-// 2048/200 = 1 km/h results in 10,24 steps per 1 km/h
-// *********************************************
-float stpSpeed = 10.24; //how many steps per km/h
+  AccelStepper ACSpeedStepper(AccelStepper::FULL4WIRE, 8, 10, 9, 11);
+  // *********************************************
+  // 1 revolution = 200 km/h (for my gauge)
+  // 1 rev = 2048 steps (for my steppermotor)
+  // 2048 steps = 200 km/h
+  // 2048/200 = 1 km/h results in 10,24 steps per 1 km/h
+  // *********************************************
+  float stpSpeed = 10.24; //how many steps per km/h
 */
 
 byte buttons1 = 0;
@@ -152,7 +152,8 @@ bool changed;
 
 bool homing = false;
 bool lcdon = false;
-bool TM1638on = true;
+bool TM1638on = false;
+bool ServoOn = false;
 
 int altl, spdl, hdgl, bnkl, pitl, varrl, varel, varil, gfol, yawl;
 int alth, spdh, hdgh, bnkh, pith, varrh, vareh, varih, gfoh, yawh;
@@ -162,18 +163,20 @@ double varr, vare, vari, gfo, yaw;
 
 void setup()
 {
-  MyServo.attach(Servopin); // my servo is attached to pin 7
-  MyServo.write(100);// Range is 0-200. Zero point is halfway = 100
-  MyServo2.attach(6); // my s2nd servo is attached to pin 6
-  MyServo2.write(100);// Range is 0-200. Zero point is halfway = 100
-
+  if (ServoOn)
+  {
+    MyServo.attach(Servopin); // my servo is attached to pin 7
+    MyServo.write(100);// Range is 0-200. Zero point is halfway = 100
+    MyServo2.attach(6); // my s2nd servo is attached to pin 6
+    MyServo2.write(100);// Range is 0-200. Zero point is halfway = 100
+  }
   //ACSpeedStepper.setMaxSpeed(600.0); //maxium number of steps per second. must be >0. my motor: 3 seconds for 2048 steps. == 2048/3 = 620.6 steps per sec
   //ACSpeedStepper.setAcceleration(600.0); // I dont want accel/decel
   //ACSpeedStepper.setCurrentPosition(0); // this needs to be in a homing routine. For now I assume the current position = 0 km/h
 
   ACSpeedStepper.zero();
-  ACSpeedStepper.setPosition(STEPS/2);
-  
+  ACSpeedStepper.setPosition(STEPS / 2);
+
   if (lcdon)
   {
     lcd.init();                  // initialiseer het LCD scherm
@@ -209,10 +212,10 @@ void setup()
   {
     tm1.clearDisplay(); // clears the display, ot the leds
     tm2.clearDisplay();
-
+    tm3.clearDisplay();
     tm1.setupDisplay(false, 2);
     tm2.setupDisplay(false, 2);
-
+    tm3.setupDisplay(false, 2);
   }
 
   Serial.begin(19200);
@@ -261,7 +264,7 @@ void loop()
         int temp = spd * stpSpeed;
         //ACSpeedStepper.moveTo(temp); // where to go
         ACSpeedStepper.setPosition(temp);
-        
+
         if (vari < -5) vari = -4.9;
         if (vari > 5) vari = 4.9;
 
@@ -293,12 +296,15 @@ void loop()
   //*****************
 
   //ACSpeedStepper.run(); //go
-   ACSpeedStepper.update();
-   
+  ACSpeedStepper.update();
+
   // Set the VARIO
   //*****************
-  MyServo.write(varr * StepVario + 100); //0.1 m/s *20 +100 = 102
-  MyServo2.write(vari * StepVario + 100); //
+  if (ServoOn)
+  {
+    MyServo.write(varr * StepVario + 100); //0.1 m/s *20 +100 = 102
+    MyServo2.write(vari * StepVario + 100); //
+  }
   /*
     if (TM1638on)
     {
@@ -373,54 +379,4 @@ void YawLeds(TM1638 m, double a)
   if (a >= -6.0 && a < -4.0) m.setLEDs(512);
   if (a >= -4.0 && a < -2.0) m.setLEDs(1024);
   if (a >= -2.0 && a < 0.0) m.setLEDs(2048);
-}
-
-
-void TMDfloat(TM1638 m, String v, double val)
-{
-
-  m.setDisplayToString(v, 0, 0);
-  m.setDisplayToString(String(val, 1), 0, 4);
-}
-
-void TMDint(TM1638 m, String v, int val)
-{
-  m.setDisplayToString(v, 0, 0);
-  if (val <= -100 && val > -1000)
-  {
-    m.setDisplayToString(String(val, DEC), 0, 4);
-  }
-  if (val <= -10 && val > -100)
-  {
-    m.clearDisplayDigit(4, false);
-    m.setDisplayToString(String(val, DEC), 0, 5);
-  }
-  if (val < 0 && val > -10)
-  {
-    m.clearDisplayDigit(4, false);
-    m.clearDisplayDigit(5, false);
-    m.setDisplayToString(String(val, DEC), 0, 6);
-  }
-  if (val < 10 && val >= 0)
-  {
-    m.clearDisplayDigit(4, false);
-    m.clearDisplayDigit(5, false);
-    m.clearDisplayDigit(6, false);
-    m.setDisplayToString(String(val, DEC), 0, 7);
-  }
-  if (val < 100 && val >= 10)
-  {
-    m.clearDisplayDigit(4, false);
-    m.clearDisplayDigit(5, false);
-    m.setDisplayToString(String(val, DEC), 0, 6);
-  }
-  if (val < 1000 && val >= 100)
-  {
-    m.clearDisplayDigit(4, false);
-    m.setDisplayToString(String(val, DEC), 0, 5);
-  }
-  if (val < 10000 && val >= 1000)
-  {
-    m.setDisplayToString(String(val, DEC), 0, 4);
-  }
 }
