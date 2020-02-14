@@ -127,8 +127,8 @@ int StepVario = 20; // 1 ms/s = 20 steps on the servo --> 0.1 m/s = 2 steps on t
 SwitecX25 ACSpeedStepper(STEPS, 8, 9, 10, 11);
 // standard X27.168 range 315 degrees at 1/3 degree steps
 // maxsteps: 945 --> X27 can only turn 315° =>  315° * 3° = 945 steps
-// max speed glider: 300 kmph --> 945/300 = 3.15 steps per km
- float stpSpeed = 3.15;
+// max speed glider: 280 kmph --> 945/280 = 3.15 steps per km
+ float stpSpeed = 3.40;
 
 
 /*
