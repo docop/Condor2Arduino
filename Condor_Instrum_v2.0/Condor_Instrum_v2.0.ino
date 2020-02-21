@@ -3,9 +3,7 @@
 #include <LiquidCrystal_I2C.h> // LCD display
 #include <TM1638.h> // library for the 8 segments display / 8 buttons, 8 led red/green 
 
-//#include <AccelStepper.h> // link to the advanced Stepper library. Accelstepper is not default you need to install it.
-#include <SwitecX25.h> // library for X27 stepper motor
-//#include <Stepper.h>
+#include <Stepper.h>
 
 #define motorPin1  8      // IN1 on the ULN2003 driver
 #define motorPin2  9      // IN2 on the ULN2003 driver
@@ -20,14 +18,16 @@
 #define  DIO_TM 3         // DIO of all boards is on pin 3
 #define TM_BRT 0x02       // set the brightness of board (0-7)
 
-#define STEPS (315*3)
-const int X27StepsPerRevolution = 720;
-const int maxSteps = 630; // X27 can only turn 315° => 720 steps * 315° / 360° = 630 steps
+#define STEPS (315*3) // 945
+// the x27 stepper lists 1/3deg per step.=3 steps per deg = 3*360 steps per full rotation = 1080 steps per revolution.
+// 1080/360*315 (max) = 945.
+const int X27StepsPerRevolution = 1080;
+const int maxSteps = 945; // X27 can only turn 315°
 
 TM1638 tm1(DIO_TM, CLOCK_TM, STROBE_TM1);
 TM1638 tm2(DIO_TM, CLOCK_TM, STROBE_TM2);
 TM1638 tm3(DIO_TM, CLOCK_TM, STROBE_TM3);
-word leds [17] = {0, 256, 768, 1792, 3840, 7936, 16128, 32512, 65280, 1, 3, 7, 15, 31, 63, 127, 255};
+//word leds [17] = {0, 256, 768, 1792, 3840, 7936, 16128, 32512, 65280, 1, 3, 7, 15, 31, 63, 127, 255};
 //https://tronixstuff.com/2012/03/11/arduino-and-tm1638-led-display-modules/
 
 /*Set the display (segments and LEDs) active or off and intensity (range from 0-7).
@@ -123,32 +123,8 @@ Servo MyServo2; // define an object of servomotor
 // *********************************************600
 int StepVario = 20; // 1 ms/s = 20 steps on the servo --> 0.1 m/s = 2 steps on the servo
 
-
-SwitecX25 ACSpeedStepper(STEPS, 8, 9, 10, 11);
-// standard X27.168 range 315 degrees at 1/3 degree steps
-// maxsteps: 945 --> X27 can only turn 315° =>  315° * 3° = 945 steps
-// max speed glider: 280 kmph --> 945/280 = 3.15 steps per km
- float stpSpeed = 3.40;
-
-
-/*
-  AccelStepper ACSpeedStepper(AccelStepper::FULL4WIRE, 8, 10, 9, 11);
-  // *********************************************
-  // 1 revolution = 200 km/h (for my gauge)
-  // 1 rev = 2048 steps (for my steppermotor)
-  // 2048 steps = 200 km/h
-  // 2048/200 = 1 km/h results in 10,24 steps per 1 km/h
-  // *********************************************
-  float stpSpeed = 10.24; //how many steps per km/h
-*/
-/*
 Stepper ACSpeedStepper(X27StepsPerRevolution, 8, 9, 10, 11);
-// 1 revolution = 300 km/h (for my gauge)
-// 300 kmph = 630 steps
-// 1 kmph = 2.10 steps
-float stpSpeed = 2.10;
-*/
-
+  
 byte buttons1 = 0;
 byte buttons2 = 0;
 //byte buttons3=0;
@@ -159,7 +135,6 @@ byte page1 = 1;
 byte page2 = 1;
 //byte page3=1;
 
-unsigned long milstart, milstart2 = 0;
 bool changed;
 
 bool homing = false;
@@ -171,8 +146,9 @@ int altl, spdl, hdgl, bnkl, pitl, varrl, varel, varil, gfol, yawl;
 int alth, spdh, hdgh, bnkh, pith, varrh, vareh, varih, gfoh, yawh;
 int alt, spd, hdg, bnk, pit;
 double varr, vare, vari, gfo, yaw;
-
-
+int spdval,pos;
+int maxspeed=300;
+int maxsteps=630;
 void setup()
 {
   if (ServoOn)
@@ -182,17 +158,12 @@ void setup()
     MyServo2.attach(6); // my s2nd servo is attached to pin 6
     MyServo2.write(100);// Range is 0-200. Zero point is halfway = 100
   }
-  //ACSpeedStepper.setMaxSpeed(600.0); //maxium number of steps per second. must be >0. my motor: 3 seconds for 2048 steps. == 2048/3 = 620.6 steps per sec
-  //ACSpeedStepper.setAcceleration(600.0); // I dont want accel/decel
-  //ACSpeedStepper.setCurrentPosition(0); // this needs to be in a homing routine. For now I assume the current position = 0 km/h
+ 
+  pos = 0;
+  spdval=0;
+  ACSpeedStepper.setSpeed(30);
+  ACSpeedStepper.step (-1*maxsteps);
 
-  ACSpeedStepper.zero();
-  delay(1000);
-  ACSpeedStepper.setPosition(STEPS / 2);
-  
-  //ACSpeedStepper.setSpeed(70);
-  //ACSpeedStepper.step (-1 * (maxSteps+10));
-  
   if (lcdon)
   {
     lcd.init();                  // initialiseer het LCD scherm
@@ -277,15 +248,9 @@ void loop()
         gfo = ((gfol << 8 | gfoh) / 10.0) - 10.0; //decode gforce
         yaw = ((yawl << 8 | yawh)) - 50.0; //decode yawstringangle (deg) [-99,99] but more in the range of [-10 , 10]
 
+        if (spd>maxspeed) spd=maxspeed;
+        spdval = map(spd, 0, maxspeed, 0, maxsteps);
 
-        int temp = spd * stpSpeed;
-        //ACSpeedStepper.moveTo(temp); // where to go
-        ACSpeedStepper.setPosition(temp);
-        
-       
-      //  ACSpeedStepper.step(relpos);
-       
-        
         if (vari < -5) vari = -4.9;
         if (vari > 5) vari = 4.9;
 
@@ -302,7 +267,7 @@ void loop()
         {
           tm1.setDisplayToSignedDecNumber(alt, 0, false);
           tm2.setDisplayToSignedDecNumber(spd, 0, false);
-          tm3.setDisplayToSignedDecNumber(hdg, 0, false);
+          tm3.setDisplayToSignedDecNumber(spdval, 0, false);
           tm1.setLEDs(0);
           tm3.setLEDs(0);
 
@@ -315,10 +280,20 @@ void loop()
 
   //Set the Speeddial
   //*****************
-  //ACSpeedStepper.run(); //go
-  ACSpeedStepper.update();
   
-  
+  if (abs(spdval - pos) >= 2)
+  { //if diference is greater than 2 steps.
+    if ((spdval - pos) > 0)
+    {
+      ACSpeedStepper.step(+1);      // move one step to the right.
+      pos++;
+    }
+    if ((spdval - pos) < 0)
+    {
+      ACSpeedStepper.step(-1);       // move one step to the left.
+      pos--;
+    }
+  }
   // Set the VARIO
   //*****************
   if (ServoOn)
