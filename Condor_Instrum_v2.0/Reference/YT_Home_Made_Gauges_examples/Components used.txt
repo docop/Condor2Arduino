@@ -1,0 +1,17 @@
+Components used :
+---------------
+
+Breadboard : https://fr.aliexpress.com/wholesale?SearchText=breadboard+mb102
+5V Power supply : https://fr.aliexpress.com/wholesale?SearchText=5v+2a+jack+power+supply+eu+plug
+Connector : https://fr.aliexpress.com/wholesale?SearchText=2.54mm+male+connector+kf2510
+Arduino nano clone : https://fr.aliexpress.com/wholesale?SearchText=nano+v3+atmega328p
+Dupont cable : https://fr.aliexpress.com/wholesale?SearchText=dupont+cable+male
+Stepper motor + driver : https://fr.aliexpress.com/wholesale?SearchText=28byj-48
+Potentiometer : https://fr.aliexpress.com/wholesale?SearchText=10k+wh148+potentiometer
+Hall sensor : https://fr.aliexpress.com/wholesale?SearchText=a3144+a3144e+hall+sensor+50pcs
+
+Libraries :
+---------
+AccelStepper : http://www.airspayce.com/mikem/arduino/AccelStepper/index.html
+OACSP and Command Gateway: https://github.com/apoloval/open-airbus-cockpit
+Wire documentation : https://www.arduino.cc/en/Reference/Wire
