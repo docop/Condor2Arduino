@@ -161,7 +161,7 @@ void setup()
  
   pos = 0;
   spdval=0;
-  ACSpeedStepper.setSpeed(30);
+  ACSpeedStepper.setSpeed(25);
   ACSpeedStepper.step (-1*maxsteps);
 
   if (lcdon)
@@ -298,8 +298,9 @@ void loop()
   //*****************
   if (ServoOn)
   {
-    MyServo.write(varr * StepVario + 100); //0.1 m/s *20 +100 = 102
-    MyServo2.write(vari * StepVario + 100); //
+   
+   MyServo.write(varr * StepVario + 100); //0.1 m/s *20 +100 = 102
+   MyServo2.write(vari * StepVario + 100); //
   }
   /*
     if (TM1638on)
