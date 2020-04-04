@@ -72,3 +72,4 @@ hudmessages *	HUD message text	separated by ;
 		flaps ** flaps position index : 0=most negative to MAXFLAPS-1
 		MC ** MacCready setting m/s
 		water ** Water ballast content kg
+Please note: The hudmessages do not show properly. I suspect a bug with Condor. I have sent an email to Condor
